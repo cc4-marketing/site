@@ -62,6 +62,61 @@ const stats = [
     secondaryCta={{ label: 'Browse Docs', href: '#modules' }}
   />
 
+  <!-- Quickstart Video Section -->
+  <section class="quickstart-section" id="quickstart">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">Watch First</div>
+        <h2 class="section-title">Quickstart Guide</h2>
+        <p class="section-description">Watch this 5-minute video to see how the course works before you start.</p>
+      </div>
+
+      <div class="video-container">
+        <iframe 
+          src="https://www.youtube.com/embed/35vdqYFikbg" 
+          title="Claude Code for Marketers - Quickstart Guide"
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen>
+        </iframe>
+      </div>
+
+      <div class="quickstart-steps">
+        <h3>Quick Installation Steps</h3>
+        <div class="install-steps">
+          <div class="install-step">
+            <span class="install-number">1</span>
+            <div class="install-content">
+              <strong>Download the Course</strong>
+              <p>Go to the <a href="/download">Download page</a>, enter your email, and click "Download Course".</p>
+            </div>
+          </div>
+          <div class="install-step">
+            <span class="install-number">2</span>
+            <div class="install-content">
+              <strong>Unzip & Open Terminal</strong>
+              <p>Unzip the downloaded file, then right-click the folder and select "New Terminal at Folder".</p>
+            </div>
+          </div>
+          <div class="install-step">
+            <span class="install-number">3</span>
+            <div class="install-content">
+              <strong>Install Claude Code</strong>
+              <p>If you haven't already, install Claude Code from <a href="https://claude.ai/code" target="_blank" rel="noopener">claude.ai/code</a>.</p>
+            </div>
+          </div>
+          <div class="install-step">
+            <span class="install-number">4</span>
+            <div class="install-content">
+              <strong>Start Learning</strong>
+              <p>Run <code>claude</code> in the terminal, then type <code>/start-0-0</code> to begin the course!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- How It Works Section -->
   <section class="how-it-works-section" id="how-it-works">
     <div class="container">
@@ -185,6 +240,114 @@ const stats = [
 </BaseLayout>
 
 <style>
+  /* Quickstart Video Section */
+  .quickstart-section {
+    background: linear-gradient(135deg, var(--charcoal) 0%, #1a1a2e 100%);
+    color: white;
+    padding: 80px 24px;
+  }
+
+  .quickstart-section .section-title,
+  .quickstart-section .section-description {
+    color: white;
+  }
+
+  .video-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 40px auto;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border: 4px solid var(--mustard);
+    box-shadow: 12px 12px 0 rgba(232, 185, 35, 0.3);
+  }
+
+  .video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .quickstart-steps {
+    max-width: 700px;
+    margin: 50px auto 0;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .quickstart-steps h3 {
+    font-family: var(--font-display);
+    font-size: 1.4em;
+    margin-bottom: 25px;
+    text-align: center;
+    color: var(--mustard);
+  }
+
+  .install-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .install-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .install-number {
+    min-width: 36px;
+    height: 36px;
+    background: var(--mustard);
+    color: var(--charcoal);
+    font-family: var(--font-display);
+    font-size: 1.1em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .install-content {
+    flex: 1;
+  }
+
+  .install-content strong {
+    display: block;
+    font-size: 1.05em;
+    margin-bottom: 4px;
+    color: white;
+  }
+
+  .install-content p {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .install-content a {
+    color: var(--mustard);
+    text-decoration: underline;
+  }
+
+  .install-content a:hover {
+    color: white;
+  }
+
+  .install-content code {
+    background: var(--olive);
+    color: white;
+    padding: 2px 8px;
+    font-family: monospace;
+    font-size: 0.95em;
+  }
+
   /* How It Works Section */
   .how-it-works-section {
     background: var(--cream);
