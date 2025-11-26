@@ -14,16 +14,6 @@ const modulesCollection = defineCollection({
   }),
 });
 
-const bonusCollection = defineCollection({
-  loader: glob({ pattern: '**/*.mdx', base: './src/content/bonus' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    order: z.number().optional(),
-  }),
-});
-
 export const collections = {
   modules: modulesCollection,
-  bonus: bonusCollection,
 };
