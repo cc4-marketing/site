@@ -5,8 +5,8 @@ interface Props {
 
 const { showOnHomepage = false } = Astro.props;
 
-const paypalButtonId = 'REPLACE_WITH_PAYPAL_BUTTON_ID';
-const kofiProfile = 'cc4marketing';
+const paypalLink = 'https://paypal.me/MinhTriVo?locale.x=en_US&country.x=VN';
+const kofiId = 'L3L61PX2L8';
 ---
 
 <section class="donation-section" class:list={[showOnHomepage && 'donation-homepage']}>
@@ -23,19 +23,17 @@ const kofiProfile = 'cc4marketing';
           <div class="method-icon">🛒</div>
           <h4>PayPal Donation</h4>
           <p>Support with a one-time donation</p>
-          <a href={`https://www.paypal.com/donate/?business=${paypalButtonId}&no_recurring=0&currency_code=USD`} target="_blank" rel="noopener noreferrer" class="donation-btn paypal-btn">
+          <a href={paypalLink} target="_blank" rel="noopener noreferrer" class="donation-btn paypal-btn">
             Donate with PayPal →
           </a>
         </div>
 
-        <!-- Ko-fi Button -->
+        <!-- Ko-fi Widget -->
         <div class="donation-method kofi">
           <div class="method-icon">☕</div>
           <h4>Ko-fi Support</h4>
           <p>Buy me a coffee or send a tip</p>
-          <a href={`https://ko-fi.com/${kofiProfile}`} target="_blank" rel="noopener noreferrer" class="donation-btn kofi-btn">
-            Support on Ko-fi →
-          </a>
+          <div id="kofi-widget-container"></div>
         </div>
       </div>
 
@@ -188,3 +186,17 @@ const kofiProfile = 'cc4marketing';
     }
   }
 </style>
+
+<script>
+  // Load Ko-fi widget
+  const kofiScript = document.createElement('script');
+  kofiScript.type = 'text/javascript';
+  kofiScript.src = 'https://storage.ko-fi.com/cdn/widget/Widget_2.js';
+  kofiScript.onload = () => {
+    if (typeof kofiwidget2 !== 'undefined') {
+      kofiwidget2.init('Support me on Ko-fi', '#72a4f2', 'L3L61PX2L8');
+      kofiwidget2.draw();
+    }
+  };
+  document.head.appendChild(kofiScript);
+</script>
