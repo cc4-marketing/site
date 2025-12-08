@@ -245,9 +245,13 @@ const stats = [
 <style>
   /* Quickstart Video Section */
   .quickstart-section {
-    background: linear-gradient(135deg, var(--charcoal) 0%, #1a1a2e 100%);
+    background: linear-gradient(135deg, #2C2C2C 0%, #1a1a2e 100%);
     color: white;
     padding: 80px 24px;
+  }
+
+  html[data-theme="dark"] .quickstart-section {
+    background: linear-gradient(135deg, #2D2D2D 0%, #1a1a2e 100%);
   }
 
   .quickstart-section .section-title,
@@ -307,7 +311,7 @@ const stats = [
     min-width: 36px;
     height: 36px;
     background: var(--mustard);
-    color: var(--charcoal);
+    color: #2C2C2C;
     font-family: var(--font-display);
     font-size: 1.1em;
     font-weight: bold;
@@ -353,8 +357,33 @@ const stats = [
 
   /* How It Works Section */
   .how-it-works-section {
-    background: var(--cream);
+    background: #F5F1E8;
     border-bottom: 4px solid var(--olive);
+  }
+
+  html[data-theme="dark"] .how-it-works-section {
+    background: var(--bg-primary);
+    border-bottom-color: #6B8E23;
+  }
+
+  html[data-theme="dark"] .how-it-works-section .section-title,
+  html[data-theme="dark"] .how-it-works-section .section-description {
+    color: var(--text-primary);
+  }
+
+  html[data-theme="dark"] .how-step {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    box-shadow: 8px 8px 0 var(--border-color);
+    color: var(--text-primary);
+  }
+
+  html[data-theme="dark"] .how-step h3 {
+    color: var(--text-primary);
+  }
+
+  html[data-theme="dark"] .how-step p {
+    color: var(--text-secondary);
   }
 
   .how-it-works-grid {
@@ -367,34 +396,38 @@ const stats = [
   .how-step {
     text-align: center;
     padding: 30px;
-    background: white;
-    border: 3px solid var(--charcoal);
-    box-shadow: 8px 8px 0 var(--charcoal);
+    background: #FFFFFF;
+    border: 3px solid #2C2C2C;
+    box-shadow: 8px 8px 0 #2C2C2C;
   }
 
   .step-number {
     width: 60px;
     height: 60px;
     background: var(--mustard);
-    color: var(--charcoal);
+    color: #2C2C2C;
     font-family: var(--font-display);
     font-size: 1.8em;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 20px;
-    border: 3px solid var(--charcoal);
+    border: 3px solid #2C2C2C;
+  }
+
+  html[data-theme="dark"] .step-number {
+    border-color: var(--border-color);
   }
 
   .how-step h3 {
     font-family: var(--font-display);
     font-size: 1.3em;
     margin-bottom: 10px;
-    color: var(--charcoal);
+    color: #2C2C2C;
   }
 
   .how-step p {
-    color: var(--charcoal);
+    color: #2C2C2C;
     line-height: 1.6;
   }
 
@@ -409,11 +442,18 @@ const stats = [
   .practice-project {
     margin-top: 60px;
     padding: 40px;
-    background: var(--olive);
+    background: #6B8E23;
     color: white;
     text-align: center;
-    border: 3px solid var(--charcoal);
-    box-shadow: 10px 10px 0 var(--charcoal);
+    border: 3px solid #2C2C2C;
+    box-shadow: 10px 10px 0 #2C2C2C;
+  }
+
+  html[data-theme="dark"] .practice-project {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+    box-shadow: 10px 10px 0 var(--border-color);
   }
 
   .practice-project h3 {
@@ -444,7 +484,16 @@ const stats = [
 
   /* Features Section */
   .features-section {
-    background: white;
+    background: #FFFFFF;
+  }
+
+  html[data-theme="dark"] .features-section {
+    background: var(--bg-primary);
+  }
+
+  html[data-theme="dark"] .features-section .section-title,
+  html[data-theme="dark"] .features-section .section-description {
+    color: var(--text-primary);
   }
 
   .features-grid {
@@ -502,8 +551,17 @@ const stats = [
 
   /* Stats Section */
   .stats-section {
-    background: white;
+    background: #FFFFFF;
     padding: 80px 0;
+  }
+
+  html[data-theme="dark"] .stats-section {
+    background: var(--bg-primary);
+  }
+
+  html[data-theme="dark"] .stats-section .section-title,
+  html[data-theme="dark"] .stats-section .section-description {
+    color: var(--text-primary);
   }
 
   .stats-grid {

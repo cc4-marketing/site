@@ -20,10 +20,10 @@ const emailUrl = `mailto:hi@cc4.marketing?subject=${encodeURIComponent(emailSubj
 <div class={`feedback-button-wrapper feedback-${placement}`}>
   <div class="feedback-buttons">
     <a href={feedbackUrl} target="_blank" rel="noopener noreferrer" class="feedback-button feedback-github" title="Create GitHub Issue">
-      {placement === 'sidebar' ? '💬' : '📝 GitHub'}
+      {placement === 'sidebar' ? '💬' : 'Feedback on Github'}
     </a>
     <a href={emailUrl} class="feedback-button feedback-email" title="Send Email Feedback">
-      {placement === 'sidebar' ? '✉️' : '✉️ Email'}
+      {placement === 'sidebar' ? '✉️' : 'Email'}
     </a>
   </div>
 </div>
