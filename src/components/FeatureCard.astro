@@ -17,11 +17,16 @@ const { icon, title, description } = Astro.props;
 <style>
   .feature-card {
     padding: 40px;
-    background: var(--cream);
-    border: 3px solid var(--charcoal);
+    background: var(--bg-secondary);
+    border: 3px solid var(--border-color);
     position: relative;
     transition: all 0.3s ease;
     animation: fadeInScale 0.6s ease-out backwards;
+  }
+
+  html[data-theme="dark"] .feature-card {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
   }
 
   .feature-card::before {
@@ -55,11 +60,11 @@ const { icon, title, description } = Astro.props;
     font-family: var(--font-display);
     font-size: 1.4em;
     margin-bottom: 12px;
-    color: var(--charcoal);
+    color: var(--text-primary);
   }
 
   .feature-text {
-    color: var(--charcoal);
+    color: var(--text-secondary);
     font-size: 1em;
     line-height: 1.7;
     margin: 0;

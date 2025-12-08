@@ -1,0 +1,69 @@
+---
+// This component adds copy buttons to code blocks when loaded on the client
+---
+
+<script>
+  function setupCodeBlockCopy() {
+    // Find all pre elements that contain code
+    const preElements = document.querySelectorAll('pre');
+    
+    preElements.forEach((pre) => {
+      // Skip if already wrapped
+      if (pre.parentElement?.classList.contains('code-block-wrapper')) {
+        return;
+      }
+
+      // Create wrapper
+      const wrapper = document.createElement('div');
+      wrapper.className = 'code-block-wrapper';
+      
+      // Wrap the pre element
+      pre.parentNode?.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
+
+      // Create copy button
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'code-copy-btn';
+      copyBtn.textContent = 'Copy';
+      copyBtn.type = 'button';
+      
+      wrapper.insertBefore(copyBtn, pre);
+
+      // Handle click
+      copyBtn.addEventListener('click', async () => {
+        const code = pre.innerText || pre.textContent || '';
+        
+        try {
+          await navigator.clipboard.writeText(code);
+          
+          // Show feedback
+          const originalText = copyBtn.textContent;
+          copyBtn.textContent = 'Copied!';
+          copyBtn.classList.add('copied');
+          
+          // Reset after 2 seconds
+          setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.classList.remove('copied');
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy:', err);
+          copyBtn.textContent = 'Error';
+          setTimeout(() => {
+            copyBtn.textContent = originalText;
+          }, 2000);
+        }
+      });
+    });
+  }
+
+  // Run on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupCodeBlockCopy);
+  } else {
+    setupCodeBlockCopy();
+  }
+
+  // Also run on navigation (for SPAs)
+  window.addEventListener('pageshow', setupCodeBlockCopy);
+</script>

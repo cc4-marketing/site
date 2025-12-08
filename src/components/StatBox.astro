@@ -16,10 +16,14 @@ const { number, label } = Astro.props;
   .stat-box {
     text-align: center;
     padding: 30px;
-    background: var(--cream);
+    background: var(--bg-secondary);
     border-radius: 0;
     position: relative;
     animation: fadeInScale 0.6s ease-out backwards;
+  }
+
+  html[data-theme="dark"] .stat-box {
+    background: var(--bg-secondary);
   }
 
   .stat-box::before {
@@ -34,6 +38,10 @@ const { number, label } = Astro.props;
     opacity: 0.5;
   }
 
+  html[data-theme="dark"] .stat-box::before {
+    opacity: 0.3;
+  }
+
   .stat-number {
     font-family: var(--font-display);
     font-size: 2.8em;
@@ -42,7 +50,7 @@ const { number, label } = Astro.props;
   }
 
   .stat-label {
-    color: var(--charcoal);
+    color: var(--text-primary);
     font-weight: 600;
     font-size: 0.95em;
   }

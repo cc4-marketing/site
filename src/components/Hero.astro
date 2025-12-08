@@ -35,7 +35,11 @@ const { title, subtitle, description, primaryCta, secondaryCta } = Astro.props;
     position: relative;
     overflow: hidden;
     padding: 120px 24px 60px;
-    background: linear-gradient(135deg, var(--cream) 0%, rgba(232, 185, 35, 0.05) 100%);
+    background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(232, 185, 35, 0.05) 100%);
+  }
+
+  html[data-theme="dark"] .hero {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(255, 136, 102, 0.08) 100%);
   }
 
   .hero::before {
@@ -51,6 +55,10 @@ const { title, subtitle, description, primaryCta, secondaryCta } = Astro.props;
     animation: float 20s ease-in-out infinite;
   }
 
+  html[data-theme="dark"] .hero::before {
+    opacity: 0.15;
+  }
+
   .hero::after {
     content: '';
     position: absolute;
@@ -62,6 +70,10 @@ const { title, subtitle, description, primaryCta, secondaryCta } = Astro.props;
     left: -80px;
     opacity: 0.2;
     animation: float 25s ease-in-out infinite reverse;
+  }
+
+  html[data-theme="dark"] .hero::after {
+    opacity: 0.1;
   }
 
   @keyframes float {
@@ -81,7 +93,7 @@ const { title, subtitle, description, primaryCta, secondaryCta } = Astro.props;
     font-size: 4.5em;
     line-height: 1.1;
     margin-bottom: 20px;
-    color: var(--charcoal);
+    color: var(--text-primary);
     letter-spacing: -0.02em;
     animation: slideInDown 0.8s ease-out;
   }
@@ -94,9 +106,13 @@ const { title, subtitle, description, primaryCta, secondaryCta } = Astro.props;
     animation: slideInUp 0.8s ease-out 0.1s both;
   }
 
+  html[data-theme="dark"] .hero-subtitle {
+    color: #FF8866;
+  }
+
   .hero-description {
     font-size: 1.15em;
-    color: var(--charcoal);
+    color: var(--text-secondary);
     margin-bottom: 40px;
     max-width: 700px;
     margin-left: auto;

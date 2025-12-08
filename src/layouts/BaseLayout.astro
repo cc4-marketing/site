@@ -1,6 +1,7 @@
 ---
 import HelloBar from '../components/HelloBar.astro';
 import FloatingSideBanner from '../components/FloatingSideBanner.astro';
+import CodeBlockCopy from '../components/CodeBlockCopy.astro';
 import { promoConfig } from '../config/promo';
 
 interface Props {
@@ -161,6 +162,7 @@ const breadcrumbSchema = {
 <body>
   <HelloBar {...promoConfig.helloBar} />
   <FloatingSideBanner {...promoConfig.floatingBanner} />
+  <CodeBlockCopy />
   <slot />
 </body>
 </html>

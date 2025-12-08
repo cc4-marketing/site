@@ -242,6 +242,39 @@ section {
   to { opacity: 1; transform: scale(1); }
 }
 
+/* Code Block Copy Button */
+.code-block-wrapper {
+  position: relative;
+  margin: 24px 0;
+}
+
+.code-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--rust);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 0.8em;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  opacity: 0.8;
+  z-index: 10;
+}
+
+.code-copy-btn:hover {
+  opacity: 1;
+  background: var(--rust);
+  transform: scale(1.05);
+}
+
+.code-copy-btn.copied {
+  background: var(--accent-teal);
+}
+
 /* Utility Classes */
 .text-center { text-align: center; }
 .text-rust { color: var(--rust); }
