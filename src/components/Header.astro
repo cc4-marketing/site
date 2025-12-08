@@ -20,6 +20,9 @@ const navItems = [
           {item.label}
         </a>
       ))}
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <span class="theme-icon">🌙</span>
+      </button>
     </nav>
   </div>
 </header>
@@ -33,8 +36,13 @@ const navItems = [
     z-index: 100;
     background: rgba(245, 241, 232, 0.95);
     backdrop-filter: blur(10px);
-    border-bottom: 2px solid var(--charcoal);
+    border-bottom: 2px solid var(--border-color);
     padding: 16px 0;
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+
+  html[data-theme="dark"] .header {
+    background: rgba(26, 26, 26, 0.95);
   }
 
   .container {
@@ -53,10 +61,11 @@ const navItems = [
   .nav {
     display: flex;
     gap: 32px;
+    align-items: center;
   }
 
   .nav-link {
-    color: var(--charcoal);
+    color: var(--text-primary);
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
@@ -66,9 +75,68 @@ const navItems = [
     color: var(--rust);
   }
 
+  .theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+  }
+
+  .theme-toggle:hover {
+    transform: scale(1.2);
+  }
+
+  .theme-icon {
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
   @media (max-width: 768px) {
     .nav {
       gap: 16px;
     }
   }
 </style>
+
+<script>
+  function initTheme() {
+    const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const html = document.documentElement;
+    html.setAttribute('data-theme', theme);
+    updateThemeIcon(theme);
+  }
+
+  function updateThemeIcon(theme) {
+    const icon = document.querySelector('.theme-icon');
+    if (icon) {
+      icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+    }
+  }
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme') || 'light';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+  }
+
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+  }
+
+  // Initialize theme on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTheme);
+  } else {
+    initTheme();
+  }
+</script>

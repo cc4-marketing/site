@@ -3,7 +3,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Righteous&family=Outfit:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Core Colors */
+  color-scheme: light;
+  /* Core Colors - Light Mode */
   --rust: #B85C3C;
   --olive: #6B8E23;
   --mustard: #E8B923;
@@ -12,6 +13,13 @@
   --charcoal: #2C2C2C;
   --accent-teal: #0D9488;
   --accent-pink: #EC4899;
+  
+  /* Background and Text Colors */
+  --bg-primary: #F5F1E8;
+  --bg-secondary: #FFFFFF;
+  --text-primary: #2C2C2C;
+  --text-secondary: #666666;
+  --border-color: #2C2C2C;
   
   /* Typography */
   --font-display: 'Righteous', serif;
@@ -33,6 +41,18 @@
   --shadow-mustard: 6px 6px 0 var(--mustard);
 }
 
+/* Dark Mode */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-primary: #1A1A1A;
+  --bg-secondary: #2D2D2D;
+  --text-primary: #F5F1E8;
+  --text-secondary: #B0B0B0;
+  --border-color: #F5F1E8;
+  --rust: #E8917E;
+  --charcoal: #F5F1E8;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -45,11 +65,11 @@ html {
 
 body {
   font-family: var(--font-body);
-  background: var(--cream);
-  color: var(--charcoal);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   line-height: 1.6;
   overflow-x: hidden;
-  transition: padding-top 0.3s ease;
+  transition: background 0.3s ease, color 0.3s ease, padding-top 0.3s ease;
 }
 
 body:has(.hello-bar.visible) {
@@ -62,7 +82,7 @@ body:has(.hello-bar.visible) {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--cream);
+  background: var(--bg-primary);
 }
 
 ::-webkit-scrollbar-thumb {

@@ -1,0 +1,280 @@
+---
+interface Props {
+  lessonTitle?: string;
+  lessonUrl?: string;
+  placement?: 'content-end' | 'sidebar';
+}
+
+const {
+  lessonTitle = 'Lesson',
+  lessonUrl = typeof window !== 'undefined' ? window.location.href : '',
+  placement = 'content-end'
+} = Astro.props;
+---
+
+<div class={`feedback-button-wrapper feedback-${placement}`}>
+  <button class="feedback-button" id="feedback-button-{lessonTitle}">
+    {placement === 'sidebar' ? '💬 Feedback' : '📝 Give Feedback'}
+  </button>
+</div>
+
+<!-- Feedback Modal -->
+<div class="feedback-modal" id="feedback-modal-{lessonTitle}">
+  <div class="feedback-modal-content">
+    <div class="feedback-header">
+      <h3>Share Your Feedback</h3>
+      <button class="feedback-close" id="feedback-close-{lessonTitle}">×</button>
+    </div>
+    
+    <form class="feedback-form" id="feedback-form-{lessonTitle}">
+      <div class="form-group">
+        <label for="feedback-type-{lessonTitle}">Feedback Type</label>
+        <select id="feedback-type-{lessonTitle}" required>
+          <option value="">Select type...</option>
+          <option value="bug">Bug Report</option>
+          <option value="improvement">Improvement</option>
+          <option value="question">Question</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="feedback-text-{lessonTitle}">Your Feedback</label>
+        <textarea 
+          id="feedback-text-{lessonTitle}" 
+          required 
+          placeholder="Share your thoughts, issues, or suggestions..."
+          rows="5"
+        ></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="feedback-email-{lessonTitle}">Email (optional)</label>
+        <input 
+          type="email" 
+          id="feedback-email-{lessonTitle}" 
+          placeholder="your@email.com"
+        />
+      </div>
+      
+      <button type="submit" class="btn btn-primary">Submit Feedback</button>
+      <p class="feedback-note">Your feedback will create a GitHub issue in the course repository.</p>
+    </form>
+    
+    <div class="feedback-status" id="feedback-status-{lessonTitle}" style="display: none;"></div>
+  </div>
+</div>
+
+<style>
+  .feedback-button-wrapper {
+    margin: 24px 0;
+  }
+
+  .feedback-content-end {
+    text-align: center;
+    padding: 24px 0;
+    border-top: 2px solid var(--border-color);
+  }
+
+  .feedback-sidebar {
+    margin-top: 16px;
+  }
+
+  .feedback-button {
+    background: var(--rust);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.95em;
+  }
+
+  .feedback-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(184, 92, 60, 0.3);
+  }
+
+  .feedback-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .feedback-modal.active {
+    display: flex;
+  }
+
+  .feedback-modal-content {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 32px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    color: var(--text-primary);
+  }
+
+  .feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .feedback-header h3 {
+    margin: 0;
+  }
+
+  .feedback-close {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: color 0.2s;
+  }
+
+  .feedback-close:hover {
+    color: var(--text-primary);
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--rust);
+  }
+
+  .form-group textarea {
+    resize: vertical;
+  }
+
+  .feedback-note {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    margin-top: 12px;
+    margin-bottom: 0;
+  }
+
+  .feedback-status {
+    padding: 16px;
+    border-radius: 4px;
+    margin-top: 16px;
+  }
+
+  .feedback-status.success {
+    background: rgba(13, 148, 136, 0.1);
+    color: var(--accent-teal);
+    border: 1px solid var(--accent-teal);
+  }
+
+  .feedback-status.error {
+    background: rgba(236, 72, 153, 0.1);
+    color: var(--accent-pink);
+    border: 1px solid var(--accent-pink);
+  }
+
+  .feedback-status.loading {
+    background: rgba(184, 92, 60, 0.1);
+    color: var(--rust);
+    border: 1px solid var(--rust);
+  }
+</style>
+
+<script>
+  function setupFeedback(lessonTitle: string, lessonUrl: string) {
+    const modal = document.getElementById(`feedback-modal-${lessonTitle}`);
+    const button = document.getElementById(`feedback-button-${lessonTitle}`);
+    const closeBtn = document.getElementById(`feedback-close-${lessonTitle}`);
+    const form = document.getElementById(`feedback-form-${lessonTitle}`);
+    const statusDiv = document.getElementById(`feedback-status-${lessonTitle}`);
+
+    if (!modal || !button || !closeBtn || !form) return;
+
+    const openModal = () => modal.classList.add('active');
+    const closeModal = () => modal.classList.remove('active');
+
+    button.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const feedbackType = (document.getElementById(`feedback-type-${lessonTitle}`) as HTMLSelectElement).value;
+      const feedbackText = (document.getElementById(`feedback-text-${lessonTitle}`) as HTMLTextAreaElement).value;
+      const feedbackEmail = (document.getElementById(`feedback-email-${lessonTitle}`) as HTMLInputElement).value;
+
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'feedback-status loading';
+      statusDiv.textContent = 'Submitting feedback...';
+
+      try {
+        const response = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: feedbackType,
+            text: feedbackText,
+            email: feedbackEmail,
+            lessonTitle,
+            lessonUrl: lessonUrl || window.location.href,
+          }),
+        });
+
+        if (response.ok) {
+          statusDiv.className = 'feedback-status success';
+          statusDiv.textContent = '✓ Feedback submitted! Thank you for helping improve the course.';
+          form.reset();
+          setTimeout(() => closeModal(), 2000);
+        } else {
+          throw new Error('Failed to submit feedback');
+        }
+      } catch (error) {
+        statusDiv.className = 'feedback-status error';
+        statusDiv.textContent = '✗ Failed to submit feedback. Please try again.';
+      }
+    });
+  }
+
+  const lessonTitle = document.currentScript?.parentElement?.id || 'feedback';
+  const lessonUrl = window.location.href;
+  setupFeedback(lessonTitle, lessonUrl);
+</script>

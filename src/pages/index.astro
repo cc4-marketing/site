@@ -6,6 +6,7 @@ import Hero from '../components/Hero.astro';
 import FeatureCard from '../components/FeatureCard.astro';
 import ModuleCard from '../components/ModuleCard.astro';
 import StatBox from '../components/StatBox.astro';
+import DonationSection from '../components/DonationSection.astro';
 
 const features = [
   { icon: '⚡', title: '10x Speed', description: 'Campaign briefs in minutes instead of hours. Generate content at scale without losing quality.' },
@@ -235,6 +236,8 @@ const stats = [
       <a href="/modules/0/introduction" class="cta-button">Begin Course →</a>
     </div>
   </section>
+
+  <DonationSection showOnHomepage={true} />
 
   <Footer />
 </BaseLayout>

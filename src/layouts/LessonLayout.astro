@@ -2,6 +2,8 @@
 import BaseLayout from './BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import FeedbackButton from '../components/FeedbackButton.astro';
+import DonationSection from '../components/DonationSection.astro';
 
 interface Props {
   title: string;
@@ -35,6 +37,10 @@ const { title, module, lesson, description, duration, prevLesson, nextLesson } =
         <slot />
       </article>
 
+      <FeedbackButton lessonTitle={title} placement="content-end" />
+
+      <DonationSection />
+
       <nav class="lesson-nav">
         {prevLesson && (
           <a href={prevLesson.href} class="nav-prev">
@@ -59,22 +65,24 @@ const { title, module, lesson, description, duration, prevLesson, nextLesson } =
   .lesson-container {
     padding: 120px 24px 60px;
     min-height: 100vh;
-    background: var(--cream);
+    background: var(--bg-primary);
   }
 
   .lesson-content {
     max-width: 800px;
     margin: 0 auto;
-    background: white;
+    background: var(--bg-secondary);
     padding: 60px;
-    border: 3px solid var(--charcoal);
+    border: 3px solid var(--border-color);
     box-shadow: 12px 12px 0 var(--mustard);
+    color: var(--text-primary);
   }
 
   .lesson-header {
     border-bottom: 3px solid var(--rust);
     padding-bottom: 30px;
     margin-bottom: 40px;
+    color: var(--text-primary);
   }
 
   .lesson-meta {
@@ -157,20 +165,21 @@ const { title, module, lesson, description, duration, prevLesson, nextLesson } =
   }
 
   .prose :global(code) {
-    background: var(--cream);
+    background: var(--bg-primary);
     padding: 2px 8px;
     font-family: 'Fira Code', monospace;
     font-size: 0.9em;
-    border: 1px solid var(--charcoal);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
   }
 
   .prose :global(pre) {
-    background: var(--charcoal);
-    color: var(--cream);
+    background: var(--bg-primary);
+    color: var(--text-primary);
     padding: 24px;
     overflow-x: auto;
     margin: 24px 0;
-    border: 3px solid var(--charcoal);
+    border: 3px solid var(--border-color);
   }
 
   .prose :global(pre code) {
@@ -186,6 +195,7 @@ const { title, module, lesson, description, duration, prevLesson, nextLesson } =
     padding: 20px 24px;
     margin: 24px 0;
     font-style: italic;
+    color: var(--text-primary);
   }
 
   .prose :global(a) {
@@ -210,13 +220,14 @@ const { title, module, lesson, description, duration, prevLesson, nextLesson } =
 
   .nav-prev, .nav-next {
     padding: 20px;
-    border: 2px solid var(--charcoal);
+    border: 2px solid var(--border-color);
     text-decoration: none;
     transition: all 0.3s ease;
+    color: var(--text-primary);
   }
 
   .nav-prev:hover, .nav-next:hover {
-    background: var(--cream);
+    background: var(--bg-primary);
     transform: translateY(-4px);
     box-shadow: 6px 6px 0 var(--mustard);
   }
