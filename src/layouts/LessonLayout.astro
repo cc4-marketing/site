@@ -3,7 +3,6 @@ import BaseLayout from './BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FeedbackButton from '../components/FeedbackButton.astro';
-import DonationSection from '../components/DonationSection.astro';
 
 interface Props {
   title: string;
@@ -38,8 +37,6 @@ const { title, module, lesson, description, duration, prevLesson, nextLesson } =
       </article>
 
       <FeedbackButton lessonTitle={title} placement="content-end" />
-
-      <DonationSection />
 
       <nav class="lesson-nav">
         {prevLesson && (

@@ -4,41 +4,199 @@ const currentYear = new Date().getFullYear();
 
 <footer class="footer">
   <div class="container">
-    <p><strong>Claude Code for Marketers</strong> — An open-source course for modern marketers</p>
-    <p class="links">
-      <a href="https://github.com/cc4-marketing/cc4.marketing">GitHub</a> | 
-      <a href="/modules/0/introduction">Start Learning</a> | 
-      <a href="https://cc4.marketing">cc4.marketing</a>
-    </p>
-    <p class="copyright">© {currentYear} CC4.Marketing. MIT License.</p>
+    <!-- Support Section -->
+    <div class="footer-support">
+      <span class="support-label">Support CC4.Marketing</span>
+      <div class="donation-links">
+        <a href="https://paypal.me/MinhTriVo?locale.x=en_US&country.x=VN" target="_blank" rel="noopener noreferrer" class="donation-btn paypal-btn" title="Support via PayPal">
+          🛒
+        </a>
+        <a href="https://ko-fi.com/cc4marketing" target="_blank" rel="noopener noreferrer" class="donation-btn kofi-btn" title="Support via Ko-fi">
+          ☕
+        </a>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="footer-divider"></div>
+
+    <!-- Branding & Links Section -->
+    <div class="footer-bottom">
+      <div class="footer-branding">
+        <a href="/" class="footer-logo">Claude Code for Marketing</a>
+        <span class="footer-meta">© {currentYear} CC4.Marketing. MIT License.</span>
+      </div>
+      
+      <nav class="footer-links">
+        <a href="/">Home</a>
+        <a href="/modules/0/introduction">Start Learning</a>
+        <a href="https://github.com/cc4-marketing/cc4.marketing" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://cc4.marketing" target="_blank" rel="noopener noreferrer">cc4.marketing</a>
+      </nav>
+    </div>
   </div>
 </footer>
 
 <style>
   .footer {
     background: var(--charcoal);
-    color: var(--cream);
-    padding: 40px 24px;
-    text-align: center;
+    color: var(--text-primary);
+    padding: 32px 24px;
+    border-top: 3px solid var(--rust);
     font-size: 0.95em;
   }
 
-  .footer a {
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Support Section */
+  .footer-support {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .support-label {
+    font-weight: 600;
+    color: var(--rust);
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .donation-links {
+    display: flex;
+    gap: 12px;
+  }
+
+  .donation-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    font-size: 1.5em;
+    border: 2px solid var(--rust);
+    background: transparent;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .donation-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--mustard);
+    background: var(--rust);
+  }
+
+  /* Footer Divider */
+  .footer-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 20px 0;
+    opacity: 0.3;
+  }
+
+  /* Bottom Section */
+  .footer-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+
+  .footer-branding {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .footer-logo {
+    font-family: var(--font-display);
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--rust);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .footer-logo:hover {
+    color: var(--mustard);
+  }
+
+  .footer-meta {
+    font-size: 0.8em;
+    color: var(--text-secondary);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
     color: var(--mustard);
     text-decoration: none;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    position: relative;
   }
 
-  .footer a:hover {
-    text-decoration: underline;
+  .footer-links a:hover {
+    color: var(--rust);
   }
 
-  .links {
-    margin: 12px 0;
+  .footer-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--rust);
+    transition: width 0.3s ease;
   }
 
-  .copyright {
-    margin-top: 16px;
-    opacity: 0.7;
-    font-size: 0.85em;
+  .footer-links a:hover::after {
+    width: 100%;
+  }
+
+  /* Dark Mode */
+  html[data-theme="dark"] .footer {
+    border-top-color: var(--rust);
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .footer {
+      padding: 24px 16px;
+    }
+
+    .footer-support {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-bottom {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .footer-links {
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .footer-links a {
+      font-size: 0.85em;
+    }
   }
 </style>

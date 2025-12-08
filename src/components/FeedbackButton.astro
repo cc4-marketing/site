@@ -12,12 +12,20 @@ const {
 const githubRepo = 'cc4-marketing/cc4.marketing';
 const feedbackTitle = `Feedback for "${lessonTitle}"`;
 const feedbackUrl = `https://github.com/${githubRepo}/issues/new?title=${encodeURIComponent(feedbackTitle)}&labels=feedback`;
+const emailSubject = `Feedback for "${lessonTitle}"`;
+const emailBody = `I have feedback about the "${lessonTitle}" lesson.\n\n[Share your thoughts here]`;
+const emailUrl = `mailto:hi@cc4.marketing?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
 ---
 
 <div class={`feedback-button-wrapper feedback-${placement}`}>
-  <a href={feedbackUrl} target="_blank" rel="noopener noreferrer" class="feedback-button">
-    {placement === 'sidebar' ? '💬 Feedback' : '📝 Give Feedback'}
-  </a>
+  <div class="feedback-buttons">
+    <a href={feedbackUrl} target="_blank" rel="noopener noreferrer" class="feedback-button feedback-github" title="Create GitHub Issue">
+      {placement === 'sidebar' ? '💬' : '📝 GitHub'}
+    </a>
+    <a href={emailUrl} class="feedback-button feedback-email" title="Send Email Feedback">
+      {placement === 'sidebar' ? '✉️' : '✉️ Email'}
+    </a>
+  </div>
 </div>
 
 <style>
@@ -35,12 +43,19 @@ const feedbackUrl = `https://github.com/${githubRepo}/issues/new?title=${encodeU
     margin-top: 16px;
   }
 
+  .feedback-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
   .feedback-button {
     display: inline-block;
     background: var(--rust);
     color: white;
     border: 2px solid var(--rust);
-    padding: 12px 28px;
+    padding: 12px 24px;
     text-decoration: none;
     cursor: pointer;
     font-weight: 600;
@@ -54,5 +69,31 @@ const feedbackUrl = `https://github.com/${githubRepo}/issues/new?title=${encodeU
     box-shadow: 6px 6px 0 var(--mustard);
     background: var(--rust);
     color: white;
+  }
+
+  .feedback-github {
+    background: var(--rust);
+    border-color: var(--rust);
+  }
+
+  .feedback-email {
+    background: transparent;
+    border-color: var(--rust);
+    color: var(--text-primary);
+  }
+
+  .feedback-email:hover {
+    background: var(--rust);
+    color: white;
+  }
+
+  /* Sidebar layout */
+  .feedback-sidebar .feedback-buttons {
+    gap: 8px;
+  }
+
+  .feedback-sidebar .feedback-button {
+    padding: 8px 12px;
+    font-size: 0.85em;
   }
 </style>
