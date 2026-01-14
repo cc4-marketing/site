@@ -13,6 +13,7 @@
   --charcoal: #2C2C2C;
   --accent-teal: #0D9488;
   --accent-pink: #EC4899;
+  --ink-on-mustard: #2C2C2C;
   
   /* Background and Text Colors */
   --bg-primary: #F5F1E8;
@@ -53,6 +54,7 @@ html[data-theme="dark"] {
   --charcoal: #F0F0F0;
   --cream: #1A1A1A;
   --mustard: #FFD147;
+  --ink-on-mustard: #2C2C2C;
 }
 
 * {
@@ -176,7 +178,7 @@ section {
   transform: translate(-2px, -2px);
   box-shadow: 8px 8px 0 var(--mustard);
   background: var(--mustard);
-  color: var(--charcoal);
+  color: var(--ink-on-mustard);
 }
 
 /* Section Headers */

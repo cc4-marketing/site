@@ -2,69 +2,52 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-
-const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSct4n1_PbVZsrBoactOIpYwNGzvM2Es0-4jx7mLYxmRdRlCcg/formResponse";
-const EMAIL_FIELD_NAME = "entry.778960156";
 ---
 
-<BaseLayout title="Download Course | Claude Code for Marketers" description="Get the interactive course materials">
+<BaseLayout title="Subscribe | Claude Code for Marketers" description="Subscribe for course updates and bonus content">
   <Header />
   
   <section class="download-section">
     <div class="container">
       <div class="download-card" id="email-form-card">
         <div class="download-icon">📧</div>
-        <h1>Get the Course Materials</h1>
+        <h1>Subscribe for Course Updates</h1>
         <p class="download-description">
-          Enter your email to download the complete interactive course. 
-          We'll also send you updates and bonus content.
+          Join the CC4 Marketing list for new lessons, practical playbooks, and bonus content.
         </p>
-        
-        <form id="email-form" class="email-form">
-          <input 
-            type="email" 
-            name="email" 
-            placeholder="your@email.com" 
-            required 
-            class="email-input"
-            id="email-input"
-          />
-          <button type="submit" class="submit-btn">
-            Download Course →
-          </button>
+
+        <ul class="signup-list">
+          <li>Short, tactical emails you can apply the same day</li>
+          <li>Early access to new modules and worksheets</li>
+          <li>Zero fluff. Unsubscribe anytime.</li>
+        </ul>
+
+        <form
+          class="signup-form"
+          action="https://cc4marketing.substack.com/subscribe"
+          method="get"
+          target="_blank"
+          rel="noopener"
+        >
+          <label for="email-input" class="signup-label">Email address</label>
+          <div class="signup-row">
+            <input
+              type="email"
+              name="email"
+              id="email-input"
+              placeholder="you@company.com"
+              required
+              class="signup-input"
+            />
+            <button type="submit" class="signup-button">
+              Join free list →
+            </button>
+          </div>
+          <p class="form-note">Opens Substack in a new tab to confirm your subscription.</p>
         </form>
         
         <p class="privacy-note">
           No spam, ever. Unsubscribe anytime.
-        </p>
-      </div>
-
-      <div class="download-card hidden" id="thank-you-card">
-        <div class="download-icon">🎉</div>
-        <h1>Thank You!</h1>
-        <p class="download-description">
-          Your download is ready. Click below to get the course materials.
-        </p>
-        
-        <a 
-          href="https://go.mtri.me/cm" 
-          class="download-btn"
-          id="download-link"
-        >
-          Download Course (ZIP) →
-        </a>
-        
-        <div class="next-steps">
-          <h3>Next Steps:</h3>
-          <ol>
-            <li>Extract the ZIP file</li>
-            <li>Open the folder in Claude Code</li>
-            <li>Type <code>/start-0-0</code> to begin!</li>
-          </ol>
-        </div>
-
-        <p class="bonus-note">
-          🎁 Check your email for a special bonus lesson!
         </p>
       </div>
     </div>
@@ -73,79 +56,27 @@ const EMAIL_FIELD_NAME = "entry.778960156";
   <Footer />
 </BaseLayout>
 
-<script define:vars={{ GOOGLE_FORM_ACTION, EMAIL_FIELD_NAME }}>
-  const form = document.getElementById('email-form');
-  const emailInput = document.getElementById('email-input');
-  const emailFormCard = document.getElementById('email-form-card');
-  const thankYouCard = document.getElementById('thank-you-card');
-
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const email = emailInput.value;
-    
-    // Create hidden iframe for form submission
-    const iframe = document.createElement('iframe');
-    iframe.name = 'hidden_iframe';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-    
-    // Create a form element to submit to Google
-    const googleForm = document.createElement('form');
-    googleForm.method = 'POST';
-    googleForm.action = GOOGLE_FORM_ACTION;
-    googleForm.target = 'hidden_iframe';
-    
-    // Add email as hidden input
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = EMAIL_FIELD_NAME;
-    input.value = email;
-    googleForm.appendChild(input);
-    
-    // Submit the form
-    document.body.appendChild(googleForm);
-    googleForm.submit();
-    
-    // Show thank you card
-    emailFormCard.classList.add('hidden');
-    thankYouCard.classList.remove('hidden');
-    
-    // Store in localStorage
-    localStorage.setItem('cc4m_email', email);
-    localStorage.setItem('cc4m_downloaded', 'true');
-    
-    // Cleanup after submission
-    setTimeout(() => {
-      document.body.removeChild(googleForm);
-      document.body.removeChild(iframe);
-    }, 1000);
-  });
-
-  // Check if already downloaded
-  if (localStorage.getItem('cc4m_downloaded') === 'true') {
-    emailFormCard.classList.add('hidden');
-    thankYouCard.classList.remove('hidden');
-  }
-</script>
-
 <style>
   .download-section {
     min-height: calc(100vh - 200px);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--cream) 0%, #E8E4DB 100%);
+    background:
+      radial-gradient(circle at 15% 20%, rgba(232, 185, 35, 0.18), transparent 45%),
+      radial-gradient(circle at 85% 10%, rgba(184, 92, 60, 0.16), transparent 50%),
+      linear-gradient(135deg, var(--bg-primary) 0%, var(--cream) 100%);
     padding: 60px 24px;
   }
 
   .download-card {
-    background: white;
-    border: 4px solid var(--charcoal);
-    box-shadow: 12px 12px 0 var(--charcoal);
+    background: var(--bg-secondary);
+    border: 4px solid var(--border-color);
+    box-shadow: 12px 12px 0 var(--border-color);
     padding: 60px;
-    max-width: 500px;
+    max-width: 520px;
     text-align: center;
+    position: relative;
   }
 
   .download-card.hidden {
@@ -165,112 +96,98 @@ const EMAIL_FIELD_NAME = "entry.778960156";
   }
 
   .download-description {
-    color: #666;
+    color: var(--text-secondary);
     line-height: 1.7;
     margin-bottom: 30px;
   }
 
-  .email-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  .signup-list {
+    text-align: left;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 28px;
+    color: var(--text-primary);
   }
 
-  .email-input {
-    padding: 16px 20px;
-    font-size: 1.1em;
-    border: 3px solid var(--charcoal);
-    background: var(--cream);
+  .signup-list li {
+    position: relative;
+    padding-left: 26px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .signup-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--olive);
+    font-weight: 700;
+  }
+
+  .signup-form {
+    margin-top: 10px;
+    background: var(--bg-primary);
+    border: 3px solid var(--border-color);
+    box-shadow: 8px 8px 0 var(--border-color);
+    padding: 20px;
+    text-align: left;
+  }
+
+  .signup-label {
+    display: block;
+    font-size: 0.9em;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .signup-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+  }
+
+  .signup-input {
+    padding: 14px 16px;
+    font-size: 1em;
+    border: 3px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
     font-family: var(--font-body);
-    text-align: center;
   }
 
-  .email-input:focus {
+  .signup-input:focus {
     outline: none;
     border-color: var(--olive);
-    background: white;
   }
 
-  .submit-btn {
-    padding: 18px 30px;
-    font-size: 1.1em;
+  .signup-button {
+    padding: 14px 20px;
+    font-size: 1em;
     font-weight: 700;
     font-family: var(--font-display);
     background: var(--mustard);
-    color: var(--charcoal);
-    border: 3px solid var(--charcoal);
+    color: var(--ink-on-mustard);
+    border: 3px solid var(--border-color);
     cursor: pointer;
-    box-shadow: 6px 6px 0 var(--charcoal);
+    box-shadow: 4px 4px 0 var(--border-color);
     transition: all 0.2s ease;
   }
 
-  .submit-btn:hover {
-    transform: translate(-3px, -3px);
-    box-shadow: 9px 9px 0 var(--charcoal);
+  .signup-button:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--border-color);
+  }
+
+  .form-note {
+    font-size: 0.8em;
+    color: var(--text-secondary);
+    margin-top: 12px;
   }
 
   .privacy-note {
     font-size: 0.85em;
-    color: #999;
-    margin-top: 20px;
-  }
-
-  .download-btn {
-    display: inline-block;
-    padding: 20px 40px;
-    font-size: 1.2em;
-    font-weight: 700;
-    font-family: var(--font-display);
-    background: var(--olive);
-    color: white;
-    border: 3px solid var(--charcoal);
-    text-decoration: none;
-    box-shadow: 8px 8px 0 var(--charcoal);
-    transition: all 0.2s ease;
-    margin-bottom: 30px;
-  }
-
-  .download-btn:hover {
-    transform: translate(-4px, -4px);
-    box-shadow: 12px 12px 0 var(--charcoal);
-    color: white;
-  }
-
-  .next-steps {
-    background: var(--cream);
-    border: 2px solid var(--charcoal);
-    padding: 25px;
-    text-align: left;
-    margin-bottom: 20px;
-  }
-
-  .next-steps h3 {
-    font-family: var(--font-display);
-    font-size: 1.1em;
-    margin-bottom: 15px;
-    color: var(--charcoal);
-  }
-
-  .next-steps ol {
-    margin: 0;
-    padding-left: 20px;
-  }
-
-  .next-steps li {
-    margin-bottom: 8px;
-    color: var(--charcoal);
-  }
-
-  .next-steps code {
-    background: var(--olive);
-    color: white;
-    padding: 2px 8px;
-    font-family: monospace;
-  }
-
-  .bonus-note {
-    color: var(--rust);
-    font-weight: 600;
+    color: var(--text-secondary);
     margin-top: 20px;
   }
 
@@ -282,5 +199,17 @@ const EMAIL_FIELD_NAME = "entry.778960156";
     .download-card h1 {
       font-size: 1.8em;
     }
+
+    .signup-row {
+      grid-template-columns: 1fr;
+    }
+
+  }
+
+  html[data-theme="dark"] .download-section {
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255, 209, 71, 0.12), transparent 45%),
+      radial-gradient(circle at 80% 15%, rgba(255, 136, 102, 0.12), transparent 50%),
+      linear-gradient(135deg, #101010 0%, #1A1A1A 100%);
   }
 </style>

@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout title="404 | Page Not Found" description="We couldn't find that page.">
+  <Header />
+
+  <section class="not-found-section">
+    <div class="container">
+      <div class="not-found-card">
+        <div class="not-found-icon">🧭</div>
+        <h1>Page not found</h1>
+        <p>
+          That link doesn’t exist here. Try one of these instead.
+        </p>
+        <div class="not-found-actions">
+          <a href="/" class="btn btn-primary">Go to homepage</a>
+          <a href="/modules/0/introduction" class="btn btn-secondary">Start the course</a>
+        </div>
+        <div class="not-found-links">
+          <a href="/download">Subscribe for updates</a>
+          <a href="/modules">Browse modules</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .not-found-section {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(232, 185, 35, 0.16), transparent 45%),
+      radial-gradient(circle at 80% 10%, rgba(184, 92, 60, 0.14), transparent 50%),
+      linear-gradient(135deg, var(--bg-primary) 0%, var(--cream) 100%);
+    padding: 80px 24px;
+  }
+
+  .not-found-card {
+    background: var(--bg-secondary);
+    border: 4px solid var(--border-color);
+    box-shadow: 12px 12px 0 var(--border-color);
+    padding: 60px;
+    max-width: 640px;
+    text-align: center;
+  }
+
+  .not-found-icon {
+    font-size: 3.5em;
+    margin-bottom: 20px;
+  }
+
+  .not-found-card h1 {
+    font-family: var(--font-display);
+    font-size: 2.4em;
+    margin-bottom: 14px;
+    color: var(--text-primary);
+  }
+
+  .not-found-card p {
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+  }
+
+  .not-found-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .not-found-actions .btn {
+    min-width: 200px;
+    text-align: center;
+  }
+
+  .not-found-links {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-size: 0.95em;
+  }
+
+  html[data-theme="dark"] .not-found-section {
+    background:
+      radial-gradient(circle at 20% 15%, rgba(255, 209, 71, 0.12), transparent 45%),
+      radial-gradient(circle at 80% 10%, rgba(255, 136, 102, 0.12), transparent 50%),
+      linear-gradient(135deg, #101010 0%, #1A1A1A 100%);
+  }
+
+  @media (max-width: 600px) {
+    .not-found-card {
+      padding: 40px 24px;
+    }
+
+    .not-found-card h1 {
+      font-size: 1.9em;
+    }
+  }
+</style>
