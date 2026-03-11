@@ -13,7 +13,7 @@ objectives:
 
 ## Install Claude Code
 
-Claude Code now comes with a native installer - no Node.js or coding knowledge required!
+Claude Code can be installed quickly using the native installer.
 
 ## Step 1: Download Claude Code
 
@@ -22,50 +22,61 @@ Claude Code now comes with a native installer - no Node.js or coding knowledge r
 Open your terminal and run:
 
 ```bash
-curl -fsSL https://claude.ai/install.sh | bash
+curl -fsSL https://code.claude.com/install.sh | bash
 ```
 
 ### Windows
 
-Download the installer from [https://claude.ai/download](https://claude.ai/download)
+For the easiest experience on Windows, we recommend installing the **Warp terminal** first, which provides a modern, intuitive command line interface.
 
-## Step 2: Get Your API Key
+1. Download and install Warp from [warp.dev](https://www.warp.dev/).
+2. Open your new Warp terminal and run the following command to install Claude Code:
 
-1. Go to [console.anthropic.com](https://console.anthropic.com)
-2. Create a free account if you don't have one
-3. Navigate to **API Keys**
-4. Click **Create Key**
-5. Copy the key (it starts with `sk-ant-`)
+```powershell
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://code.claude.com/install.ps1'))
+```
 
-> **Important**: Keep your API key private! Never share it or commit it to version control.
+## Step 2: Authenticate with Claude Code
 
-## Step 3: Configure Your API Key
+The easiest way to use Claude Code is through OAuth login with your Anthropic account.
 
-Set your API key as an environment variable:
+### Option A: OAuth Login (Recommended)
 
-### Mac / Linux
+Simply open your terminal and run:
 
-Add this line to your `~/.zshrc` or `~/.bashrc`:
+```bash
+claude login
+```
+
+This will automatically open your web browser. Log in with your Claude.ai account or Anthropic Console credentials. Once authenticated, return to your terminal and you're ready to go!
+
+### Option B: Using an API Key
+
+If you prefer to use an API key manually:
+
+1. Go to [console.anthropic.com](https://console.anthropic.com) and navigate to **API Keys**.
+2. Create and copy your key (it starts with `sk-ant-`).
+3. Set it as an environment variable:
+
+**Mac / Linux / WSL:**
+
+Add this line to your `~/.zshrc` or `~/.bashrc`, then restart your terminal:
 
 ```bash
 export ANTHROPIC_API_KEY='sk-ant-your-key-here'
 ```
 
-Then reload your shell:
+**Windows (PowerShell in Warp):**
 
-```bash
-source ~/.zshrc
-```
-
-### Windows
-
-Set an environment variable through System Properties, or run:
+Run this command to set the variable for your user:
 
 ```powershell
-setx ANTHROPIC_API_KEY "sk-ant-your-key-here"
+[System.Environment]::SetEnvironmentVariable('ANTHROPIC_API_KEY', 'sk-ant-your-key-here', 'User')
 ```
 
-## Step 4: Verify Installation
+> **Important**: Keep your API key private! Never share it or commit it to version control.
+
+## Step 3: Verify Installation
 
 Run these commands to verify everything is working:
 
