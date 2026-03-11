@@ -2,12 +2,13 @@
 interface Props {
   number: string;
   label: string;
+  style?: string;
 }
 
-const { number, label } = Astro.props;
+const { number, label, style } = Astro.props;
 ---
 
-<div class="stat-box">
+<div class="stat-box" style={style}>
   <div class="stat-number">{number}</div>
   <div class="stat-label">{label}</div>
 </div>

@@ -3,12 +3,13 @@ interface Props {
   icon: string;
   title: string;
   description: string;
+  style?: string;
 }
 
-const { icon, title, description } = Astro.props;
+const { icon, title, description, style } = Astro.props;
 ---
 
-<div class="feature-card">
+<div class="feature-card" style={style}>
   <div class="feature-icon">{icon}</div>
   <div class="feature-title">{title}</div>
   <p class="feature-text">{description}</p>

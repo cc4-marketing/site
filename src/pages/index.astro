@@ -1,4 +1,5 @@
 ---
+import { siteData } from '../config/siteData';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -8,48 +9,6 @@ import ModuleCard from '../components/ModuleCard.astro';
 import StatBox from '../components/StatBox.astro';
 import DonationSection from '../components/DonationSection.astro';
 
-const features = [
-  { icon: '⚡', title: '10x Speed', description: 'Campaign briefs in minutes instead of hours. Generate content at scale without losing quality.' },
-  { icon: '🎯', title: 'Consistent Brand', description: 'AI agents enforce brand voice across all materials. No more tone inconsistency.' },
-  { icon: '📊', title: 'Data Insights', description: 'Analyze campaign performance instantly. Turn data into actionable strategy.' },
-  { icon: '🚀', title: 'More Campaigns', description: 'Ship 5x more campaigns. Focus on strategy while AI handles execution.' },
-  { icon: '🤖', title: 'Custom Agents', description: 'Build your own AI team. Brand guardian, SEO specialist, copywriter.' },
-  { icon: '📈', title: 'Compound Growth', description: 'Every campaign gets faster. Every project builds on the last.' },
-];
-
-const modules = [
-  {
-    number: 0,
-    title: 'Getting Started',
-    description: 'Install Claude Code and get your first taste of AI-powered marketing.',
-    lessonCount: '3 Lessons • 30 minutes',
-    lessons: ['Introduction', 'Installation', 'First Task'],
-    href: '/modules/0/introduction'
-  },
-  {
-    number: 1,
-    title: 'Core Concepts',
-    description: 'Master AI agents, sub-agents, and real marketing workflows with Markit agency.',
-    lessonCount: '7 Lessons • 3-4 hours',
-    lessons: ['Welcome to Markit', 'Working with Files', 'First Tasks', '+ 4 more lessons'],
-    href: '/modules/1/welcome'
-  },
-  {
-    number: 2,
-    title: 'Advanced Apps',
-    description: 'Execute real campaigns for Planerio. Strategy to analytics.',
-    lessonCount: '6 Lessons • 4-5 hours',
-    lessons: ['Campaign Briefs', 'Content Strategy', 'Marketing Copy', '+ 3 more lessons'],
-    href: '/modules/2/campaign-brief'
-  },
-];
-
-const stats = [
-  { number: '10x', label: 'Campaign Speed' },
-  { number: '5x', label: 'Monthly Output' },
-  { number: '+65%', label: 'Quality Scores' },
-  { number: '89%', label: 'Consistency' },
-];
 ---
 
 <BaseLayout title="Claude Code for Marketers" description="Master AI-powered marketing workflows. Work 10x faster. Ship more campaigns.">
@@ -170,7 +129,7 @@ const stats = [
       </div>
 
       <div class="features-grid">
-        {features.map((feature, i) => (
+        {siteData.home.features.map((feature, i) => (
           <FeatureCard 
             icon={feature.icon} 
             title={feature.title} 
@@ -192,7 +151,7 @@ const stats = [
       </div>
 
       <div class="modules-grid">
-        {modules.map((module, i) => (
+        {siteData.home.modules.map((module, i) => (
           <ModuleCard 
             number={module.number}
             title={module.title}
@@ -217,7 +176,7 @@ const stats = [
       </div>
 
       <div class="stats-grid">
-        {stats.map((stat, i) => (
+        {siteData.home.stats.map((stat, i) => (
           <StatBox 
             number={stat.number} 
             label={stat.label}

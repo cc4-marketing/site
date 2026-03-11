@@ -1,0 +1,101 @@
+---
+title: "GitHub PR Workflow for Marketers"
+module: 0
+lesson: 3
+description: "A simple guide to creating, reviewing, and merging Pull Requests"
+duration: "10 minutes"
+order: 4
+objectives:
+  - Understand what a Pull Request (PR) is
+  - Learn how to create a PR on GitHub
+  - Communicate effectively with developers during review
+  - Know what to do after a PR is approved
+---
+
+## What is a Pull Request?
+
+When you or your AI assistant (like Claude Code) finishes a new task, the changes are usually saved in a "branch" (think of it like a draft document). 
+
+A **Pull Request (PR)** is how you ask the repository owner: *"Hey, I made some changes in my draft. Can you review them and merge them into the main document?"*
+
+Let's walk through the exact steps to manage this process smoothly.
+
+## Step 1: Create the Pull Request
+
+Once your work is pushed to GitHub, follow these steps:
+
+1. Go to your project's GitHub repository in your browser.
+2. Click the **Pull requests** tab at the top.
+3. Click the green **New pull request** button.
+4. Select the branches:
+   - **Base branch:** Usually `main` (the final, public version).
+   - **Compare branch:** Select the branch where you just made your changes (e.g., `claude/feature-name`).
+5. Fill in the PR details clearly:
+
+   **Title:** Make it short and descriptive (e.g., *Update campaign landing page copy*)
+   
+   **Description:** Include brief explanations:
+   - What issue this fixes (e.g., *Resolves #3*)
+   - Changes made
+   - Expected benefits
+   - Testing/Review steps for the owner
+
+6. Click **Create pull request**.
+
+## Step 2: Notify the Repository Owner
+
+Don't just open a PR and wait silently. Notify the person who needs to review it!
+
+**Option A (GitHub):** Tag them in the PR comment section.
+> *@username Ready for review! I've updated the landing page copy as requested.*
+
+**Option B (Slack/Email):** Send a direct message with a link.
+> *Hi! I've created a PR to update the copy. Here is the link: [URL]. Let me know if any changes are needed!*
+
+## Step 3: The Review Process
+
+The owner will review your code and will likely do one of the following:
+
+- ✅ **Approve and Merge:** They like it! The changes go live. Your work is done. 🎉
+- 💬 **Request Changes:** They might ask for tweaks. Check with your AI assistant or developer to make the requested updates.
+- ❓ **Ask Questions:** They need clarification on why a certain change was made.
+
+### Common Scenarios & Responses
+
+**If they ask: "Can you test this?"**
+> *Response:* "I don't have a local test environment set up. Could you test it on your end? Would you prefer I write up a quick test plan document instead?"
+
+**If they say: "This breaks something."**
+> *Response:* "Thanks for catching that! Can you share exactly what broke, the steps to reproduce the issue, and what you expected to see? I'll work on fixing it right away."
+
+**If they ask highly technical questions:**
+> *Response:* "Let me consult with my developer tool on this technical detail and get back to you shortly." (Then ask Claude Code!)
+
+## Step 4: After Approval
+
+Once the PR is merged into `main`, you need to tie up loose ends:
+
+1. **Close the original issue** (if there was one). Go to the Issues tab, close the related issue, and comment: *"Fixed in PR #123."*
+2. **Update your local computer** before starting your next task:
+
+```bash
+git checkout main
+git pull origin main
+```
+
+## 🚨 Important Rules to Remember
+
+- **Never merge your own PRs.** Always wait for a review and approval from the project owner or tech lead.
+- **Keep communication open.** Ask clarifying questions if you aren't sure what the reviewer means.
+- **Don't panic about merge conflicts.** If GitHub says there's a file conflict, it just means two people edited the same line at the same time. Ask your developer or AI tool for help resolving it.
+
+## What's Next?
+
+Congratulations, you've completed Module 0! You now have:
+
+- ✅ Claude Code installed
+- ✅ Markit project cloned
+- ✅ Project structure ready
+- ✅ A strong understanding of the PR workflow
+
+In **Module 1**, you'll learn the core concepts of using AI agents for real marketing tasks. Ready? Let's dive in! 🚀

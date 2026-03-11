@@ -6,12 +6,13 @@ interface Props {
   lessonCount: string;
   lessons: string[];
   href?: string;
+  style?: string;
 }
 
-const { number, title, description, lessonCount, lessons, href } = Astro.props;
+const { number, title, description, lessonCount, lessons, href, style } = Astro.props;
 ---
 
-<div class="module-card">
+<div class="module-card" style={style}>
   <div class="module-number">{number}</div>
   <div class="module-title">{title}</div>
   <p class="module-description">{description}</p>

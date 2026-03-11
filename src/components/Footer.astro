@@ -1,4 +1,6 @@
 ---
+import { siteData } from '../config/siteData';
+
 const currentYear = new Date().getFullYear();
 ---
 
@@ -8,22 +10,22 @@ const currentYear = new Date().getFullYear();
     <div class="footer-main">
       <!-- Left: Branding -->
       <div class="footer-brand">
-        <h3>Claude Code for Marketers</h3>
-        <p>© {currentYear} CC4.Marketing. MIT License.</p>
+        <h3>{siteData.footer.brand.name}</h3>
+        <p>© {currentYear} {siteData.footer.brand.copyright}</p>
       </div>
 
       <!-- Center: Support CTAs -->
       <div class="footer-support">
         <p class="support-headline">Support This Course</p>
         <div class="support-buttons">
-          <a href="https://paypal.me/MinhTriVo?locale.x=en_US&country.x=VN" target="_blank" rel="noopener noreferrer" class="support-btn paypal">
+          <a href={siteData.footer.support.paypal} target="_blank" rel="noopener noreferrer" class="support-btn paypal">
             <span class="support-icon">💳</span>
             <span class="support-text">
               <strong>PayPal</strong>
               <small>One-time</small>
             </span>
           </a>
-          <a href="https://ko-fi.com/cc4marketing" target="_blank" rel="noopener noreferrer" class="support-btn kofi">
+          <a href={siteData.footer.support.kofi} target="_blank" rel="noopener noreferrer" class="support-btn kofi">
             <span class="support-icon">☕</span>
             <span class="support-text">
               <strong>Ko-fi</strong>
