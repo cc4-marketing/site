@@ -33,7 +33,11 @@ const {
 const siteUrl = "https://cc4.marketing";
 const currentPath = Astro.url.pathname;
 const canonicalUrl = canonical || `${siteUrl}${currentPath}`;
-const fullTitle = title.includes("CC4") ? title : `${title} | Claude Code for Marketers`;
+const siteName = "Claude Code for Marketers";
+const normalizedTitle = title.trim();
+const fullTitle = normalizedTitle.endsWith(siteName)
+  ? normalizedTitle
+  : `${normalizedTitle} | ${siteName}`;
 const ogImage = image.startsWith("http") ? image : `${siteUrl}${image}`;
 
 // JSON-LD Structured Data

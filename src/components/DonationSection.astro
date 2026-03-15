@@ -6,7 +6,7 @@ interface Props {
 const { showOnHomepage = false } = Astro.props;
 
 const paypalLink = 'https://paypal.me/MinhTriVo?locale.x=en_US&country.x=VN';
-const kofiId = 'L3L61PX2L8';
+const kofiUrl = 'https://ko-fi.com/cc4marketing';
 ---
 
 <section class="donation-section" class:list={[showOnHomepage && 'donation-homepage']}>
@@ -33,7 +33,7 @@ const kofiId = 'L3L61PX2L8';
           <div class="method-icon">☕</div>
           <h4>Ko-fi Support</h4>
           <p>Buy me a coffee or send a tip</p>
-          <a href="https://ko-fi.com/L3L61PX2L8" target="_blank" rel="noopener noreferrer" class="donation-btn kofi-btn">
+          <a href={kofiUrl} target="_blank" rel="noopener noreferrer" class="donation-btn kofi-btn">
             Support on Ko-fi →
           </a>
         </div>
