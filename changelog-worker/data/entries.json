@@ -1,0 +1,80 @@
+[
+  {
+    "id": "bc_001",
+    "slug": "public-launch",
+    "title": "CC4.Marketing Public Launch",
+    "summary": "Full course website with 17 interactive lessons, dark mode, Substack subscription, donation support, SEO optimization, and retro-futuristic design system.",
+    "type": "added",
+    "version": "0.1.0",
+    "modules": ["course", "site"],
+    "machine_summary": "Initial public release. 3 modules (Getting Started, Core Concepts, Advanced Apps), 17 MDX lessons, dark mode, Substack email capture, PayPal/Ko-fi donations, GitHub feedback, comprehensive SEO with JSON-LD, Cloudflare + GitHub Pages deployment.",
+    "status": "published",
+    "published_at": "2025-11-25T00:00:00.000Z",
+    "created_at": "2025-11-25T00:00:00.000Z"
+  },
+  {
+    "id": "bc_002",
+    "slug": "changelog-system",
+    "title": "Live changelog with timeline, filters, and agent feeds",
+    "summary": "Added a full changelog system with a beautiful timeline page, type filters, search, contextual lesson banners, a /whats-new Claude Code skill, and llms.txt for AI agent discovery.",
+    "type": "added",
+    "version": "unreleased",
+    "modules": ["changelog", "homepage", "infrastructure"],
+    "machine_summary": "Deployed BearlyChange as Cloudflare Worker with KV storage. Created /changelog page with timeline view, version grouping, filter pills, search. Added WhatsNew homepage section, ModuleUpdatesBanner on lesson pages, /whats-new skill, llms.txt and llms-full.txt, RSS/JSON feeds, auto-changelog CI workflow.",
+    "status": "published",
+    "published_at": "2026-03-17T00:00:00.000Z",
+    "created_at": "2026-03-17T00:00:00.000Z"
+  },
+  {
+    "id": "bc_003",
+    "slug": "fix-content-consistency",
+    "title": "Fix content consistency across site",
+    "summary": "Fixed lesson counts in JSON-LD and homepage to correctly show 17, updated Module 0 card to 4 lessons, normalized Ko-fi links, and resolved SEO title duplication.",
+    "type": "fixed",
+    "version": "unreleased",
+    "modules": ["seo", "homepage", "modules"],
+    "machine_summary": "Corrected lesson count from 16/18 to 17 in JSON-LD structured data and homepage. Fixed Module 0 lesson count from 3 to 4. Normalized Ko-fi URLs. Fixed BaseLayout title template duplication.",
+    "status": "published",
+    "published_at": "2026-03-16T15:57:00.000Z",
+    "created_at": "2026-03-16T15:57:00.000Z"
+  },
+  {
+    "id": "bc_004",
+    "slug": "fix-install-steps-substack",
+    "title": "Update install steps to match Substack flow",
+    "summary": "Updated the quickstart installation steps on the homepage to match the current Substack-based subscription and course download process.",
+    "type": "fixed",
+    "version": "unreleased",
+    "modules": ["homepage", "onboarding"],
+    "machine_summary": "Updated 4-step quickstart instructions on index.astro to reflect Substack subscribe flow instead of previous direct download approach.",
+    "status": "published",
+    "published_at": "2026-03-16T15:37:00.000Z",
+    "created_at": "2026-03-16T15:37:00.000Z"
+  },
+  {
+    "id": "bc_005",
+    "slug": "centralized-config-brand-guide",
+    "title": "Centralized site config, brand guide, and PR guide",
+    "summary": "Moved all site configuration to a single siteData.ts, added brand guidelines page, GitHub PR contribution guide, and cleaned up unused components.",
+    "type": "changed",
+    "version": "unreleased",
+    "modules": ["config", "docs", "site"],
+    "machine_summary": "Created siteData.ts centralizing nav, modules, features, stats. Added brand-guide.astro page. Added GitHub PR guide lesson (0.3). Removed email subscription API and unused navigation components. Updated module content ordering.",
+    "status": "published",
+    "published_at": "2026-03-12T00:00:00.000Z",
+    "created_at": "2026-03-12T00:00:00.000Z"
+  },
+  {
+    "id": "bc_006",
+    "slug": "enhanced-changelog-api",
+    "title": "Enhanced changelog API with agent metadata",
+    "summary": "The /api/changelog endpoint now returns richer metadata including site URL, feed URLs, and llms.txt pointer for better AI agent consumption.",
+    "type": "changed",
+    "version": "unreleased",
+    "modules": ["changelog", "infrastructure"],
+    "machine_summary": "Updated handleApiChangelog to return description, site_url, feed_urls (json, rss), and llms_txt fields. Added JSON response (201) support for POST /admin/entries when Accept: application/json header is present.",
+    "status": "published",
+    "published_at": "2026-03-17T00:00:00.000Z",
+    "created_at": "2026-03-17T00:00:00.000Z"
+  }
+]

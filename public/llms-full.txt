@@ -1,0 +1,170 @@
+# CC4.Marketing — Full Course Reference
+
+> This is the extended version of llms.txt with complete lesson details. For a concise overview, see: https://cc4.marketing/llms.txt
+
+## Module 0: Getting Started (4 lessons, ~30 minutes)
+
+### Lesson 0.0 — Introduction (10 min)
+Path: /modules/0/introduction
+Description: Welcome to Claude Code for Marketers. Learn what this course covers and how to get the most from it.
+Objectives:
+- Understand what Claude Code is and why it matters for marketers
+- Learn the course structure and what you'll achieve
+- Get excited about transforming your marketing workflow
+
+### Lesson 0.1 — Installation (5 min)
+Path: /modules/0/installation
+Description: Install Claude Code on your machine using the 2025 native installer. No coding experience required.
+Objectives:
+- Download and install Claude Code
+- Set up your Anthropic API key
+- Verify the installation works
+
+### Lesson 0.2 — Start & Clone (10 min)
+Path: /modules/0/start-clone
+Description: Launch Claude Code and clone the course materials to your local machine.
+Objectives:
+- Start Claude Code in your terminal
+- Clone the Markit project
+- Explore the project structure
+
+### Lesson 0.3 — GitHub PR Workflow for Marketers (10 min)
+Path: /modules/0/github-pr-guide
+Description: A simple guide to creating, reviewing, and merging Pull Requests.
+Objectives:
+- Understand what a Pull Request (PR) is
+- Learn how to create a PR on GitHub
+- Communicate effectively with developers during review
+- Know what to do after a PR is approved
+
+---
+
+## Module 1: Core Concepts (7 lessons, ~3-4 hours)
+
+### Lesson 1.1 — Welcome to Markit (20 min)
+Path: /modules/1/welcome
+Description: Introduction to Markit, your hands-on marketing agency project for learning Claude Code.
+Objectives:
+- Understand the Markit project structure
+- Learn about the Planerio product you'll be marketing
+- Set up your first marketing project with Claude
+- Create your first marketing file
+
+### Lesson 1.2 — Working with Marketing Files (25 min)
+Path: /modules/1/working-with-files
+Description: Learn to organize, find, and manage marketing files efficiently with Claude Code.
+Objectives:
+- Structure marketing project folders effectively
+- Create and organize marketing files
+- Find files quickly with search
+- Work with multiple files simultaneously
+
+### Lesson 1.3 — First Marketing Tasks (30 min)
+Path: /modules/1/first-tasks
+Description: Complete real marketing tasks including multi-channel copy, competitive analysis, and content strategy.
+Objectives:
+- Generate on-brand marketing copy for multiple channels
+- Conduct competitor research with Claude
+- Create content strategies and calendars
+- Use Claude for brainstorming and ideation
+
+### Lesson 1.4 — Using Agents for Marketing (35 min)
+Path: /modules/1/agents
+Description: Learn to use agents for parallel workflows, multi-perspective feedback, and complex campaigns.
+Objectives:
+- Understand agents and when to use them
+- Run parallel marketing workflows
+- Get feedback from multiple perspectives
+- Handle complex multi-step campaigns
+
+### Lesson 1.5 — Custom Marketing Sub-Agents (30 min)
+Path: /modules/1/custom-agents
+Description: Create specialized marketing reviewers for brand voice, SEO, conversion, and quality control.
+Objectives:
+- Create custom marketing reviewer personas
+- Build a brand voice guardian
+- Create SEO and conversion optimization reviewers
+- Maintain consistency across campaigns
+
+### Lesson 1.6 — Project Memory for Marketing (20 min)
+Path: /modules/1/project-memory
+Description: Use CLAUDE.md to maintain consistent brand context across all your marketing work.
+Objectives:
+- Create a CLAUDE.md file for your marketing project
+- Know what to include for maximum effectiveness
+- Understand how Claude uses project memory
+- Maintain consistency across all content
+
+### Lesson 1.7 — Claude Code Navigation (20 min)
+Path: /modules/1/navigation
+Description: Master file operations, search techniques, and project organization for efficient marketing work.
+Objectives:
+- Learn quick file finding techniques
+- Master advanced search patterns
+- Perform batch operations on multiple files
+- Apply project organization best practices
+
+---
+
+## Module 2: Advanced Applications (6 lessons, ~4-5 hours)
+
+### Lesson 2.1 — Write a Campaign Brief (45 min)
+Path: /modules/2/campaign-brief
+Description: Create professional, comprehensive campaign briefs with multi-perspective feedback.
+Objectives:
+- Partner with Claude to create comprehensive campaign briefs
+- Structure complex marketing documents
+- Incorporate research and data into strategy
+- Get multi-perspective feedback on your brief
+
+### Lesson 2.2 — Develop Content Strategy (40 min)
+Path: /modules/2/content-strategy
+Description: Build data-driven content strategies with calendars, topic clusters, and multi-channel planning.
+Objectives:
+- Create data-driven content strategies
+- Build comprehensive content calendars
+- Master topic clustering and pillar content
+- Plan multi-channel content distribution
+
+### Lesson 2.3 — Generate Marketing Copy (35 min)
+Path: /modules/2/marketing-copy
+Description: Create high-converting copy at scale for every marketing channel.
+Objectives:
+- Write effective copy for each marketing channel
+- Generate A/B test variations
+- Apply copywriting frameworks
+- Personalize content at scale
+
+### Lesson 2.4 — Analyze Campaign Data (35 min)
+Path: /modules/2/analytics
+Description: Turn marketing data into actionable insights and executive reports.
+Objectives:
+- Analyze campaign performance data
+- Create compelling executive reports
+- Identify optimization opportunities
+- Build data-driven recommendations
+
+### Lesson 2.5 — Competitive Analysis (30 min)
+Path: /modules/2/competitive-analysis
+Description: Research competitors, analyze positioning, and identify strategic opportunities.
+Objectives:
+- Conduct comprehensive competitor analysis
+- Analyze positioning and messaging
+- Research competitive content strategy
+- Identify competitive advantages
+
+### Lesson 2.6 — SEO Optimization (40 min)
+Path: /modules/2/seo-optimization
+Description: Master search engine optimization with keyword research, content optimization, and technical SEO.
+Objectives:
+- Conduct comprehensive keyword research
+- Optimize content for search engines
+- Build pillar pages and topic clusters
+- Understand technical SEO fundamentals
+
+---
+
+## Changelog API
+- JSON: https://cc4-changelog.mtri-vo.workers.dev/api/changelog
+- RSS: https://cc4-changelog.mtri-vo.workers.dev/rss.xml
+- JSON Feed: https://cc4-changelog.mtri-vo.workers.dev/feed.json

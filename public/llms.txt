@@ -1,0 +1,41 @@
+# CC4.Marketing — Claude Code for Marketers
+
+> A free, interactive course teaching marketers how to use Claude Code to work 10x faster. 3 modules, 17 lessons, taught entirely inside Claude Code itself.
+
+## About
+CC4.Marketing is an open-source course that teaches AI-powered marketing workflows. Students install Claude Code, clone a starter project, then type /start-0-0 to begin interactive lessons. The practice project simulates working as a Marketing Strategist at "Markit" agency, running campaigns for a B2B SaaS client called "Planerio."
+
+## Site Structure
+- Homepage: https://cc4.marketing/
+- Course Modules: https://cc4.marketing/modules/{module}/{lesson-slug}
+- Changelog: https://cc4.marketing/changelog
+- Download/Subscribe: https://cc4.marketing/download
+- Brand Guidelines: https://cc4.marketing/brand-guide
+
+## Course Modules
+- Module 0: Getting Started (4 lessons, 30 min) — Installation, setup, first task
+- Module 1: Core Concepts (7 lessons, 3-4 hours) — Agents, sub-agents, project memory, marketing workflows
+- Module 2: Advanced Applications (6 lessons, 4-5 hours) — Campaign briefs, content strategy, copy, analytics, SEO
+
+## Changelog API
+The changelog tracks all course and site updates. Each entry includes a `machine_summary` field optimized for agent consumption.
+
+- JSON API: https://cc4-changelog.mtri-vo.workers.dev/api/changelog
+- JSON Feed (v1.1): https://cc4-changelog.mtri-vo.workers.dev/feed.json
+- RSS Feed (2.0): https://cc4-changelog.mtri-vo.workers.dev/rss.xml
+
+Entry schema: { id, slug, title, summary, machine_summary, type (new|improvement|fix|breaking), version, modules[], published_at }
+
+## For AI Agents
+- Entries are sorted newest-first
+- The `machine_summary` field provides concise, structured descriptions for programmatic consumption
+- The `modules` array maps entries to course modules (e.g., "module-1", "course", "homepage")
+- Entry `type` indicates severity: breaking > new > improvement > fix
+- Full course details available at: https://cc4.marketing/llms-full.txt
+
+## Source Code
+- Site repo: https://github.com/cc4-marketing/cc4.marketing
+- License: MIT
+
+## Contact
+- Newsletter: https://cc4marketing.substack.com

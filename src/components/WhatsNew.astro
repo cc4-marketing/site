@@ -1,0 +1,308 @@
+---
+import { siteData } from '../config/siteData';
+
+const apiUrl = siteData.changelog.apiUrl;
+---
+
+<section class="whatsnew-section" id="whats-new">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Stay Updated</div>
+      <h2 class="section-title">What's New</h2>
+      <p class="section-description">Latest updates, improvements, and new features for the course.</p>
+    </div>
+
+    <div class="whatsnew-grid" id="whatsnew-entries">
+      <!-- Loading skeletons -->
+      <div class="skeleton-card"><div class="skeleton-badge"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
+      <div class="skeleton-card"><div class="skeleton-badge"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
+      <div class="skeleton-card"><div class="skeleton-badge"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
+    </div>
+
+    <div class="whatsnew-empty" id="whatsnew-empty" style="display:none;">
+      <p>No updates yet. Check back soon!</p>
+    </div>
+
+    <div class="whatsnew-cta">
+      <a href="/changelog" class="view-all-link">View all updates &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ apiUrl }}>
+  const TYPE_LABELS = { added: 'Added', changed: 'Changed', deprecated: 'Deprecated', removed: 'Removed', fixed: 'Fixed', security: 'Security' };
+
+  function formatDate(dateStr) {
+    return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function renderEntry(entry, i) {
+    const typeClass = `type-${entry.type}`;
+    const label = TYPE_LABELS[entry.type] || entry.type;
+    const modules = (entry.modules || []).map(m => `<span class="module-tag">${m}</span>`).join('');
+
+    const isNewest = i === 0;
+    return `
+      <div class="changelog-entry ${isNewest ? 'newest' : ''}" style="animation-delay: ${i * 0.1}s">
+        <div class="entry-accent ${typeClass}"></div>
+        <div class="entry-inner">
+          <div class="entry-meta">
+            <span class="type-badge ${typeClass}">${label}</span>
+            <span class="version">v${entry.version}</span>
+            <span class="date">${formatDate(entry.published_at)}</span>
+          </div>
+          <h3 class="entry-title">${entry.title}</h3>
+          <p class="entry-summary">${entry.summary}</p>
+          ${modules ? `<div class="entry-modules">${modules}</div>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  async function loadEntries() {
+    try {
+      const res = await fetch(`${apiUrl}/api/changelog`);
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      const entries = (data.entries || []).slice(0, 3);
+      const container = document.getElementById('whatsnew-entries');
+      const empty = document.getElementById('whatsnew-empty');
+
+      if (entries.length === 0) {
+        container.style.display = 'none';
+        empty.style.display = 'block';
+      } else {
+        container.innerHTML = entries.map(renderEntry).join('');
+      }
+    } catch {
+      const container = document.getElementById('whatsnew-entries');
+      const empty = document.getElementById('whatsnew-empty');
+      container.style.display = 'none';
+      empty.style.display = 'block';
+    }
+  }
+
+  loadEntries();
+</script>
+
+<style>
+  .whatsnew-section {
+    background: #F5F1E8;
+    border-top: 4px solid var(--olive);
+  }
+
+  html[data-theme="dark"] .whatsnew-section {
+    background: var(--bg-primary);
+    border-top-color: #6B8E23;
+  }
+
+  html[data-theme="dark"] .whatsnew-section .section-title,
+  html[data-theme="dark"] .whatsnew-section .section-description {
+    color: var(--text-primary);
+  }
+
+  .whatsnew-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+  }
+
+  /* Skeleton loading */
+  .skeleton-card {
+    padding: 30px;
+    background: var(--bg-secondary);
+    border: 3px solid var(--border-color);
+  }
+
+  .skeleton-badge {
+    width: 60px;
+    height: 24px;
+    background: var(--border-color);
+    margin-bottom: 14px;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .skeleton-title {
+    width: 80%;
+    height: 22px;
+    background: var(--border-color);
+    margin-bottom: 10px;
+    animation: shimmer 1.5s infinite;
+    animation-delay: 0.1s;
+  }
+
+  .skeleton-text {
+    width: 100%;
+    height: 44px;
+    background: var(--border-color);
+    animation: shimmer 1.5s infinite;
+    animation-delay: 0.2s;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.7; }
+  }
+
+  /* Client-rendered entry styles */
+  .whatsnew-section :global(.changelog-entry) {
+    display: flex;
+    background: var(--bg-secondary);
+    border: 3px solid var(--border-color);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.5s ease-out backwards;
+    overflow: hidden;
+  }
+
+  .whatsnew-section :global(.entry-accent) {
+    width: 4px;
+    flex-shrink: 0;
+  }
+
+  .whatsnew-section :global(.entry-accent.type-added) { background: var(--olive); }
+  .whatsnew-section :global(.entry-accent.type-changed) { background: var(--mustard); }
+  .whatsnew-section :global(.entry-accent.type-fixed) { background: var(--rust); }
+  .whatsnew-section :global(.entry-accent.type-security) { background: var(--plum); }
+
+  .whatsnew-section :global(.entry-inner) {
+    padding: 30px;
+    flex: 1;
+  }
+
+  .whatsnew-section :global(.newest) {
+    border-color: var(--mustard);
+    box-shadow: 0 0 0 1px var(--mustard);
+    animation: fadeInUp 0.5s ease-out backwards, subtlePulse 3s ease-in-out 1s 2;
+  }
+
+  @keyframes subtlePulse {
+    0%, 100% { box-shadow: 0 0 0 1px var(--mustard); }
+    50% { box-shadow: 0 0 12px 2px rgba(232, 185, 35, 0.3); }
+  }
+
+  .whatsnew-section :global(.changelog-entry:hover) {
+    transform: translate(-8px, -8px);
+    box-shadow: 16px 16px 0 var(--mustard);
+  }
+
+  .whatsnew-section :global(.entry-meta) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .whatsnew-section :global(.type-badge) {
+    padding: 4px 12px;
+    font-size: 0.8em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: white;
+  }
+
+  .whatsnew-section :global(.type-added) { background: var(--olive); }
+  .whatsnew-section :global(.type-changed) { background: var(--mustard); color: #2C2C2C; }
+  .whatsnew-section :global(.type-fixed) { background: var(--rust); }
+  .whatsnew-section :global(.type-security) { background: var(--plum); }
+
+  .whatsnew-section :global(.version) {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    background: var(--bg-primary);
+    padding: 2px 8px;
+    border: 1px solid var(--border-color);
+  }
+
+  .whatsnew-section :global(.date) {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+  }
+
+  .whatsnew-section :global(.entry-title) {
+    font-family: var(--font-display);
+    font-size: 1.3em;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+
+  .whatsnew-section :global(.entry-summary) {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .whatsnew-section :global(.entry-modules) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .whatsnew-section :global(.module-tag) {
+    font-size: 0.8em;
+    padding: 3px 10px;
+    background: rgba(107, 142, 35, 0.1);
+    border: 1px solid var(--olive);
+    color: var(--olive);
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Empty state */
+  .whatsnew-empty {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+    font-size: 1.1em;
+  }
+
+  /* CTA link */
+  .whatsnew-cta {
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  .view-all-link {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 1em;
+    color: var(--charcoal);
+    text-decoration: none;
+    background: var(--mustard);
+    padding: 12px 32px;
+    border: 3px solid var(--charcoal);
+    box-shadow: 6px 6px 0 var(--charcoal);
+    transition: all 0.2s ease;
+  }
+
+  .view-all-link:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 10px 10px 0 var(--charcoal);
+    color: var(--charcoal);
+  }
+
+  html[data-theme="dark"] .view-all-link {
+    border-color: var(--border-color);
+    box-shadow: 6px 6px 0 var(--border-color);
+    color: #2C2C2C;
+  }
+
+  html[data-theme="dark"] .view-all-link:hover {
+    box-shadow: 10px 10px 0 var(--border-color);
+    color: #2C2C2C;
+  }
+
+  @media (max-width: 768px) {
+    .whatsnew-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+</style>

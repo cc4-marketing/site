@@ -1,0 +1,148 @@
+name: Auto-generate changelog entry
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract conventional commits
+        id: commits
+        run: |
+          # Get last tag, or first commit if no tags
+          LAST_REF=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)
+
+          # Get conventional commits since last ref
+          COMMITS=$(git log "$LAST_REF"..HEAD --format="%H|||%s|||%b" --no-merges | grep -E '^\w+\|\|\|(feat|fix|improve|breaking|docs|chore):' || true)
+
+          if [ -z "$COMMITS" ]; then
+            echo "No conventional commits found. Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+          # Save commits to file for the next step
+          echo "$COMMITS" > /tmp/commits.txt
+          echo "Found $(echo "$COMMITS" | wc -l | tr -d ' ') conventional commits"
+
+          # Extract affected file paths to determine modules
+          CHANGED_FILES=$(git diff --name-only "$LAST_REF"..HEAD)
+          echo "$CHANGED_FILES" > /tmp/changed_files.txt
+
+      - name: Generate changelog entry with Claude
+        if: steps.commits.outputs.skip != 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          COMMITS=$(cat /tmp/commits.txt)
+          CHANGED_FILES=$(cat /tmp/changed_files.txt)
+
+          # Build the prompt
+          PROMPT="You are a changelog writer for CC4.Marketing, a Claude Code course for marketers.
+
+          Given these git commits and changed files, generate a single changelog entry.
+
+          COMMITS:
+          $COMMITS
+
+          CHANGED FILES:
+          $CHANGED_FILES
+
+          Respond with ONLY valid JSON (no markdown, no code fences):
+          {
+            \"title\": \"Short human-readable title (max 60 chars)\",
+            \"summary\": \"1-2 sentence human summary of what changed and why it matters\",
+            \"machine_summary\": \"Concise technical summary for AI agents\",
+            \"type\": \"added|changed|deprecated|removed|fixed|security (use Keep a Changelog convention)\",
+            \"version_bump\": \"major|minor|patch\",
+            \"modules\": [\"affected modules like: course, homepage, module-0, module-1, module-2, infrastructure, seo, docs\"]
+          }"
+
+          # Call Anthropic API
+          RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
+            -H "content-type: application/json" \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -d "{
+              \"model\": \"claude-haiku-4-5-20251001\",
+              \"max_tokens\": 500,
+              \"messages\": [{\"role\": \"user\", \"content\": $(echo "$PROMPT" | jq -Rs .)}]
+            }")
+
+          # Extract the text content
+          ENTRY_JSON=$(echo "$RESPONSE" | jq -r '.content[0].text')
+          echo "$ENTRY_JSON" > /tmp/entry.json
+          echo "Generated entry:"
+          cat /tmp/entry.json
+
+      - name: Determine version and post entry
+        if: steps.commits.outputs.skip != 'true'
+        env:
+          CHANGELOG_ADMIN_USER: ${{ secrets.CHANGELOG_ADMIN_USER }}
+          CHANGELOG_ADMIN_PASS: ${{ secrets.CHANGELOG_ADMIN_PASS }}
+        run: |
+          API_URL="https://cc4-changelog.mtri-vo.workers.dev"
+
+          # Get current latest version
+          CURRENT=$(curl -s "$API_URL/api/changelog" | jq -r '.entries[0].version // "1.0.0"')
+          echo "Current version: $CURRENT"
+
+          # Parse version components
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+
+          # Read the bump type
+          BUMP=$(jq -r '.version_bump' /tmp/entry.json)
+
+          case "$BUMP" in
+            major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+            minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+            *) PATCH=$((PATCH + 1)) ;;
+          esac
+
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "New version: $NEW_VERSION"
+
+          # Build the slug
+          TITLE=$(jq -r '.title' /tmp/entry.json)
+          SLUG=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//' | head -c 50)
+
+          # Build JSON payload
+          PAYLOAD=$(jq -n \
+            --arg title "$TITLE" \
+            --arg slug "$SLUG" \
+            --arg summary "$(jq -r '.summary' /tmp/entry.json)" \
+            --arg type "$(jq -r '.type' /tmp/entry.json)" \
+            --arg version "$NEW_VERSION" \
+            --arg machine_summary "$(jq -r '.machine_summary' /tmp/entry.json)" \
+            --arg modules "$(jq -r '.modules | join(",")' /tmp/entry.json)" \
+            --arg status "draft" \
+            '{title: $title, slug: $slug, summary: $summary, type: $type, version: $version, machine_summary: $machine_summary, modules: $modules, status: $status}')
+
+          echo "Posting entry as draft..."
+          RESULT=$(curl -s -w "\n%{http_code}" \
+            -u "$CHANGELOG_ADMIN_USER:$CHANGELOG_ADMIN_PASS" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            -X POST "$API_URL/admin/entries" \
+            -d "$PAYLOAD")
+
+          HTTP_CODE=$(echo "$RESULT" | tail -1)
+          BODY=$(echo "$RESULT" | sed '$d')
+
+          if [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "302" ]; then
+            echo "Changelog entry created as draft (v$NEW_VERSION)"
+            echo "Review and publish at: $API_URL/admin"
+          else
+            echo "Failed to create entry (HTTP $HTTP_CODE)"
+            echo "$BODY"
+            exit 1
+          fi

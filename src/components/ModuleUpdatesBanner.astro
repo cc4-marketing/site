@@ -1,0 +1,195 @@
+---
+import { siteData } from '../config/siteData';
+
+interface Props {
+  module: number;
+}
+
+const { module } = Astro.props;
+const apiUrl = siteData.changelog.apiUrl;
+---
+
+<div class="mub" id="mub" data-module={module} style="display:none;">
+  <div class="mub-bar" id="mub-bar">
+    <span class="mub-dot"></span>
+    <span class="mub-text" id="mub-text">Recent updates</span>
+    <span class="mub-arrow" id="mub-arrow">&#9662;</span>
+    <span class="mub-dismiss" id="mub-dismiss" role="button" tabindex="0" title="Dismiss">&times;</span>
+  </div>
+  <div class="mub-list" id="mub-list" hidden></div>
+</div>
+
+<script define:vars={{ apiUrl, module }}>
+  const TL = { added: 'ADDED', changed: 'CHANGED', deprecated: 'DEPRECATED', removed: 'REMOVED', fixed: 'FIXED', security: 'SECURITY' };
+  const TC = { added: '#6B8E23', changed: '#E8B923', deprecated: '#999', removed: '#EC4899', fixed: '#B85C3C', security: '#5C3A6B' };
+
+  async function init() {
+    try {
+      const res = await fetch(`${apiUrl}/api/changelog`);
+      if (!res.ok) return;
+      const data = await res.json();
+
+      const moduleStr = `module-${module}`;
+      const recent = (data.entries || []).filter(e => {
+        const mods = e.modules || [];
+        return mods.some(m => m === moduleStr || m === 'course' || m === String(module));
+      }).slice(0, 3);
+
+      if (recent.length === 0) return;
+
+      const latestId = recent[0].id;
+      const dismissKey = `cc4-dismissed-${latestId}`;
+      if (localStorage.getItem(dismissKey)) return;
+
+      const banner = document.getElementById('mub');
+      const text = document.getElementById('mub-text');
+      const list = document.getElementById('mub-list');
+      const bar = document.getElementById('mub-bar');
+      const arrow = document.getElementById('mub-arrow');
+      const dismiss = document.getElementById('mub-dismiss');
+
+      text.textContent = `${recent.length} recent update${recent.length > 1 ? 's' : ''} for Module ${module}`;
+      list.innerHTML = recent.map(e => `
+        <div class="mub-entry">
+          <span class="mub-type" style="background:${TC[e.type] || '#666'}">${TL[e.type] || e.type}</span>
+          <span class="mub-title">${e.title}</span>
+          <span class="mub-date">${new Date(e.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+        </div>
+      `).join('');
+
+      banner.style.display = 'block';
+
+      let expanded = false;
+      bar.addEventListener('click', (ev) => {
+        if (ev.target === dismiss || ev.target.closest('.mub-dismiss')) return;
+        expanded = !expanded;
+        list.hidden = !expanded;
+        arrow.style.transform = expanded ? 'rotate(180deg)' : '';
+      });
+
+      dismiss.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        localStorage.setItem(dismissKey, '1');
+        banner.style.display = 'none';
+      });
+    } catch {}
+  }
+
+  init();
+</script>
+
+<style>
+  .mub {
+    margin-bottom: 28px;
+    border: 2px solid rgba(107, 142, 35, 0.3);
+    border-left: 4px solid var(--olive);
+    background: rgba(107, 142, 35, 0.04);
+    animation: mubFadeIn 0.4s ease;
+  }
+
+  html[data-theme="dark"] .mub {
+    background: rgba(107, 142, 35, 0.08);
+    border-color: rgba(107, 142, 35, 0.25);
+    border-left-color: var(--olive);
+  }
+
+  .mub-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .mub-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--olive);
+    flex-shrink: 0;
+    animation: mubPulse 2.5s ease-in-out infinite;
+  }
+
+  .mub-text {
+    flex: 1;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--olive);
+  }
+
+  .mub-arrow {
+    font-size: 0.75em;
+    color: var(--text-secondary);
+    transition: transform 0.2s ease;
+  }
+
+  .mub-dismiss {
+    font-size: 1.1em;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+    opacity: 0.5;
+    transition: opacity 0.15s ease, color 0.15s ease;
+  }
+
+  .mub-dismiss:hover {
+    opacity: 1;
+    color: var(--rust);
+  }
+
+  .mub-list {
+    padding: 0 14px 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-top: 1px solid rgba(107, 142, 35, 0.15);
+    margin: 0 14px;
+    padding-top: 8px;
+  }
+
+  .mub-entry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82em;
+    padding: 2px 0;
+  }
+
+  .mub-type {
+    padding: 1px 6px;
+    font-size: 0.7em;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    letter-spacing: 0.03em;
+    flex-shrink: 0;
+    line-height: 1.5;
+  }
+
+  .mub-title {
+    flex: 1;
+    color: var(--text-primary);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mub-date {
+    color: var(--text-secondary);
+    font-size: 0.88em;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  @keyframes mubPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @keyframes mubFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>

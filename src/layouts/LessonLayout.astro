@@ -3,6 +3,7 @@ import BaseLayout from './BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FeedbackButton from '../components/FeedbackButton.astro';
+import ModuleUpdatesBanner from '../components/ModuleUpdatesBanner.astro';
 
 interface Props {
   title: string;
@@ -31,6 +32,8 @@ const { title, module, lesson, description, duration, prevLesson, nextLesson } =
         <h1>{title}</h1>
         <p class="lesson-description">{description}</p>
       </div>
+
+      <ModuleUpdatesBanner module={module} />
 
       <article class="prose">
         <slot />

@@ -1,7 +1,11 @@
 export const siteData = {
+  changelog: {
+    apiUrl: 'https://cc4-changelog.mtri-vo.workers.dev',
+  },
   navItems: [
     { label: 'Home', href: '/' },
     { label: 'Modules', href: '/#modules' },
+    { label: 'Changelog', href: '/changelog' },
     { label: 'GitHub', href: 'https://github.com/cc4-marketing/cc4.marketing', external: true },
   ],
   footer: {

@@ -1,0 +1,689 @@
+---
+import { siteData } from '../config/siteData';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const apiUrl = siteData.changelog.apiUrl;
+---
+
+<BaseLayout title="Changelog - Claude Code for Marketers" description="Latest updates, improvements, and new features for the Claude Code for Marketers course.">
+  <Header />
+
+  <section class="cl-hero">
+    <div class="cl-hero-pattern"></div>
+    <div class="cl-hero-inner">
+      <span class="cl-hero-label">Stay Updated</span>
+      <h1 class="cl-hero-title">Changelog</h1>
+      <p class="cl-hero-desc">Every update, improvement, and fix — for humans and machines alike.</p>
+      <div class="cl-hero-meta" id="hero-meta"></div>
+      <div class="cl-feed-links">
+        <a href={`${apiUrl}/rss.xml`} target="_blank" rel="noopener" class="cl-feed-pill">RSS</a>
+        <a href={`${apiUrl}/feed.json`} target="_blank" rel="noopener" class="cl-feed-pill">JSON Feed</a>
+        <a href="/llms.txt" class="cl-feed-pill">llms.txt</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="cl-controls" id="cl-controls">
+    <div class="cl-controls-inner">
+      <div class="cl-filter-pills">
+        <button class="cl-pill cl-pill--active" data-type="all">All</button>
+        <button class="cl-pill" data-type="added"><span class="cl-pill-dot cl-dot--added"></span>Added</button>
+        <button class="cl-pill" data-type="changed"><span class="cl-pill-dot cl-dot--changed"></span>Changed</button>
+        <button class="cl-pill" data-type="fixed"><span class="cl-pill-dot cl-dot--fixed"></span>Fixed</button>
+        <button class="cl-pill" data-type="security"><span class="cl-pill-dot cl-dot--security"></span>Security</button>
+      </div>
+      <input type="text" class="cl-search" id="cl-search" placeholder="Search updates..." autocomplete="off" />
+    </div>
+  </div>
+
+  <section class="cl-body">
+    <div class="cl-body-inner">
+      <div class="cl-stats" id="cl-stats"></div>
+
+      <div class="cl-timeline" id="cl-timeline">
+        <div class="cl-skeleton">
+          <div class="cl-sk-bar cl-sk-bar--short"></div>
+          <div class="cl-sk-card"><div class="cl-sk-bar cl-sk-bar--tiny"></div><div class="cl-sk-bar cl-sk-bar--med"></div><div class="cl-sk-bar cl-sk-bar--wide"></div></div>
+          <div class="cl-sk-card"><div class="cl-sk-bar cl-sk-bar--tiny"></div><div class="cl-sk-bar cl-sk-bar--med"></div><div class="cl-sk-bar cl-sk-bar--wide"></div></div>
+        </div>
+      </div>
+
+      <div class="cl-empty" id="cl-empty" style="display:none;">
+        <h3>No updates found</h3>
+        <p id="cl-empty-msg">Try adjusting your filters or search.</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<script define:vars={{ apiUrl }}>
+  const TL = { added: 'Added', changed: 'Changed', deprecated: 'Deprecated', removed: 'Removed', fixed: 'Fixed', security: 'Security' };
+  const TC = { added: 'type-added', changed: 'type-changed', deprecated: 'type-deprecated', removed: 'type-removed', fixed: 'type-fixed', security: 'type-security' };
+
+  let allEntries = [];
+  let activeType = 'all';
+  let searchQuery = '';
+
+  function fmtDate(d) {
+    return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function groupByVersion(entries) {
+    const g = new Map();
+    for (const e of entries) {
+      const v = e.version === 'unreleased' ? 'Unreleased' : e.version;
+      if (!g.has(v)) g.set(v, []);
+      g.get(v).push(e);
+    }
+    return g;
+  }
+
+  function renderEntry(entry) {
+    const tc = TC[entry.type] || '';
+    const label = TL[entry.type] || entry.type;
+    const mods = (entry.modules || []).map(m => `<span class="cl-mod">${m}</span>`).join('');
+    const ms = entry.machine_summary
+      ? `<details class="cl-agent"><summary>Agent context</summary><p>${entry.machine_summary}</p></details>`
+      : '';
+
+    return `
+      <div class="cl-entry">
+        <div class="cl-dot ${tc}"></div>
+        <div class="cl-card">
+          <div class="cl-accent ${tc}"></div>
+          <div class="cl-card-body">
+            <div class="cl-meta">
+              <span class="cl-badge ${tc}">${label}</span>
+              ${entry.version !== 'unreleased' ? `<span class="cl-ver">v${entry.version}</span>` : '<span class="cl-ver">unreleased</span>'}
+              <span class="cl-date">${fmtDate(entry.published_at)}</span>
+            </div>
+            <h3 class="cl-entry-title">${entry.title}</h3>
+            <p class="cl-entry-desc">${entry.summary}</p>
+            ${ms}
+            ${mods ? `<div class="cl-mods">${mods}</div>` : ''}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderTimeline(entries) {
+    const tl = document.getElementById('cl-timeline');
+    const empty = document.getElementById('cl-empty');
+
+    if (entries.length === 0) {
+      tl.style.display = 'none';
+      empty.style.display = 'block';
+      document.getElementById('cl-empty-msg').textContent =
+        activeType !== 'all' || searchQuery ? 'Try adjusting your filters or search.' : 'No updates yet. Check back soon!';
+      return;
+    }
+
+    tl.style.display = 'block';
+    empty.style.display = 'none';
+
+    const groups = groupByVersion(entries);
+    let html = '';
+    for (const [version, items] of groups) {
+      const dr = items.length === 1
+        ? fmtDate(items[0].published_at)
+        : `${fmtDate(items[items.length - 1].published_at)} — ${fmtDate(items[0].published_at)}`;
+
+      const isUnreleased = version === 'Unreleased';
+      const vLabel = isUnreleased ? 'Unreleased' : `v${version}`;
+
+      html += `
+        <div class="cl-vgroup ${isUnreleased ? 'cl-vgroup--unreleased' : ''}">
+          <div class="cl-vheader">
+            <h2 class="cl-vlabel">${vLabel}</h2>
+            ${!isUnreleased ? `<span class="cl-vdate">${dr}</span>` : ''}
+            <span class="cl-vcount">${items.length} update${items.length > 1 ? 's' : ''}</span>
+          </div>
+          <div class="cl-ventries">${items.map(renderEntry).join('')}</div>
+        </div>`;
+    }
+    tl.innerHTML = html;
+  }
+
+  function renderStats(entries) {
+    const el = document.getElementById('cl-stats');
+    const vers = new Set(entries.map(e => e.version.split('.').slice(0, 2).join('.')));
+    const tc = {};
+    for (const e of entries) tc[e.type] = (tc[e.type] || 0) + 1;
+    const dots = Object.entries(tc).map(([t, c]) =>
+      `<span class="cl-stat-item"><span class="cl-stat-dot ${TC[t]}"></span>${c} ${TL[t] || t}</span>`
+    ).join('');
+    el.innerHTML = `<span class="cl-stat-total">${entries.length} updates across ${vers.size} versions</span><span class="cl-stat-sep"></span>${dots}`;
+  }
+
+  function renderHeroMeta(entries) {
+    const el = document.getElementById('hero-meta');
+    if (!entries.length) return;
+    el.innerHTML = `Latest: <strong>v${entries[0].version}</strong> — ${fmtDate(entries[0].published_at)}`;
+  }
+
+  function applyFilters() {
+    let f = allEntries;
+    if (activeType !== 'all') f = f.filter(e => e.type === activeType);
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      f = f.filter(e => e.title.toLowerCase().includes(q) || e.summary.toLowerCase().includes(q) || (e.modules || []).some(m => m.toLowerCase().includes(q)));
+    }
+    renderTimeline(f);
+    const p = new URLSearchParams();
+    if (activeType !== 'all') p.set('type', activeType);
+    if (searchQuery) p.set('q', searchQuery);
+    const qs = p.toString();
+    history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
+  }
+
+  function initFilters() {
+    const p = new URLSearchParams(location.search);
+    if (p.get('type')) {
+      activeType = p.get('type');
+      document.querySelectorAll('.cl-pill').forEach(b => b.classList.toggle('cl-pill--active', b.dataset.type === activeType));
+    }
+    if (p.get('q')) { searchQuery = p.get('q'); document.getElementById('cl-search').value = searchQuery; }
+
+    document.querySelectorAll('.cl-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.cl-pill').forEach(b => b.classList.remove('cl-pill--active'));
+        pill.classList.add('cl-pill--active');
+        activeType = pill.dataset.type;
+        applyFilters();
+      });
+    });
+
+    let deb;
+    document.getElementById('cl-search').addEventListener('input', (e) => {
+      clearTimeout(deb);
+      deb = setTimeout(() => { searchQuery = e.target.value.trim(); applyFilters(); }, 250);
+    });
+  }
+
+  async function load() {
+    try {
+      const res = await fetch(`${apiUrl}/api/changelog`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      allEntries = data.entries || [];
+      renderHeroMeta(allEntries);
+      renderStats(allEntries);
+      initFilters();
+      applyFilters();
+    } catch {
+      document.getElementById('cl-timeline').style.display = 'none';
+      document.getElementById('cl-empty').style.display = 'block';
+      document.getElementById('cl-empty-msg').textContent = 'Could not load changelog. Please try again later.';
+    }
+  }
+
+  load();
+</script>
+
+<style>
+  /* Reset section padding from global.css */
+  .cl-hero, .cl-body { padding: 0; }
+
+  /* ── HERO ─────────────────────────────────────── */
+  .cl-hero {
+    background: linear-gradient(135deg, #2C2C2C 0%, #1a1a2e 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  html[data-theme="dark"] .cl-hero {
+    background: linear-gradient(135deg, #1a1a1a 0%, #111122 100%);
+  }
+
+  .cl-hero-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(232, 185, 35, 0.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+  }
+
+  .cl-hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 120px 24px 56px;
+    text-align: center;
+  }
+
+  .cl-hero-label {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.85em;
+    color: var(--mustard);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 16px;
+  }
+
+  .cl-hero-title {
+    font-family: var(--font-display);
+    font-size: 3.5em;
+    color: white;
+    margin-bottom: 16px;
+    line-height: 1.1;
+  }
+
+  .cl-hero-desc {
+    font-size: 1.15em;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 auto 20px;
+    max-width: 500px;
+    line-height: 1.7;
+  }
+
+  .cl-hero-meta {
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 20px;
+  }
+
+  .cl-hero-meta strong { color: var(--mustard); }
+
+  .cl-feed-links {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .cl-feed-pill {
+    font-size: 0.78em;
+    font-weight: 600;
+    color: var(--mustard);
+    text-decoration: none;
+    border: 1px solid rgba(232, 185, 35, 0.35);
+    padding: 4px 14px;
+    transition: all 0.2s ease;
+    letter-spacing: 0.04em;
+  }
+
+  .cl-feed-pill:hover {
+    background: var(--mustard);
+    color: #2C2C2C;
+    border-color: var(--mustard);
+  }
+
+  /* ── CONTROLS (sticky filter bar) ─────────────── */
+  .cl-controls {
+    background: var(--bg-secondary);
+    border-bottom: 2px solid var(--border-color);
+    padding: 14px 24px;
+    position: sticky;
+    top: 60px;
+    z-index: 10;
+  }
+
+  .cl-controls-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .cl-filter-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .cl-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    font-size: 0.8em;
+    font-weight: 600;
+    border: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: var(--font-body);
+  }
+
+  .cl-pill:hover {
+    border-color: var(--mustard);
+    color: var(--text-primary);
+  }
+
+  .cl-pill--active {
+    background: var(--charcoal);
+    color: white;
+    border-color: var(--charcoal);
+  }
+
+  html[data-theme="dark"] .cl-pill--active {
+    background: var(--mustard);
+    color: #1a1a1a;
+    border-color: var(--mustard);
+  }
+
+  .cl-pill-dot {
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .cl-dot--added { background: #6B8E23; }
+  .cl-dot--changed { background: #E8B923; }
+  .cl-dot--fixed { background: #B85C3C; }
+  .cl-dot--security { background: #5C3A6B; }
+
+  .cl-search {
+    flex: 1;
+    min-width: 160px;
+    padding: 7px 14px;
+    font-size: 0.85em;
+    border: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .cl-search:focus { border-color: var(--mustard); }
+  .cl-search::placeholder { color: var(--text-secondary); opacity: 0.5; }
+
+  /* ── STATS RIBBON ─────────────────────────────── */
+  .cl-stats {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+  }
+
+  .cl-body-inner :global(.cl-stat-total) {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .cl-body-inner :global(.cl-stat-sep) {
+    width: 1px;
+    height: 14px;
+    background: var(--border-color);
+    display: inline-block;
+  }
+
+  .cl-body-inner :global(.cl-stat-item) {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .cl-body-inner :global(.cl-stat-dot) {
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+  }
+
+  .cl-body-inner :global(.cl-stat-dot.type-added) { background: var(--olive); }
+  .cl-body-inner :global(.cl-stat-dot.type-changed) { background: var(--mustard); }
+  .cl-body-inner :global(.cl-stat-dot.type-fixed) { background: var(--rust); }
+  .cl-body-inner :global(.cl-stat-dot.type-security) { background: var(--plum); }
+  .cl-body-inner :global(.cl-stat-dot.type-deprecated) { background: #999; }
+  .cl-body-inner :global(.cl-stat-dot.type-removed) { background: #EC4899; }
+
+  /* ── BODY ─────────────────────────────────────── */
+  .cl-body {
+    background: var(--bg-primary);
+    min-height: 60vh;
+  }
+
+  .cl-body-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 24px 100px;
+  }
+
+  /* ── TIMELINE ─────────────────────────────────── */
+  .cl-body-inner :global(.cl-vgroup) {
+    margin-bottom: 48px;
+  }
+
+  .cl-body-inner :global(.cl-vheader) {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid var(--border-color);
+    flex-wrap: wrap;
+  }
+
+  .cl-body-inner :global(.cl-vlabel) {
+    font-family: var(--font-display);
+    font-size: 1.5em;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1;
+  }
+
+  .cl-body-inner :global(.cl-vdate) {
+    font-size: 0.82em;
+    color: var(--text-secondary);
+  }
+
+  .cl-body-inner :global(.cl-vcount) {
+    font-size: 0.78em;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    padding: 2px 10px;
+    border: 1px solid var(--border-color);
+  }
+
+  .cl-body-inner :global(.cl-ventries) {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-left: 28px;
+    border-left: 2px solid var(--border-color);
+  }
+
+  /* ── ENTRY ────────────────────────────────────── */
+  .cl-body-inner :global(.cl-entry) {
+    position: relative;
+  }
+
+  .cl-body-inner :global(.cl-dot) {
+    position: absolute;
+    left: -35px;
+    top: 22px;
+    width: 12px;
+    height: 12px;
+    border: 3px solid var(--bg-primary);
+    box-sizing: border-box;
+  }
+
+  .cl-body-inner :global(.cl-dot.type-added) { background: var(--olive); }
+  .cl-body-inner :global(.cl-dot.type-changed) { background: var(--mustard); }
+  .cl-body-inner :global(.cl-dot.type-fixed) { background: var(--rust); }
+  .cl-body-inner :global(.cl-dot.type-security) { background: var(--plum); }
+  .cl-body-inner :global(.cl-dot.type-deprecated) { background: #999; }
+  .cl-body-inner :global(.cl-dot.type-removed) { background: #EC4899; }
+
+  .cl-body-inner :global(.cl-card) {
+    display: flex;
+    background: var(--bg-secondary);
+    border: 3px solid var(--border-color);
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .cl-body-inner :global(.cl-card:hover) {
+    transform: translate(-6px, -6px);
+    box-shadow: 12px 12px 0 var(--mustard);
+  }
+
+  .cl-body-inner :global(.cl-accent) {
+    width: 5px;
+    flex-shrink: 0;
+  }
+
+  .cl-body-inner :global(.cl-accent.type-added) { background: var(--olive); }
+  .cl-body-inner :global(.cl-accent.type-changed) { background: var(--mustard); }
+  .cl-body-inner :global(.cl-accent.type-fixed) { background: var(--rust); }
+  .cl-body-inner :global(.cl-accent.type-security) { background: var(--plum); }
+  .cl-body-inner :global(.cl-accent.type-deprecated) { background: #999; }
+  .cl-body-inner :global(.cl-accent.type-removed) { background: #EC4899; }
+
+  .cl-body-inner :global(.cl-card-body) {
+    padding: 22px 24px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cl-body-inner :global(.cl-meta) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .cl-body-inner :global(.cl-badge) {
+    padding: 2px 10px;
+    font-size: 0.72em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: white;
+  }
+
+  .cl-body-inner :global(.cl-badge.type-added) { background: var(--olive); }
+  .cl-body-inner :global(.cl-badge.type-changed) { background: var(--mustard); color: #2C2C2C; }
+  .cl-body-inner :global(.cl-badge.type-fixed) { background: var(--rust); }
+  .cl-body-inner :global(.cl-badge.type-security) { background: var(--plum); }
+  .cl-body-inner :global(.cl-badge.type-deprecated) { background: #999; }
+  .cl-body-inner :global(.cl-badge.type-removed) { background: #EC4899; }
+
+  .cl-body-inner :global(.cl-ver) {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.78em;
+    color: var(--text-secondary);
+    background: var(--bg-primary);
+    padding: 1px 7px;
+    border: 1px solid var(--border-color);
+  }
+
+  .cl-body-inner :global(.cl-date) {
+    font-size: 0.78em;
+    color: var(--text-secondary);
+  }
+
+  .cl-body-inner :global(.cl-entry-title) {
+    font-family: var(--font-display);
+    font-size: 1.15em;
+    margin: 0 0 4px;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .cl-body-inner :global(.cl-entry-desc) {
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin: 0;
+    font-size: 0.92em;
+  }
+
+  .cl-body-inner :global(.cl-agent) {
+    margin-top: 8px;
+    font-size: 0.85em;
+  }
+
+  .cl-body-inner :global(.cl-agent summary) {
+    cursor: pointer;
+    color: var(--olive);
+    font-weight: 600;
+    font-size: 0.88em;
+  }
+
+  .cl-body-inner :global(.cl-agent p) {
+    margin: 6px 0 0;
+    padding: 8px 12px;
+    background: var(--bg-primary);
+    border-left: 3px solid var(--olive);
+    line-height: 1.55;
+    color: var(--text-secondary);
+    font-size: 0.95em;
+  }
+
+  .cl-body-inner :global(.cl-mods) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+  }
+
+  .cl-body-inner :global(.cl-mod) {
+    font-size: 0.72em;
+    padding: 1px 7px;
+    background: rgba(107, 142, 35, 0.08);
+    border: 1px solid var(--olive);
+    color: var(--olive);
+  }
+
+  html[data-theme="dark"] .cl-body-inner :global(.cl-mod) {
+    background: rgba(107, 142, 35, 0.15);
+  }
+
+  /* ── SKELETON ─────────────────────────────────── */
+  .cl-skeleton { display: flex; flex-direction: column; gap: 14px; }
+  .cl-sk-card { padding: 22px 24px; background: var(--bg-secondary); border: 3px solid var(--border-color); display: flex; flex-direction: column; gap: 10px; }
+  .cl-sk-bar { background: var(--border-color); animation: cl-shimmer 1.5s infinite; }
+  .cl-sk-bar--short { width: 90px; height: 24px; }
+  .cl-sk-bar--tiny { width: 60px; height: 18px; }
+  .cl-sk-bar--med { width: 65%; height: 18px; animation-delay: 0.1s; }
+  .cl-sk-bar--wide { width: 100%; height: 36px; animation-delay: 0.2s; }
+
+  @keyframes cl-shimmer { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+  /* ── EMPTY STATE ──────────────────────────────── */
+  .cl-empty {
+    text-align: center;
+    padding: 80px 24px;
+  }
+
+  .cl-empty h3 {
+    font-family: var(--font-display);
+    font-size: 1.4em;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .cl-empty p {
+    color: var(--text-secondary);
+    font-size: 1em;
+  }
+
+  /* ── RESPONSIVE ───────────────────────────────── */
+  @media (max-width: 768px) {
+    .cl-hero-title { font-size: 2.4em; }
+    .cl-hero-inner { padding: 100px 16px 40px; }
+    .cl-controls-inner { flex-direction: column; }
+    .cl-filter-pills { width: 100%; }
+    .cl-search { width: 100%; }
+    .cl-body-inner { padding: 24px 16px 60px; }
+    .cl-body-inner :global(.cl-ventries) { padding-left: 20px; }
+    .cl-body-inner :global(.cl-dot) { left: -27px; width: 10px; height: 10px; }
+    .cl-body-inner :global(.cl-card-body) { padding: 16px; }
+  }
+</style>

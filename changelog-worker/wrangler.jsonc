@@ -1,0 +1,15 @@
+{
+  "name": "cc4-changelog",
+  "main": "src/index.js",
+  "compatibility_date": "2025-11-26",
+  "kv_namespaces": [
+    {
+      "binding": "CHANGELOG_KV",
+      "id": "0056bfd0472e481387acaec3f6e8a721"
+    }
+  ],
+  "vars": {
+    "ADMIN_USER": "admin"
+  }
+  // Set ADMIN_PASS as a secret: npx wrangler secret put ADMIN_PASS
+}

@@ -37,6 +37,11 @@ export default defineConfig({
           item.priority = 0.8;
           item.changefreq = 'monthly';
         }
+        // Changelog
+        else if (url.includes('/changelog')) {
+          item.priority = 0.8;
+          item.changefreq = 'weekly';
+        }
         // Default
         else {
           item.priority = 0.7;

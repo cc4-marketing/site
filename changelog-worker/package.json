@@ -1,0 +1,13 @@
+{
+  "name": "cc4-changelog",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "seed": "node scripts/seed.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
