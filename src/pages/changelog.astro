@@ -27,6 +27,12 @@ const apiUrl = siteData.changelog.apiUrl;
 
   <div class="cl-controls" id="cl-controls">
     <div class="cl-controls-inner">
+      <div class="cl-scope-pills">
+        <button class="cl-scope cl-scope--active" data-scope="all">All</button>
+        <button class="cl-scope" data-scope="site"><span class="cl-scope-icon cl-scope-icon--site"></span>Website</button>
+        <button class="cl-scope" data-scope="course"><span class="cl-scope-icon cl-scope-icon--course"></span>Course</button>
+      </div>
+      <span class="cl-filter-sep"></span>
       <div class="cl-filter-pills">
         <button class="cl-pill cl-pill--active" data-type="all">All</button>
         <button class="cl-pill" data-type="added"><span class="cl-pill-dot cl-dot--added"></span>Added</button>
@@ -66,7 +72,14 @@ const apiUrl = siteData.changelog.apiUrl;
 
   let allEntries = [];
   let activeType = 'all';
+  let activeScope = 'all';
   let searchQuery = '';
+
+  function getScope(entry) {
+    const mods = entry.modules || [];
+    if (mods.includes('course')) return 'course';
+    return 'site';
+  }
 
   function fmtDate(d) {
     return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -85,7 +98,10 @@ const apiUrl = siteData.changelog.apiUrl;
   function renderEntry(entry) {
     const tc = TC[entry.type] || '';
     const label = TL[entry.type] || entry.type;
-    const mods = (entry.modules || []).map(m => `<span class="cl-mod">${m}</span>`).join('');
+    const scope = getScope(entry);
+    const scopeLabel = scope === 'course' ? 'Course' : 'Website';
+    const scopeClass = scope === 'course' ? 'cl-scope-tag--course' : 'cl-scope-tag--site';
+    const mods = (entry.modules || []).filter(m => m !== 'site' && m !== 'course').map(m => `<span class="cl-mod">${m}</span>`).join('');
     const ms = entry.machine_summary
       ? `<details class="cl-agent"><summary>Agent context</summary><p>${entry.machine_summary}</p></details>`
       : '';
@@ -93,10 +109,11 @@ const apiUrl = siteData.changelog.apiUrl;
     return `
       <div class="cl-entry">
         <div class="cl-dot ${tc}"></div>
-        <div class="cl-card">
+        <div class="cl-card cl-card--${scope}">
           <div class="cl-accent ${tc}"></div>
           <div class="cl-card-body">
             <div class="cl-meta">
+              <span class="cl-scope-tag ${scopeClass}">${scopeLabel}</span>
               <span class="cl-badge ${tc}">${label}</span>
               ${entry.version !== 'unreleased' ? `<span class="cl-ver">v${entry.version}</span>` : '<span class="cl-ver">unreleased</span>'}
               <span class="cl-date">${fmtDate(entry.published_at)}</span>
@@ -150,13 +167,14 @@ const apiUrl = siteData.changelog.apiUrl;
 
   function renderStats(entries) {
     const el = document.getElementById('cl-stats');
-    const vers = new Set(entries.map(e => e.version.split('.').slice(0, 2).join('.')));
+    const siteCount = entries.filter(e => getScope(e) === 'site').length;
+    const courseCount = entries.filter(e => getScope(e) === 'course').length;
     const tc = {};
     for (const e of entries) tc[e.type] = (tc[e.type] || 0) + 1;
     const dots = Object.entries(tc).map(([t, c]) =>
       `<span class="cl-stat-item"><span class="cl-stat-dot ${TC[t]}"></span>${c} ${TL[t] || t}</span>`
     ).join('');
-    el.innerHTML = `<span class="cl-stat-total">${entries.length} updates across ${vers.size} versions</span><span class="cl-stat-sep"></span>${dots}`;
+    el.innerHTML = `<span class="cl-stat-total">${entries.length} updates</span><span class="cl-stat-sep"></span><span class="cl-stat-item"><span class="cl-stat-dot cl-stat-dot--site"></span>${siteCount} Website</span><span class="cl-stat-item"><span class="cl-stat-dot cl-stat-dot--course"></span>${courseCount} Course</span><span class="cl-stat-sep"></span>${dots}`;
   }
 
   function renderHeroMeta(entries) {
@@ -167,6 +185,7 @@ const apiUrl = siteData.changelog.apiUrl;
 
   function applyFilters() {
     let f = allEntries;
+    if (activeScope !== 'all') f = f.filter(e => getScope(e) === activeScope);
     if (activeType !== 'all') f = f.filter(e => e.type === activeType);
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -174,6 +193,7 @@ const apiUrl = siteData.changelog.apiUrl;
     }
     renderTimeline(f);
     const p = new URLSearchParams();
+    if (activeScope !== 'all') p.set('scope', activeScope);
     if (activeType !== 'all') p.set('type', activeType);
     if (searchQuery) p.set('q', searchQuery);
     const qs = p.toString();
@@ -182,11 +202,24 @@ const apiUrl = siteData.changelog.apiUrl;
 
   function initFilters() {
     const p = new URLSearchParams(location.search);
+    if (p.get('scope')) {
+      activeScope = p.get('scope');
+      document.querySelectorAll('.cl-scope').forEach(b => b.classList.toggle('cl-scope--active', b.dataset.scope === activeScope));
+    }
     if (p.get('type')) {
       activeType = p.get('type');
       document.querySelectorAll('.cl-pill').forEach(b => b.classList.toggle('cl-pill--active', b.dataset.type === activeType));
     }
     if (p.get('q')) { searchQuery = p.get('q'); document.getElementById('cl-search').value = searchQuery; }
+
+    document.querySelectorAll('.cl-scope').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.cl-scope').forEach(b => b.classList.remove('cl-scope--active'));
+        btn.classList.add('cl-scope--active');
+        activeScope = btn.dataset.scope;
+        applyFilters();
+      });
+    });
 
     document.querySelectorAll('.cl-pill').forEach(pill => {
       pill.addEventListener('click', () => {
@@ -384,6 +417,61 @@ const apiUrl = siteData.changelog.apiUrl;
   .cl-dot--fixed { background: #B85C3C; }
   .cl-dot--security { background: #5C3A6B; }
 
+  /* ── SCOPE PILLS ──────────────────────────────── */
+  .cl-scope-pills {
+    display: flex;
+    gap: 4px;
+  }
+
+  .cl-scope {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    font-size: 0.8em;
+    font-weight: 700;
+    border: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: var(--font-body);
+  }
+
+  .cl-scope:hover {
+    border-color: var(--text-primary);
+    color: var(--text-primary);
+  }
+
+  .cl-scope--active {
+    background: var(--charcoal);
+    color: white;
+    border-color: var(--charcoal);
+  }
+
+  html[data-theme="dark"] .cl-scope--active {
+    background: var(--mustard);
+    color: #1a1a1a;
+    border-color: var(--mustard);
+  }
+
+  .cl-scope-icon {
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .cl-scope-icon--site { background: #0D9488; }
+  .cl-scope-icon--course { background: #5C3A6B; }
+
+  .cl-filter-sep {
+    width: 1px;
+    height: 24px;
+    background: var(--border-color);
+    flex-shrink: 0;
+  }
+
   .cl-search {
     flex: 1;
     min-width: 160px;
@@ -441,6 +529,8 @@ const apiUrl = siteData.changelog.apiUrl;
   .cl-body-inner :global(.cl-stat-dot.type-security) { background: var(--plum); }
   .cl-body-inner :global(.cl-stat-dot.type-deprecated) { background: #999; }
   .cl-body-inner :global(.cl-stat-dot.type-removed) { background: #EC4899; }
+  .cl-body-inner :global(.cl-stat-dot--site) { background: #0D9488; }
+  .cl-body-inner :global(.cl-stat-dot--course) { background: #5C3A6B; }
 
   /* ── BODY ─────────────────────────────────────── */
   .cl-body {
@@ -557,6 +647,39 @@ const apiUrl = siteData.changelog.apiUrl;
     gap: 8px;
     margin-bottom: 8px;
     flex-wrap: wrap;
+  }
+
+  .cl-body-inner :global(.cl-scope-tag) {
+    padding: 2px 8px;
+    font-size: 0.68em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border: 1.5px solid;
+  }
+
+  .cl-body-inner :global(.cl-scope-tag--site) {
+    color: #0D9488;
+    border-color: #0D9488;
+    background: rgba(13, 148, 136, 0.08);
+  }
+
+  .cl-body-inner :global(.cl-scope-tag--course) {
+    color: #5C3A6B;
+    border-color: #5C3A6B;
+    background: rgba(92, 58, 107, 0.08);
+  }
+
+  html[data-theme="dark"] .cl-body-inner :global(.cl-scope-tag--site) {
+    color: #2DD4BF;
+    border-color: #2DD4BF;
+    background: rgba(45, 212, 191, 0.1);
+  }
+
+  html[data-theme="dark"] .cl-body-inner :global(.cl-scope-tag--course) {
+    color: #C084FC;
+    border-color: #C084FC;
+    background: rgba(192, 132, 252, 0.1);
   }
 
   .cl-body-inner :global(.cl-badge) {

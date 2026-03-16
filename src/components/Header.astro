@@ -7,13 +7,14 @@ import { siteData } from '../config/siteData';
     <a href="/" class="logo">CC4.Marketing</a>
     <nav class="nav">
       {siteData.navItems.map(item => (
-        <a 
-          href={item.href} 
-          class="nav-link"
+        <a
+          href={item.href}
+          class={`nav-link ${item.label === 'Changelog' ? 'nav-link--changelog' : ''}`}
           target={item.external ? '_blank' : undefined}
           rel={item.external ? 'noopener noreferrer' : undefined}
         >
           {item.label}
+          {item.label === 'Changelog' && <span class="nav-dot" id="nav-dot"></span>}
         </a>
       ))}
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
@@ -69,6 +70,28 @@ import { siteData } from '../config/siteData';
 
   .nav-link:hover {
     color: var(--rust);
+  }
+
+  .nav-link--changelog {
+    position: relative;
+  }
+
+  .nav-dot {
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    width: 7px;
+    height: 7px;
+    background: #EF4444;
+    border-radius: 50%;
+    animation: dotPulse 2s ease-in-out infinite;
+  }
+
+  .nav-dot.hidden { display: none; }
+
+  @keyframes dotPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
   }
 
   .theme-toggle {
@@ -135,4 +158,23 @@ import { siteData } from '../config/siteData';
   } else {
     initTheme();
   }
+
+  // Changelog notification dot
+  (async function() {
+    const dot = document.getElementById('nav-dot');
+    if (!dot) return;
+    try {
+      const res = await fetch('https://cc4-changelog.mtri-vo.workers.dev/api/changelog');
+      if (!res.ok) return;
+      const data = await res.json();
+      const latest = (data.entries || [])[0];
+      if (!latest) { dot.classList.add('hidden'); return; }
+      const seen = localStorage.getItem('cc4-changelog-seen');
+      if (seen === latest.id) dot.classList.add('hidden');
+      if (window.location.pathname === '/changelog' || window.location.pathname === '/changelog/') {
+        localStorage.setItem('cc4-changelog-seen', latest.id);
+        dot.classList.add('hidden');
+      }
+    } catch { /* silent */ }
+  })();
 </script>
