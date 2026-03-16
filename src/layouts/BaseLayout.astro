@@ -33,7 +33,7 @@ const {
 const siteUrl = "https://cc4.marketing";
 const currentPath = Astro.url.pathname;
 const canonicalUrl = canonical || `${siteUrl}${currentPath}`;
-const fullTitle = title.includes("CC4") ? title : `${title} | Claude Code for Marketers`;
+const fullTitle = (title.includes("CC4") || title.includes("Claude Code for Marketers")) ? title : `${title} | Claude Code for Marketers`;
 const ogImage = image.startsWith("http") ? image : `${siteUrl}${image}`;
 
 // JSON-LD Structured Data
@@ -63,7 +63,7 @@ const courseSchema = {
   },
   "educationalLevel": "Beginner to Intermediate",
   "teaches": ["AI Marketing", "Content Creation", "Marketing Automation", "Claude Code"],
-  "numberOfCredits": "16 lessons",
+  "numberOfCredits": "17 lessons",
   "timeRequired": "PT10H",
   "inLanguage": "en",
   "isAccessibleForFree": true,
