@@ -9,6 +9,8 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-03-17
+
 ### Added
 
 - Changelog system powered by [BearlyChange](https://github.com/blacklogos/bearlychange) on Cloudflare Workers + KV
@@ -66,5 +68,6 @@ Initial public release of the CC4.Marketing website.
 - GitHub Pages deployment via GitHub Actions
 - Cloudflare DNS/CDN configuration
 
-[unreleased]: https://github.com/cc4-marketing/site/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/cc4-marketing/site/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/cc4-marketing/site/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/cc4-marketing/site/releases/tag/v0.1.0
