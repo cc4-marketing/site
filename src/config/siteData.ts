@@ -28,7 +28,7 @@ export const siteData = {
         number: 0,
         title: 'Getting Started',
         description: 'Install Claude Code and get your first taste of AI-powered marketing.',
-        lessonCount: '3 Lessons • 30 minutes',
+        lessonCount: '4 Lessons • 30 minutes',
         lessons: ['Introduction', 'Installation', 'First Task'],
         href: '/modules/0/introduction'
       },
