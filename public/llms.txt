@@ -26,7 +26,9 @@ The changelog tracks all course and site updates. Each entry includes a `machine
 
 Entry schema: { id, slug, title, summary, machine_summary, type (new|improvement|fix|breaking), version, modules[], published_at }
 
-## For AI Agents
+## For AI Agents and Students
+- Students can type `/whats-new` inside Claude Code to see latest updates
+- `/whats-new course` filters to course-only updates, `/whats-new site` for website updates
 - Entries are sorted newest-first
 - The `machine_summary` field provides concise, structured descriptions for programmatic consumption
 - The `modules` array maps entries to course modules (e.g., "module-1", "course", "homepage")
