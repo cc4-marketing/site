@@ -31,7 +31,7 @@ export async function onRequestPost(context) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: context.env.FROM_EMAIL || "CC4 Marketing <hello@cc4.marketing>",
+        from: "CC4 Marketing <hello@mail.cc4.marketing>",
         to: [email],
         subject: "Welcome to Claude Code for Marketers — here's your download link",
         html: `
@@ -62,10 +62,10 @@ export async function onRequestPost(context) {
     });
 
     if (!res.ok) {
-      const err = await res.text();
-      console.error("Resend API error:", err);
+      const errBody = await res.text();
+      console.error("Resend API error:", res.status, errBody);
       return Response.json(
-        { error: "Failed to send email" },
+        { error: "Failed to send email", detail: errBody },
         { status: 502, headers: corsHeaders }
       );
     }
