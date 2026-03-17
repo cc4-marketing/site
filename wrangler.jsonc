@@ -1,7 +1,9 @@
 {
   "name": "cc4-mkt",
   "compatibility_date": "2025-11-26",
+  "pages_build_output_dir": "./dist",
   "assets": {
     "directory": "./dist"
   }
+  // RESEND_API_KEY: set in .dev.vars (local) and Cloudflare Dashboard (production)
 }

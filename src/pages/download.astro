@@ -22,13 +22,7 @@ import Footer from '../components/Footer.astro';
           <li>Zero fluff. Unsubscribe anytime.</li>
         </ul>
 
-        <form
-          class="signup-form"
-          action="https://cc4marketing.substack.com/subscribe"
-          method="get"
-          target="_blank"
-          rel="noopener"
-        >
+        <form class="signup-form" id="subscribe-form">
           <label for="email-input" class="signup-label">Email address</label>
           <div class="signup-row">
             <input
@@ -39,12 +33,19 @@ import Footer from '../components/Footer.astro';
               required
               class="signup-input"
             />
-            <button type="submit" class="signup-button">
+            <button type="submit" class="signup-button" id="submit-btn">
               Join free list →
             </button>
           </div>
-          <p class="form-note">Opens Substack in a new tab to confirm your subscription.</p>
+          <p class="form-note" id="form-note">We'll email you the download link and subscribe you to updates.</p>
         </form>
+
+        <div class="success-message" id="success-message" hidden>
+          <div class="success-icon">✓</div>
+          <h2>Check your inbox!</h2>
+          <p>We've sent the course download link to <strong id="sent-email"></strong>.</p>
+          <p class="success-subtext">Also subscribed you to course updates via Substack.</p>
+        </div>
         
         <p class="privacy-note">
           No spam, ever. Unsubscribe anytime.
@@ -203,6 +204,61 @@ import Footer from '../components/Footer.astro';
 
   }
 
+  /* Success message */
+  .success-message {
+    margin-top: 10px;
+    padding: 30px 20px;
+    background: var(--bg-primary);
+    border: 3px solid var(--olive);
+    box-shadow: 8px 8px 0 var(--border-color);
+    text-align: center;
+  }
+
+  .success-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--olive);
+    color: white;
+    font-size: 1.5em;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+  }
+
+  .success-message h2 {
+    font-family: var(--font-display);
+    font-size: 1.4em;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .success-message p {
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .success-subtext {
+    font-size: 0.85em;
+    margin-top: 8px !important;
+  }
+
+  /* Error state */
+  .form-note.error {
+    color: var(--rust);
+    font-weight: 600;
+  }
+
+  /* Loading state */
+  .signup-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: 4px 4px 0 var(--border-color) !important;
+  }
+
   html[data-theme="dark"] .download-section {
     background:
       radial-gradient(circle at 20% 20%, rgba(255, 209, 71, 0.12), transparent 45%),
@@ -210,3 +266,53 @@ import Footer from '../components/Footer.astro';
       linear-gradient(135deg, #101010 0%, #1A1A1A 100%);
   }
 </style>
+
+<script>
+  const form = document.getElementById("subscribe-form");
+  const emailInput = document.getElementById("email-input");
+  const submitBtn = document.getElementById("submit-btn");
+  const formNote = document.getElementById("form-note");
+  const successMessage = document.getElementById("success-message");
+  const sentEmail = document.getElementById("sent-email");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    if (!email) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending...";
+    formNote.className = "form-note";
+    formNote.textContent = "We'll email you the download link and subscribe you to updates.";
+
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Something went wrong");
+      }
+
+      // Success — show confirmation and open Substack
+      sentEmail.textContent = email;
+      form.hidden = true;
+      successMessage.hidden = false;
+
+      // Also subscribe on Substack in background
+      window.open(
+        `https://cc4marketing.substack.com/subscribe?email=${encodeURIComponent(email)}`,
+        "_blank",
+        "noopener"
+      );
+    } catch (err) {
+      formNote.className = "form-note error";
+      formNote.textContent = err.message || "Failed to send. Please try again.";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Join free list →";
+    }
+  });
+</script>
