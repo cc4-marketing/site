@@ -89,5 +89,18 @@
     "status": "published",
     "published_at": "2026-03-17T00:00:00.000Z",
     "created_at": "2026-03-17T00:00:00.000Z"
+  },
+  {
+    "id": "bc_site_005",
+    "slug": "site-resend-email-subscribe",
+    "title": "Email subscribe flow revamped",
+    "summary": "The email subscribe experience has been revamped with a new integration for more reliable delivery.",
+    "type": "changed",
+    "version": "0.2.1",
+    "modules": ["site", "email"],
+    "machine_summary": "cc4-marketing/site. Replaced subscribe flow with Resend API integration via Cloudflare Pages Function at /api/subscribe. Branded HTML welcome email with course download link. CORS and error handling included.",
+    "status": "draft",
+    "published_at": null,
+    "created_at": "2026-03-18T00:00:00.000Z"
   }
 ]
