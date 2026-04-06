@@ -4,6 +4,8 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FeedbackButton from '../components/FeedbackButton.astro';
 import ModuleUpdatesBanner from '../components/ModuleUpdatesBanner.astro';
+import LessonPromoBanner from '../components/LessonPromoBanner.astro';
+import { promoConfig } from '../config/promo';
 
 interface Props {
   title: string;
@@ -58,6 +60,7 @@ const { title, module, lesson, description, duration, prevLesson, nextLesson } =
     </div>
   </main>
 
+  <LessonPromoBanner {...promoConfig.lessonBanner} />
   <Footer />
 </BaseLayout>
 

@@ -6,20 +6,30 @@
 export const promoConfig = {
     // Hello Bar (top banner)
     helloBar: {
-        enabled: false,  // Set to false to disable
-        text: "Black Friday Deal:",
-        linkText: "50% off ClaudeKit.cc",
-        linkUrl: "https://claudekit.cc/?ref=BIZE9CYY",
-        storageKey: "hellobar-bf-2024"  // Change this to reset dismissals
+        enabled: true,
+        text: "ClaudeKit Marketing v1.3.0 just dropped",
+        linkText: "See what's new",
+        linkUrl: "https://claudekit.cc/updates/claudekit-marketing/v1-3-0-the-biggest-update-yet?ref=BIZE9CYY",
+        storageKey: "hellobar-claudekit-v130",
+        cooldownDays: 3  // Re-show after 3 days
     },
 
-    // Floating Side Banner (appears on scroll)
+    // Floating Side Banner (appears on scroll) — global
     floatingBanner: {
-        enabled: false,  // Set to false to disable
+        enabled: false,
         title: "Black Friday",
         subtitle: "50% off ClaudeKit.cc",
         linkText: "Grab Deal",
         linkUrl: "https://claudekit.cc/?ref=BIZE9CYY",
-        triggerPercent: 70  // Show when scrolled 70% down
+        triggerPercent: 70
+    },
+
+    // Lesson Promo Banner (floating inside course lessons)
+    lessonBanner: {
+        enabled: true,
+        storageKey: "lesson-promo-claudekit-v130",
+        cooldownDays: 3,
+        linkUrl: "https://claudekit.cc/?ref=BIZE9CYY",
+        releaseNotesUrl: "https://claudekit.cc/updates/claudekit-marketing/v1-3-0-the-biggest-update-yet?ref=BIZE9CYY"
     }
 };

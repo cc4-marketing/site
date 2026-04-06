@@ -1,0 +1,291 @@
+---
+interface Props {
+    enabled?: boolean;
+    storageKey?: string;
+    cooldownDays?: number;
+    linkUrl?: string;
+    releaseNotesUrl?: string;
+}
+
+const {
+    enabled = true,
+    storageKey = "lesson-promo-claudekit-v130",
+    cooldownDays = 3,
+    linkUrl = "https://claudekit.cc/?ref=BIZE9CYY",
+    releaseNotesUrl = "https://claudekit.cc/updates/claudekit-marketing/v1-3-0-the-biggest-update-yet?ref=BIZE9CYY"
+} = Astro.props;
+---
+
+{enabled && (
+    <div class="lesson-promo" id="lesson-promo" data-storage-key={storageKey} data-cooldown-days={cooldownDays}>
+        <button class="lesson-promo-close" aria-label="Close">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+
+        <div class="lesson-promo-badge">NEW RELEASE</div>
+
+        <h4 class="lesson-promo-title">ClaudeKit Marketing v1.3.0</h4>
+
+        <p class="lesson-promo-desc">
+            30+ new skills. Full pipeline orchestration. AI video from your terminal. One command, entire marketing workflow.
+        </p>
+
+        <ul class="lesson-promo-highlights">
+            <li>Play skill &mdash; research to tracking in one run</li>
+            <li>Referral, gamification, paid ads, CRO skills</li>
+            <li>Kling AI + ElevenLabs video/audio integration</li>
+            <li>8 MCP servers (GA4, Ads, SendGrid, Slack...)</li>
+        </ul>
+
+        <div class="lesson-promo-actions">
+            <a href={linkUrl} target="_blank" rel="noopener noreferrer" class="lesson-promo-btn">
+                Check it out
+            </a>
+            <a href={releaseNotesUrl} target="_blank" rel="noopener noreferrer" class="lesson-promo-link">
+                Release notes &rarr;
+            </a>
+        </div>
+
+        <p class="lesson-promo-note">From our friends at ClaudeKit. One-time purchase, lifetime updates.</p>
+    </div>
+)}
+
+<style>
+    .lesson-promo {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 998;
+        width: 320px;
+        background: var(--bg-secondary);
+        border: 2px solid var(--border-color);
+        box-shadow: 8px 8px 0 var(--plum);
+        padding: 24px;
+        transform: translateY(20px);
+        opacity: 0;
+        visibility: hidden;
+        transition: transform 0.35s ease, opacity 0.35s ease, visibility 0.35s;
+    }
+
+    .lesson-promo.visible {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .lesson-promo.hiding {
+        transform: translateY(20px);
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .lesson-promo-close {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.15s;
+    }
+
+    .lesson-promo-close:hover {
+        color: var(--text-primary);
+    }
+
+    .lesson-promo-badge {
+        display: inline-block;
+        background: var(--plum);
+        color: white;
+        font-size: 0.65em;
+        font-weight: 700;
+        padding: 3px 10px;
+        letter-spacing: 0.08em;
+        margin-bottom: 12px;
+    }
+
+    .lesson-promo-title {
+        font-family: var(--font-display);
+        font-size: 1.15em;
+        color: var(--text-primary);
+        margin: 0 0 8px;
+    }
+
+    .lesson-promo-desc {
+        font-size: 0.82em;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        margin: 0 0 12px;
+    }
+
+    .lesson-promo-highlights {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 16px;
+        font-size: 0.78em;
+        color: var(--text-secondary);
+    }
+
+    .lesson-promo-highlights li {
+        padding: 3px 0 3px 16px;
+        position: relative;
+        line-height: 1.4;
+    }
+
+    .lesson-promo-highlights li::before {
+        content: ">";
+        position: absolute;
+        left: 0;
+        color: var(--rust);
+        font-weight: 700;
+        font-family: monospace;
+    }
+
+    .lesson-promo-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 12px;
+    }
+
+    .lesson-promo-btn {
+        display: inline-block;
+        background: var(--rust);
+        color: white;
+        padding: 8px 18px;
+        font-weight: 600;
+        font-size: 0.82em;
+        text-decoration: none;
+        border: 2px solid var(--rust);
+        transition: all 0.2s ease;
+        box-shadow: 4px 4px 0 var(--mustard);
+    }
+
+    .lesson-promo-btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--mustard);
+    }
+
+    .lesson-promo-link {
+        font-size: 0.78em;
+        color: var(--rust);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.15s;
+    }
+
+    .lesson-promo-link:hover {
+        color: var(--mustard);
+        text-decoration: underline;
+    }
+
+    .lesson-promo-note {
+        font-size: 0.7em;
+        color: var(--text-secondary);
+        opacity: 0.7;
+        margin: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .lesson-promo {
+            bottom: 16px;
+            right: 16px;
+            left: 16px;
+            width: auto;
+            max-width: none;
+            padding: 20px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .lesson-promo {
+            bottom: 12px;
+            right: 12px;
+            left: 12px;
+            padding: 16px;
+        }
+
+        .lesson-promo-title {
+            font-size: 1.05em;
+        }
+
+        .lesson-promo-desc {
+            font-size: 0.78em;
+        }
+
+        .lesson-promo-actions {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .lesson-promo-btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<script>
+    const promo = document.getElementById('lesson-promo');
+    if (promo) {
+        const storageKey = promo.dataset.storageKey || 'lesson-promo-dismissed';
+        const cooldownDays = parseInt(promo.dataset.cooldownDays || '3', 10);
+        const dismissedAt = localStorage.getItem(storageKey);
+
+        let shouldShow = true;
+        if (dismissedAt) {
+            const elapsed = Date.now() - parseInt(dismissedAt, 10);
+            const cooldownMs = cooldownDays * 24 * 60 * 60 * 1000;
+            if (elapsed < cooldownMs) {
+                shouldShow = false;
+            } else {
+                localStorage.removeItem(storageKey);
+            }
+        }
+
+        if (shouldShow) {
+            // Show after a short delay + some scroll
+            let shown = false;
+            const show = () => {
+                if (shown) return;
+                shown = true;
+                promo.classList.add('visible');
+            };
+
+            // Show after 2s or 30% scroll, whichever comes first
+            const timer = setTimeout(show, 2000);
+
+            const onScroll = () => {
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                if (docHeight > 0 && (scrollTop / docHeight) * 100 >= 30) {
+                    show();
+                    window.removeEventListener('scroll', onScroll);
+                    clearTimeout(timer);
+                }
+            };
+            window.addEventListener('scroll', onScroll, { passive: true });
+
+            const closeBtn = promo.querySelector('.lesson-promo-close');
+            closeBtn?.addEventListener('click', () => {
+                promo.classList.add('hiding');
+                promo.classList.remove('visible');
+                localStorage.setItem(storageKey, String(Date.now()));
+                window.removeEventListener('scroll', onScroll);
+                clearTimeout(timer);
+                setTimeout(() => promo.remove(), 350);
+            });
+        } else {
+            promo.remove();
+        }
+    }
+</script>

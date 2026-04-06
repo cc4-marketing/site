@@ -5,24 +5,26 @@ interface Props {
     linkText?: string;
     linkUrl?: string;
     storageKey?: string;
+    cooldownDays?: number;
 }
 
 const {
     enabled = true,
-    text = "Black Friday Deal:",
-    linkText = "50% off ClaudeKit.cc",
+    text = "ClaudeKit Marketing v1.3.0 just dropped",
+    linkText = "See what's new",
     linkUrl = "https://claudekit.cc/?ref=BIZE9CYY",
-    storageKey = "hellobar-bf-2024"
+    storageKey = "hellobar-claudekit-v130",
+    cooldownDays = 3
 } = Astro.props;
 ---
 
 {enabled && (
-    <div class="hello-bar" id="hello-bar" data-storage-key={storageKey}>
+    <div class="hello-bar" id="hello-bar" data-storage-key={storageKey} data-cooldown-days={cooldownDays}>
         <div class="hello-bar-content">
-            <span class="hello-bar-icon">🔥</span>
+            <span class="hello-bar-icon">&#x1F4E6;</span>
             <span class="hello-bar-text">{text}</span>
             <a href={linkUrl} target="_blank" rel="noopener noreferrer" class="hello-bar-link">
-                {linkText} →
+                {linkText} &rarr;
             </a>
         </div>
         <button class="hello-bar-close" aria-label="Close banner">
@@ -71,12 +73,6 @@ const {
 
     .hello-bar-icon {
         font-size: 1.1em;
-        animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.1); }
     }
 
     .hello-bar-text {
@@ -131,16 +127,28 @@ const {
     const bar = document.getElementById('hello-bar');
     if (bar) {
         const storageKey = bar.dataset.storageKey || 'hellobar-dismissed';
-        const isDismissed = localStorage.getItem(storageKey) === 'true';
+        const cooldownDays = parseInt(bar.dataset.cooldownDays || '3', 10);
+        const dismissedAt = localStorage.getItem(storageKey);
 
-        if (!isDismissed) {
+        let shouldShow = true;
+        if (dismissedAt) {
+            const elapsed = Date.now() - parseInt(dismissedAt, 10);
+            const cooldownMs = cooldownDays * 24 * 60 * 60 * 1000;
+            if (elapsed < cooldownMs) {
+                shouldShow = false;
+            } else {
+                localStorage.removeItem(storageKey);
+            }
+        }
+
+        if (shouldShow) {
             setTimeout(() => bar.classList.add('visible'), 100);
 
             const closeBtn = bar.querySelector('.hello-bar-close');
             closeBtn?.addEventListener('click', () => {
                 bar.classList.add('hiding');
                 bar.classList.remove('visible');
-                localStorage.setItem(storageKey, 'true');
+                localStorage.setItem(storageKey, String(Date.now()));
                 setTimeout(() => bar.remove(), 300);
             });
         } else {
