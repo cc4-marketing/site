@@ -1,6 +1,6 @@
 # CC4.Marketing
 
-The website for **Claude Code for Marketers** — a free, interactive course that teaches AI-powered marketing workflows. Built with [Astro](https://astro.build), deployed on GitHub Pages.
+The website for **Claude Code for Marketers** — a free, interactive course that teaches AI-powered marketing workflows. Built with [Astro](https://astro.build), deployed on [Cloudflare Workers](https://workers.cloudflare.com).
 
 **Live site:** [cc4.marketing](https://cc4.marketing)
 
@@ -14,8 +14,8 @@ This repo powers the course website at [cc4.marketing](https://cc4.marketing). I
 - **Content:** MDX with Astro Content Collections
 - **Styling:** CSS variables, light/dark mode, no CSS framework
 - **Changelog:** [BearlyChange](https://github.com/blacklogos/bearlychange) on Cloudflare Workers + KV
-- **Hosting:** GitHub Pages
-- **DNS/CDN:** Cloudflare
+- **Hosting:** Cloudflare Workers (static assets + API routes)
+- **CI/CD:** GitHub Actions → `wrangler deploy`
 
 ## Project Structure
 
@@ -66,7 +66,7 @@ Update `src/config/siteData.ts` to point `changelog.apiUrl` to `http://localhost
 npm run build
 ```
 
-Static output goes to `dist/`. Deployed automatically via GitHub Actions on push to `main`.
+Static output goes to `dist/`. Deployed automatically to Cloudflare Workers via GitHub Actions on push to `main`.
 
 ## Changelog
 
