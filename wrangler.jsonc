@@ -12,17 +12,18 @@
     {
       "binding": "DB",
       "database_name": "cc4-emdash",
-      "database_id": "TODO_CREATE_D1_DATABASE"
+      "database_id": "6745b124-0093-48fe-bf57-c12b35c4a70c"
     }
   ],
 
   // R2 bucket for media/image uploads
-  "r2_buckets": [
-    {
-      "binding": "MEDIA",
-      "bucket_name": "cc4-media"
-    }
-  ]
+  // Enable R2 in Cloudflare Dashboard first, then uncomment:
+  // "r2_buckets": [
+  //   {
+  //     "binding": "MEDIA",
+  //     "bucket_name": "cc4-media"
+  //   }
+  // ]
 
   // Secrets (set via Cloudflare Dashboard or `wrangler secret put`):
   // - RESEND_API_KEY

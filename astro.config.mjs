@@ -5,7 +5,7 @@ import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import emdash from 'emdash/astro';
-import { d1, r2 } from '@emdash-cms/cloudflare';
+import { d1 } from '@emdash-cms/cloudflare';
 
 // https://astro.build/config
 export default defineConfig({
@@ -64,7 +64,6 @@ export default defineConfig({
     }),
     emdash({
       database: d1({ binding: 'DB' }),
-      storage: r2({ binding: 'MEDIA' }),
     }),
   ],
 });
