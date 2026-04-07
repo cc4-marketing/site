@@ -7,6 +7,33 @@ import sitemap from '@astrojs/sitemap';
 import emdash from 'emdash/astro';
 import { d1, r2 } from '@emdash-cms/cloudflare';
 
+// All module lesson URLs (SSR, not auto-discovered by sitemap plugin)
+const modulePages = [
+  '/modules/0/introduction/',
+  '/modules/0/installation/',
+  '/modules/0/start-clone/',
+  '/modules/0/github-pr-guide/',
+  '/modules/1/welcome/',
+  '/modules/1/working-with-files/',
+  '/modules/1/first-tasks/',
+  '/modules/1/agents/',
+  '/modules/1/custom-agents/',
+  '/modules/1/project-memory/',
+  '/modules/1/navigation/',
+  '/modules/2/campaign-brief/',
+  '/modules/2/content-strategy/',
+  '/modules/2/marketing-copy/',
+  '/modules/2/analytics/',
+  '/modules/2/competitive-analysis/',
+  '/modules/2/seo-optimization/',
+].map((p) => `https://cc4.marketing${p}`);
+
+// Known blog post URLs (SSR from Emdash CMS)
+const blogPages = [
+  '/blog/claude-code-for-marketing-guide-2026',
+  '/blog/write-campaign-brief-with-ai',
+].map((p) => `https://cc4.marketing${p}`);
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://cc4.marketing',
@@ -16,6 +43,7 @@ export default defineConfig({
     react(),
     mdx(),
     sitemap({
+      customPages: [...modulePages, ...blogPages],
       serialize(item) {
         const url = item.url;
 

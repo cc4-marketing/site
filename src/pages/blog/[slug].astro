@@ -41,11 +41,11 @@ const articleSchema = {
   'datePublished': post.data.publishedAt?.toISOString(),
   'dateModified': post.data.updatedAt?.toISOString(),
   'url': `https://cc4.marketing/blog/${slug}`,
-  'image': post.data.featured_image?.src || 'https://cc4.marketing/og-blog.png',
+  'image': post.data.featured_image?.src ? `https://cc4.marketing${post.data.featured_image.src}` : 'https://cc4.marketing/og-blog.png',
   'author': {
     '@type': 'Person',
     'name': 'Tri Vo',
-    'url': 'https://cc4.marketing/blog/authors',
+    'url': 'https://cc4.marketing/blog/authors/',
   },
   'publisher': {
     '@type': 'Organization',
@@ -53,7 +53,9 @@ const articleSchema = {
     'url': 'https://cc4.marketing',
     'logo': {
       '@type': 'ImageObject',
-      'url': 'https://cc4.marketing/favicon.svg',
+      'url': 'https://cc4.marketing/og-image.png',
+      'width': 1200,
+      'height': 630,
     },
   },
   'mainEntityOfPage': {
@@ -78,7 +80,10 @@ const articleSchema = {
   publishedDate={post.data.publishedAt?.toISOString()}
   modifiedDate={post.data.updatedAt?.toISOString()}
   image={post.data.featured_image?.src || '/og-blog.png'}
-  keywords={['AI marketing', 'Claude Code', 'marketing automation', post.data.title]}
+  author="Tri Vo"
+  keywords={['AI marketing', 'Claude Code', 'marketing automation', 'AI content strategy']}
+  showCourseSchema={false}
+  showBreadcrumb={false}
 >
   <Header />
 

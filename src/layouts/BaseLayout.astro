@@ -15,6 +15,10 @@ interface Props {
   keywords?: string[];
   canonical?: string;
   noindex?: boolean;
+  /** Set false to suppress Course schema (e.g. on blog/changelog pages) */
+  showCourseSchema?: boolean;
+  /** Set false to suppress base BreadcrumbList (when page provides its own) */
+  showBreadcrumb?: boolean;
 }
 
 const { 
@@ -27,7 +31,9 @@ const {
   author = "CC4.Marketing",
   keywords = ["Claude Code", "marketing", "AI marketing", "content marketing", "marketing automation", "Claude AI", "marketing course"],
   canonical,
-  noindex = false
+  noindex = false,
+  showCourseSchema = true,
+  showBreadcrumb = true,
 } = Astro.props;
 
 const siteUrl = "https://cc4.marketing";
@@ -156,8 +162,8 @@ const breadcrumbSchema = {
   
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
-  <script type="application/ld+json" set:html={JSON.stringify(courseSchema)} />
-  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  {showCourseSchema && <script type="application/ld+json" set:html={JSON.stringify(courseSchema)} />}
+  {showBreadcrumb && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />}
 </head>
 <body>
   <HelloBar {...promoConfig.helloBar} />

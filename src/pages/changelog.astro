@@ -8,7 +8,12 @@ import Footer from '../components/Footer.astro';
 const apiUrl = siteData.changelog.apiUrl;
 ---
 
-<BaseLayout title="Changelog - Claude Code for Marketers" description="Latest updates, improvements, and new features for the Claude Code for Marketers course.">
+<BaseLayout
+  title="Changelog"
+  description="Track every update, improvement, and fix to the Claude Code for Marketers course and website. Filter by type, search, and subscribe via RSS."
+  keywords={['changelog', 'updates', 'Claude Code for Marketers', 'release notes', 'course updates']}
+  showCourseSchema={false}
+>
   <Header />
 
   <section class="cl-hero">
