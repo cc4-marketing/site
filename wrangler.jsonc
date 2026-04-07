@@ -1,8 +1,8 @@
 {
   "name": "cc4-mkt",
-  "main": "./src/worker.ts",
+  "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_date": "2025-11-26",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": ["nodejs_compat", "disable_nodejs_process_v2"],
   "assets": {
     "directory": "./dist/client"
   },
