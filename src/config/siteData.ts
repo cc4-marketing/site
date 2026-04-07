@@ -5,8 +5,8 @@ export const siteData = {
   navItems: [
     { label: 'Home', href: '/' },
     { label: 'Modules', href: '/#modules' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Changelog', href: '/changelog' },
+    { label: 'Blog', href: '/blog/' },
+    { label: 'Changelog', href: '/changelog/' },
     { label: 'GitHub', href: 'https://github.com/cc4-marketing/cc4.marketing', external: true },
   ],
   footer: {
@@ -35,7 +35,7 @@ export const siteData = {
         description: 'Install Claude Code and get your first taste of AI-powered marketing.',
         lessonCount: '4 Lessons • 30 minutes',
         lessons: ['Introduction', 'Installation', 'First Task'],
-        href: '/modules/0/introduction'
+        href: '/modules/0/introduction/'
       },
       {
         number: 1,
@@ -43,7 +43,7 @@ export const siteData = {
         description: 'Master AI agents, sub-agents, and real marketing workflows with Markit agency.',
         lessonCount: '7 Lessons • 3-4 hours',
         lessons: ['Welcome to Markit', 'Working with Files', 'First Tasks', '+ 4 more lessons'],
-        href: '/modules/1/welcome'
+        href: '/modules/1/welcome/'
       },
       {
         number: 2,
@@ -51,7 +51,7 @@ export const siteData = {
         description: 'Execute real campaigns for Planerio. Strategy to analytics.',
         lessonCount: '6 Lessons • 4-5 hours',
         lessons: ['Campaign Briefs', 'Content Strategy', 'Marketing Copy', '+ 3 more lessons'],
-        href: '/modules/2/campaign-brief'
+        href: '/modules/2/campaign-brief/'
       },
     ],
     stats: [

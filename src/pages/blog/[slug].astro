@@ -88,7 +88,7 @@ const articleSchema = {
     <div class="blog-post-inner">
       {/* Header */}
       <header class="blog-post-header">
-        <a href="/blog" class="blog-back">&larr; Back to Blog</a>
+        <a href="/blog/" class="blog-back">&larr; Back to Blog</a>
         <time class="blog-post-date" datetime={post.data.publishedAt?.toISOString()}>
           {formatDate(post.data.publishedAt)}
         </time>
@@ -98,7 +98,7 @@ const articleSchema = {
         )}
         <div class="blog-post-byline">
           <span class="byline-label">By</span>
-          <a href="/blog/authors" class="byline-author">CC4.Marketing Team</a>
+          <a href="/blog/authors/" class="byline-author">CC4.Marketing Team</a>
         </div>
       </header>
 

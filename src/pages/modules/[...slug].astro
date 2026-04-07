@@ -20,11 +20,11 @@ export async function getStaticPaths() {
         entry,
         prevLesson: prevEntry ? {
           title: prevEntry.data.title,
-          href: `/modules/${prevEntry.data.module}/${prevEntry.id.split('/').pop()?.replace('.mdx', '').split('-').slice(1).join('-')}`
+          href: `/modules/${prevEntry.data.module}/${prevEntry.id.split('/').pop()?.replace('.mdx', '').split('-').slice(1).join('-')}/`
         } : null,
         nextLesson: nextEntry ? {
           title: nextEntry.data.title,
-          href: `/modules/${nextEntry.data.module}/${nextEntry.id.split('/').pop()?.replace('.mdx', '').split('-').slice(1).join('-')}`
+          href: `/modules/${nextEntry.data.module}/${nextEntry.id.split('/').pop()?.replace('.mdx', '').split('-').slice(1).join('-')}/`
         } : null,
       },
     };
