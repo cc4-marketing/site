@@ -10,6 +10,7 @@ import { d1, r2 } from '@emdash-cms/cloudflare';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://cc4.marketing',
+  output: 'server',
   adapter: cloudflare(),
   integrations: [
     react(),
