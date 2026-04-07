@@ -17,13 +17,12 @@
   ],
 
   // R2 bucket for media/image uploads
-  // Enable R2 in Cloudflare Dashboard first, then uncomment:
-  // "r2_buckets": [
-  //   {
-  //     "binding": "MEDIA",
-  //     "bucket_name": "cc4-media"
-  //   }
-  // ]
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "cc4-media"
+    }
+  ]
 
   // Secrets (set via Cloudflare Dashboard or `wrangler secret put`):
   // - RESEND_API_KEY
