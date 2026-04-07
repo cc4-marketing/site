@@ -1,37 +1,33 @@
 ---
-export const prerender = true;
-
 import { getCollection, render } from 'astro:content';
 import LessonLayout from '../../layouts/LessonLayout.astro';
 
-export async function getStaticPaths() {
-  const modules = await getCollection('modules');
-  
-  // Sort by order
-  const sorted = modules.sort((a, b) => a.data.order - b.data.order);
-  
-  return sorted.map((entry, index) => {
-    const prevEntry = index > 0 ? sorted[index - 1] : null;
-    const nextEntry = index < sorted.length - 1 ? sorted[index + 1] : null;
-    
-    return {
-      params: { slug: `${entry.data.module}/${entry.id.split('/').pop()?.replace('.mdx', '').split('-').slice(1).join('-')}` },
-      props: { 
-        entry,
-        prevLesson: prevEntry ? {
-          title: prevEntry.data.title,
-          href: `/modules/${prevEntry.data.module}/${prevEntry.id.split('/').pop()?.replace('.mdx', '').split('-').slice(1).join('-')}/`
-        } : null,
-        nextLesson: nextEntry ? {
-          title: nextEntry.data.title,
-          href: `/modules/${nextEntry.data.module}/${nextEntry.id.split('/').pop()?.replace('.mdx', '').split('-').slice(1).join('-')}/`
-        } : null,
-      },
-    };
-  });
+const { slug } = Astro.params;
+
+const modules = await getCollection('modules');
+const sorted = modules.sort((a, b) => a.data.order - b.data.order);
+
+// Find the matching entry by slug
+const entry = sorted.find((e) => {
+  const entrySlug = `${e.data.module}/${e.id.split('/').pop()?.replace('.mdx', '').split('-').slice(1).join('-')}`;
+  return entrySlug === slug;
+});
+
+if (!entry) {
+  return Astro.redirect('/404');
 }
 
-const { entry, prevLesson, nextLesson } = Astro.props;
+const index = sorted.indexOf(entry);
+const prevEntry = index > 0 ? sorted[index - 1] : null;
+const nextEntry = index < sorted.length - 1 ? sorted[index + 1] : null;
+
+function lessonHref(e: typeof entry) {
+  return `/modules/${e.data.module}/${e.id.split('/').pop()?.replace('.mdx', '').split('-').slice(1).join('-')}/`;
+}
+
+const prevLesson = prevEntry ? { title: prevEntry.data.title, href: lessonHref(prevEntry) } : null;
+const nextLesson = nextEntry ? { title: nextEntry.data.title, href: lessonHref(nextEntry) } : null;
+
 const { Content } = await render(entry);
 ---
 

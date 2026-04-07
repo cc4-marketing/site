@@ -1,20 +1,11 @@
 ---
-export const prerender = true;
 
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import fs from 'fs';
-import path from 'path';
 
-// Read the markdown file content for the AI text
-const brandGuidePath = path.resolve('./docs/brand-guidelines.md');
-let brandGuideContent = '';
-try {
-  brandGuideContent = fs.readFileSync(brandGuidePath, 'utf-8');
-} catch (e) {
-  brandGuideContent = 'Error loading brand guidelines.';
-}
+// Import brand guidelines as raw text at build time
+const brandGuideContent = await import('../../docs/brand-guidelines.md?raw').then(m => m.default).catch(() => 'Error loading brand guidelines.');
 ---
 
 <BaseLayout title="Brand Guidelines" description="Visual identity, voice, and tone for the CC4.Marketing platform.">
