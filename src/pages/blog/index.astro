@@ -1,0 +1,291 @@
+---
+export const prerender = false;
+
+import { getEmDashCollection } from 'emdash';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const { entries: posts } = await getEmDashCollection('posts');
+
+const published = posts
+  .filter((p) => p.data.status === 'published')
+  .toSorted((a, b) => {
+    const da = a.data.publishedAt?.getTime() ?? 0;
+    const db = b.data.publishedAt?.getTime() ?? 0;
+    return db - da;
+  });
+
+function formatDate(date: Date | null | undefined): string {
+  if (!date) return '';
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+---
+
+<BaseLayout
+  title="Blog — AI Marketing Insights"
+  description="Practical guides, tutorials, and insights on using Claude Code for marketing. SEO strategies, campaign automation, and AI-powered content creation."
+  keywords={['AI marketing blog', 'Claude Code tutorials', 'marketing automation', 'AI content strategy', 'SEO with AI']}
+  image="/og-blog.png"
+>
+  <Header />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "CC4.Marketing Blog",
+    "description": "Practical guides, tutorials, and insights on using Claude Code for marketing.",
+    "url": "https://cc4.marketing/blog",
+    "isPartOf": { "@type": "WebSite", "name": "CC4.Marketing", "url": "https://cc4.marketing" },
+    "publisher": { "@type": "Organization", "name": "CC4.Marketing", "url": "https://cc4.marketing" },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://cc4.marketing" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://cc4.marketing/blog" }
+      ]
+    }
+  })} />
+
+  <section class="blog-hero">
+    <div class="blog-hero-pattern"></div>
+    <div class="blog-hero-inner">
+      <span class="blog-hero-label">Insights & Guides</span>
+      <h1 class="blog-hero-title">Blog</h1>
+      <p class="blog-hero-desc">Practical AI marketing guides, tutorials, and strategies — written for marketers who ship.</p>
+      <div class="blog-hero-cta">
+        <a href="https://cc4marketing.substack.com" target="_blank" rel="noopener" class="blog-subscribe-pill">Subscribe on Substack</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="blog-body">
+    <div class="blog-body-inner">
+      {published.length === 0 ? (
+        <div class="blog-empty">
+          <h3>Coming soon</h3>
+          <p>We're crafting our first posts. Subscribe to the newsletter to get notified.</p>
+        </div>
+      ) : (
+        <div class="blog-grid">
+          {published.map((post) => (
+            <a href={`/blog/${post.data.slug}`} class="blog-card">
+              {post.data.featured_image?.src && (
+                <div class="blog-card-image">
+                  <img src={post.data.featured_image.src} alt={post.data.featured_image.alt || post.data.title} loading="lazy" />
+                </div>
+              )}
+              <div class="blog-card-body">
+                <time class="blog-card-date" datetime={post.data.publishedAt?.toISOString()}>
+                  {formatDate(post.data.publishedAt)}
+                </time>
+                <h2 class="blog-card-title">{post.data.title}</h2>
+                {post.data.excerpt && (
+                  <p class="blog-card-excerpt">{post.data.excerpt}</p>
+                )}
+                <span class="blog-card-link">Read more</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  /* Hero */
+  .blog-hero {
+    position: relative;
+    padding: 140px 24px 60px;
+    text-align: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(184, 92, 60, 0.06) 100%);
+  }
+
+  .blog-hero-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    background-image: radial-gradient(circle at 1px 1px, var(--charcoal) 1px, transparent 0);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .blog-hero-inner {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .blog-hero-label {
+    display: inline-block;
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--rust);
+    background: rgba(184, 92, 60, 0.1);
+    padding: 6px 14px;
+    margin-bottom: 20px;
+  }
+
+  .blog-hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5em, 6vw, 4em);
+    color: var(--text-primary);
+    margin: 0 0 16px;
+    line-height: 1.1;
+  }
+
+  .blog-hero-desc {
+    font-size: 1.15em;
+    color: var(--text-secondary);
+    max-width: 520px;
+    margin: 0 auto 24px;
+    line-height: 1.5;
+  }
+
+  .blog-subscribe-pill {
+    display: inline-block;
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--rust);
+    border: 2px solid var(--rust);
+    padding: 8px 20px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .blog-subscribe-pill:hover {
+    background: var(--rust);
+    color: var(--cream);
+  }
+
+  /* Body */
+  .blog-body {
+    padding: 60px 24px 100px;
+  }
+
+  .blog-body-inner {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  /* Empty state */
+  .blog-empty {
+    text-align: center;
+    padding: 80px 24px;
+    border: 2px dashed var(--border-color);
+  }
+
+  .blog-empty h3 {
+    font-family: var(--font-display);
+    font-size: 1.5em;
+    color: var(--rust);
+    margin: 0 0 12px;
+  }
+
+  .blog-empty p {
+    color: var(--text-secondary);
+    font-size: 1em;
+  }
+
+  /* Grid */
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 32px;
+  }
+
+  /* Card */
+  .blog-card {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.25s ease;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .blog-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 8px 8px 0 var(--mustard);
+    border-color: var(--rust);
+  }
+
+  .blog-card-image {
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .blog-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .blog-card:hover .blog-card-image img {
+    transform: scale(1.04);
+  }
+
+  .blog-card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .blog-card-date {
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+
+  .blog-card-title {
+    font-family: var(--font-display);
+    font-size: 1.3em;
+    margin: 0 0 10px;
+    line-height: 1.25;
+    color: var(--text-primary);
+  }
+
+  .blog-card-excerpt {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    flex: 1;
+    margin: 0 0 16px;
+  }
+
+  .blog-card-link {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--rust);
+    margin-top: auto;
+  }
+
+  .blog-card:hover .blog-card-link {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .blog-hero {
+      padding: 120px 20px 40px;
+    }
+
+    .blog-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+</style>

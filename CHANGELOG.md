@@ -9,6 +9,30 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-08
+
+### Added
+
+- Blog section at `/blog` powered by Emdash CMS on Cloudflare D1
+- Blog post detail pages with PortableText rendering, prev/next navigation, and newsletter CTA
+- Author page at `/blog/authors` with team bios and social links
+- Custom OG image for blog pages (`og-blog.png`, 1200x630)
+- Cover illustrations for each blog post
+- BlogPosting, CollectionPage, and AboutPage schema.org structured data
+- Breadcrumb schema for all blog pages
+- Blog section added to `llms.txt` and `llms-full.txt` for AI discovery
+- Two launch posts: "Claude Code for Marketing: A Complete 2026 Guide" and "How to Write a Campaign Brief with AI in 10 Minutes"
+
+### Changed
+
+- Upgraded Astro 5 to Astro 6 with `@astrojs/cloudflare` adapter (server mode)
+- Migrated email subscribe API from custom `worker.js` to Astro API route
+- Migrated feedback API to use `cloudflare:workers` env access
+- Navigation now includes Blog link between Modules and Changelog
+- Sitemap updated with blog routes at priority 0.9
+- `wrangler.jsonc` updated with D1 database and R2 bucket bindings
+- Content config updated for Astro 6 (zod import from `astro/zod`)
+
 ## [0.2.0] - 2026-03-17
 
 ### Added
@@ -68,6 +92,7 @@ Initial public release of the CC4.Marketing website.
 - GitHub Pages deployment via GitHub Actions
 - Cloudflare DNS/CDN configuration
 
-[unreleased]: https://github.com/cc4-marketing/site/compare/v0.2.0...HEAD
+[unreleased]: https://github.com/cc4-marketing/site/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/cc4-marketing/site/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/cc4-marketing/site/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/cc4-marketing/site/releases/tag/v0.1.0

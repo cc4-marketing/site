@@ -1,0 +1,423 @@
+---
+export const prerender = false;
+
+import { getEmDashCollection, getEmDashEntry } from 'emdash';
+import { PortableText, Image } from 'emdash/ui';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const { slug } = Astro.params;
+const { entry: post } = await getEmDashEntry('posts', slug!);
+
+if (!post) {
+  return Astro.redirect('/404');
+}
+
+function formatDate(date: Date | null | undefined): string {
+  if (!date) return '';
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+// Get all published posts for prev/next nav
+const { entries: allPosts } = await getEmDashCollection('posts');
+const published = allPosts
+  .filter((p) => p.data.status === 'published')
+  .toSorted((a, b) => {
+    const da = a.data.publishedAt?.getTime() ?? 0;
+    const db = b.data.publishedAt?.getTime() ?? 0;
+    return db - da;
+  });
+
+const currentIndex = published.findIndex((p) => p.data.slug === slug);
+const prevPost = currentIndex < published.length - 1 ? published[currentIndex + 1] : null;
+const nextPost = currentIndex > 0 ? published[currentIndex - 1] : null;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  'headline': post.data.title,
+  'description': post.data.excerpt || '',
+  'datePublished': post.data.publishedAt?.toISOString(),
+  'dateModified': post.data.updatedAt?.toISOString(),
+  'url': `https://cc4.marketing/blog/${slug}`,
+  'image': post.data.featured_image?.src || 'https://cc4.marketing/og-blog.png',
+  'author': {
+    '@type': 'Person',
+    'name': 'Tri Vo',
+    'url': 'https://cc4.marketing/blog/authors',
+  },
+  'publisher': {
+    '@type': 'Organization',
+    'name': 'CC4.Marketing',
+    'url': 'https://cc4.marketing',
+    'logo': {
+      '@type': 'ImageObject',
+      'url': 'https://cc4.marketing/favicon.svg',
+    },
+  },
+  'mainEntityOfPage': {
+    '@type': 'WebPage',
+    '@id': `https://cc4.marketing/blog/${slug}`,
+  },
+  'breadcrumb': {
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://cc4.marketing' },
+      { '@type': 'ListItem', 'position': 2, 'name': 'Blog', 'item': 'https://cc4.marketing/blog' },
+      { '@type': 'ListItem', 'position': 3, 'name': post.data.title },
+    ],
+  },
+};
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.excerpt || post.data.title}
+  type="article"
+  publishedDate={post.data.publishedAt?.toISOString()}
+  modifiedDate={post.data.updatedAt?.toISOString()}
+  image={post.data.featured_image?.src || '/og-blog.png'}
+  keywords={['AI marketing', 'Claude Code', 'marketing automation', post.data.title]}
+>
+  <Header />
+
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+
+  <article class="blog-post">
+    <div class="blog-post-inner">
+      {/* Header */}
+      <header class="blog-post-header">
+        <a href="/blog" class="blog-back">&larr; Back to Blog</a>
+        <time class="blog-post-date" datetime={post.data.publishedAt?.toISOString()}>
+          {formatDate(post.data.publishedAt)}
+        </time>
+        <h1 class="blog-post-title">{post.data.title}</h1>
+        {post.data.excerpt && (
+          <p class="blog-post-excerpt">{post.data.excerpt}</p>
+        )}
+        <div class="blog-post-byline">
+          <span class="byline-label">By</span>
+          <a href="/blog/authors" class="byline-author">CC4.Marketing Team</a>
+        </div>
+      </header>
+
+      {/* Featured image */}
+      {post.data.featured_image?.src && (
+        <div class="blog-post-hero-image">
+          <img
+            src={post.data.featured_image.src}
+            alt={post.data.featured_image.alt || post.data.title}
+            width={post.data.featured_image.width}
+            height={post.data.featured_image.height}
+            loading="eager"
+          />
+        </div>
+      )}
+
+      {/* Content */}
+      <div class="blog-post-content prose">
+        {post.data.content && <PortableText value={post.data.content} />}
+      </div>
+
+      {/* Newsletter CTA */}
+      <div class="blog-post-cta">
+        <h3>Get more like this</h3>
+        <p>Subscribe to the CC4.Marketing newsletter for updates, guides, and practical AI marketing tips.</p>
+        <a href="https://cc4marketing.substack.com" target="_blank" rel="noopener" class="blog-cta-btn">Subscribe on Substack</a>
+      </div>
+
+      {/* Prev/Next */}
+      <nav class="blog-post-nav">
+        {prevPost ? (
+          <a href={`/blog/${prevPost.data.slug}`} class="blog-nav-link blog-nav-prev">
+            <span class="blog-nav-label">&larr; Previous</span>
+            <span class="blog-nav-title">{prevPost.data.title}</span>
+          </a>
+        ) : <div />}
+        {nextPost ? (
+          <a href={`/blog/${nextPost.data.slug}`} class="blog-nav-link blog-nav-next">
+            <span class="blog-nav-label">Next &rarr;</span>
+            <span class="blog-nav-title">{nextPost.data.title}</span>
+          </a>
+        ) : <div />}
+      </nav>
+    </div>
+  </article>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .blog-post {
+    padding: 120px 24px 80px;
+  }
+
+  .blog-post-inner {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* Back link */
+  .blog-back {
+    display: inline-block;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--rust);
+    text-decoration: none;
+    margin-bottom: 32px;
+    transition: opacity 0.2s;
+  }
+
+  .blog-back:hover {
+    opacity: 0.7;
+  }
+
+  /* Header */
+  .blog-post-header {
+    margin-bottom: 40px;
+  }
+
+  .blog-post-date {
+    display: block;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+
+  .blog-post-title {
+    font-family: var(--font-display);
+    font-size: clamp(2em, 5vw, 3em);
+    line-height: 1.15;
+    color: var(--text-primary);
+    margin: 0 0 16px;
+  }
+
+  .blog-post-excerpt {
+    font-size: 1.15em;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* Byline */
+  .blog-post-byline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    font-size: 0.85em;
+  }
+
+  .byline-label {
+    color: var(--text-secondary);
+  }
+
+  .byline-author {
+    color: var(--rust);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .byline-author:hover {
+    text-decoration: underline;
+  }
+
+  /* Featured image */
+  .blog-post-hero-image {
+    margin-bottom: 40px;
+    border: 2px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+
+  .blog-post-hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Content - prose styles */
+  .blog-post-content {
+    font-size: 1.05em;
+    line-height: 1.75;
+    color: var(--text-primary);
+    margin-bottom: 60px;
+  }
+
+  .blog-post-content :global(h2) {
+    font-family: var(--font-display);
+    font-size: 1.6em;
+    margin: 48px 0 16px;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .blog-post-content :global(h3) {
+    font-family: var(--font-display);
+    font-size: 1.3em;
+    margin: 36px 0 12px;
+    color: var(--text-primary);
+  }
+
+  .blog-post-content :global(p) {
+    margin: 0 0 20px;
+  }
+
+  .blog-post-content :global(a) {
+    color: var(--rust);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .blog-post-content :global(a:hover) {
+    opacity: 0.8;
+  }
+
+  .blog-post-content :global(ul),
+  .blog-post-content :global(ol) {
+    margin: 0 0 20px;
+    padding-left: 24px;
+  }
+
+  .blog-post-content :global(li) {
+    margin-bottom: 8px;
+  }
+
+  .blog-post-content :global(blockquote) {
+    border-left: 4px solid var(--rust);
+    margin: 24px 0;
+    padding: 12px 20px;
+    background: rgba(184, 92, 60, 0.05);
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  .blog-post-content :global(code) {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9em;
+    background: rgba(92, 58, 107, 0.08);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .blog-post-content :global(pre) {
+    background: var(--charcoal);
+    color: var(--cream);
+    padding: 20px;
+    margin: 24px 0;
+    overflow-x: auto;
+    border: 2px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .blog-post-content :global(pre code) {
+    background: none;
+    padding: 0;
+  }
+
+  .blog-post-content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border: 2px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    margin: 24px 0;
+  }
+
+  /* Newsletter CTA */
+  .blog-post-cta {
+    border: 2px solid var(--rust);
+    padding: 32px;
+    text-align: center;
+    margin-bottom: 48px;
+    background: rgba(184, 92, 60, 0.04);
+  }
+
+  .blog-post-cta h3 {
+    font-family: var(--font-display);
+    font-size: 1.4em;
+    color: var(--rust);
+    margin: 0 0 8px;
+  }
+
+  .blog-post-cta p {
+    color: var(--text-secondary);
+    font-size: 0.95em;
+    margin: 0 0 20px;
+    line-height: 1.5;
+  }
+
+  .blog-cta-btn {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 0.9em;
+    color: var(--cream);
+    background: var(--rust);
+    padding: 12px 28px;
+    border: 2px solid var(--rust);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .blog-cta-btn:hover {
+    background: transparent;
+    color: var(--rust);
+  }
+
+  /* Prev/Next nav */
+  .blog-post-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    border-top: 2px solid var(--border-color);
+    padding-top: 32px;
+  }
+
+  .blog-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px;
+    border: 2px solid var(--border-color);
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+  }
+
+  .blog-nav-link:hover {
+    border-color: var(--rust);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .blog-nav-next {
+    text-align: right;
+  }
+
+  .blog-nav-label {
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--rust);
+  }
+
+  .blog-nav-title {
+    font-family: var(--font-display);
+    font-size: 1em;
+    line-height: 1.3;
+  }
+
+  @media (max-width: 768px) {
+    .blog-post {
+      padding: 100px 20px 60px;
+    }
+
+    .blog-post-nav {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

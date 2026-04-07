@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F5F1E8"/>
+      <stop offset="50%" style="stop-color:#EDE8DC"/>
+      <stop offset="100%" style="stop-color:#E8E0D0"/>
+    </linearGradient>
+    <linearGradient id="termGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2C2C2C"/>
+      <stop offset="100%" style="stop-color:#1A1A1A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg1)"/>
+
+  <!-- Dot pattern -->
+  <pattern id="dots1" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1" fill="#2C2C2C" opacity="0.06"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#dots1)"/>
+
+  <!-- Top accent -->
+  <rect x="0" y="0" width="1200" height="6" fill="#B85C3C"/>
+
+  <!-- Left decorative bar -->
+  <rect x="40" y="60" width="6" height="510" fill="#E8B923"/>
+
+  <!-- Terminal window -->
+  <rect x="80" y="100" width="520" height="380" rx="0" fill="url(#termGrad)" stroke="#4A4A4A" stroke-width="2"/>
+  <!-- Terminal title bar -->
+  <rect x="80" y="100" width="520" height="36" fill="#3A3A3A"/>
+  <circle cx="104" cy="118" r="6" fill="#FF5F56"/>
+  <circle cx="124" cy="118" r="6" fill="#FFBD2E"/>
+  <circle cx="144" cy="118" r="6" fill="#27C93F"/>
+
+  <!-- Terminal content - code lines -->
+  <text x="100" y="165" font-family="monospace" font-size="14" fill="#27C93F" opacity="0.9">$ claude</text>
+  <text x="100" y="190" font-family="monospace" font-size="13" fill="#A8A8A8">Loading CC4.Marketing project...</text>
+  <text x="100" y="220" font-family="monospace" font-size="13" fill="#E8B923">> Write a campaign brief for Planerio</text>
+  <text x="100" y="250" font-family="monospace" font-size="13" fill="#A8A8A8">  Analyzing brand guidelines...</text>
+  <text x="100" y="275" font-family="monospace" font-size="13" fill="#A8A8A8">  Building audience segments...</text>
+  <text x="100" y="300" font-family="monospace" font-size="13" fill="#A8A8A8">  Generating channel strategy...</text>
+  <text x="100" y="330" font-family="monospace" font-size="13" fill="#27C93F">  Campaign brief ready (3 files)</text>
+  <text x="100" y="365" font-family="monospace" font-size="14" fill="#27C93F" opacity="0.9">$ _</text>
+
+  <!-- AI visualization blocks - right side -->
+  <!-- Chart block -->
+  <rect x="660" y="100" width="240" height="140" fill="#FFFFFF" stroke="#2C2C2C" stroke-width="2"/>
+  <rect x="668" y="108" width="224" height="124" fill="#FAFAFA"/>
+  <!-- Bar chart -->
+  <rect x="690" y="180" width="28" height="40" fill="#B85C3C"/>
+  <rect x="728" y="160" width="28" height="60" fill="#B85C3C" opacity="0.8"/>
+  <rect x="766" y="140" width="28" height="80" fill="#E8B923"/>
+  <rect x="804" y="120" width="28" height="100" fill="#6B8E23"/>
+  <rect x="842" y="130" width="28" height="90" fill="#5C3A6B"/>
+
+  <!-- Campaign flow block -->
+  <rect x="660" y="260" width="240" height="100" fill="#FFFFFF" stroke="#2C2C2C" stroke-width="2"/>
+  <!-- Flow nodes -->
+  <rect x="680" y="285" width="50" height="30" rx="4" fill="#B85C3C"/>
+  <line x1="730" y1="300" x2="755" y2="300" stroke="#2C2C2C" stroke-width="2"/>
+  <rect x="755" y="285" width="50" height="30" rx="4" fill="#E8B923"/>
+  <line x1="805" y1="300" x2="830" y2="300" stroke="#2C2C2C" stroke-width="2"/>
+  <rect x="830" y="285" width="50" height="30" rx="4" fill="#6B8E23"/>
+  <!-- Flow labels -->
+  <text x="705" y="340" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#A8A8A8">Brief</text>
+  <text x="780" y="340" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#A8A8A8">Content</text>
+  <text x="855" y="340" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#A8A8A8">Launch</text>
+
+  <!-- Text gen block -->
+  <rect x="920" y="100" width="230" height="260" fill="#FFFFFF" stroke="#2C2C2C" stroke-width="2"/>
+  <rect x="932" y="115" width="206" height="8" rx="4" fill="#2C2C2C" opacity="0.15"/>
+  <rect x="932" y="131" width="180" height="8" rx="4" fill="#2C2C2C" opacity="0.12"/>
+  <rect x="932" y="147" width="196" height="8" rx="4" fill="#2C2C2C" opacity="0.15"/>
+  <rect x="932" y="163" width="140" height="8" rx="4" fill="#2C2C2C" opacity="0.10"/>
+  <rect x="932" y="185" width="206" height="8" rx="4" fill="#B85C3C" opacity="0.25"/>
+  <rect x="932" y="201" width="170" height="8" rx="4" fill="#B85C3C" opacity="0.20"/>
+  <rect x="932" y="217" width="190" height="8" rx="4" fill="#B85C3C" opacity="0.25"/>
+  <rect x="932" y="239" width="206" height="8" rx="4" fill="#2C2C2C" opacity="0.12"/>
+  <rect x="932" y="255" width="160" height="8" rx="4" fill="#2C2C2C" opacity="0.10"/>
+  <rect x="932" y="271" width="200" height="8" rx="4" fill="#2C2C2C" opacity="0.15"/>
+  <rect x="932" y="287" width="130" height="8" rx="4" fill="#2C2C2C" opacity="0.10"/>
+  <rect x="932" y="309" width="206" height="8" rx="4" fill="#E8B923" opacity="0.3"/>
+  <rect x="932" y="325" width="170" height="8" rx="4" fill="#E8B923" opacity="0.25"/>
+  <rect x="932" y="341" width="190" height="8" rx="4" fill="#E8B923" opacity="0.3"/>
+
+  <!-- Connection lines from terminal to blocks -->
+  <line x1="600" y1="200" x2="660" y2="170" stroke="#B85C3C" stroke-width="2" stroke-dasharray="6,4" opacity="0.4"/>
+  <line x1="600" y1="300" x2="660" y2="310" stroke="#E8B923" stroke-width="2" stroke-dasharray="6,4" opacity="0.4"/>
+  <line x1="600" y1="250" x2="920" y2="230" stroke="#5C3A6B" stroke-width="2" stroke-dasharray="6,4" opacity="0.3"/>
+
+  <!-- Bottom badges -->
+  <rect x="660" y="390" width="120" height="36" fill="#B85C3C"/>
+  <text x="720" y="414" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#F5F1E8">10x FASTER</text>
+
+  <rect x="800" y="390" width="120" height="36" fill="#5C3A6B"/>
+  <text x="860" y="414" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#F5F1E8">NO CODE</text>
+
+  <rect x="940" y="390" width="120" height="36" fill="#6B8E23"/>
+  <text x="1000" y="414" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#F5F1E8">AI + HUMAN</text>
+
+  <!-- Bottom shadow bars -->
+  <rect x="664" y="426" width="120" height="6" fill="#E8B923" opacity="0.6"/>
+  <rect x="804" y="426" width="120" height="6" fill="#E8B923" opacity="0.6"/>
+  <rect x="944" y="426" width="120" height="6" fill="#E8B923" opacity="0.6"/>
+
+  <!-- Bottom accent -->
+  <rect x="0" y="624" width="1200" height="6" fill="#2C2C2C"/>
+</svg>

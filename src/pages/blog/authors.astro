@@ -1,0 +1,320 @@
+---
+export const prerender = true;
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const authors = [
+  {
+    name: 'Tri Vo',
+    role: 'Course Creator & Lead Writer',
+    bio: 'Marketer turned AI workflow builder. Created CC4.Marketing to help non-technical marketers work 10x faster with Claude Code. Writes about practical AI marketing, campaign automation, and the future of human-AI collaboration in marketing teams.',
+    avatar: '/authors/tri.png',
+    links: {
+      substack: 'https://cc4marketing.substack.com',
+      github: 'https://github.com/cc4-marketing',
+      site: 'https://cc4.marketing',
+    },
+  },
+  {
+    name: 'Alice Marketer',
+    role: 'AI Marketing Strategist',
+    bio: 'CC4.Marketing co-admin and resident AI strategist. Specializes in content strategy, SEO optimization, and building AI agent workflows for marketing teams. Focuses on bridging the gap between marketing strategy and AI execution.',
+    avatar: '/authors/alice.png',
+    links: {
+      substack: 'https://cc4marketing.substack.com',
+    },
+  },
+];
+---
+
+<BaseLayout
+  title="Authors — CC4.Marketing Blog"
+  description="Meet the team behind CC4.Marketing. Practical AI marketing guides written by marketers who build with Claude Code every day."
+  keywords={['CC4.Marketing authors', 'AI marketing writers', 'Claude Code experts']}
+  image="/og-blog.png"
+>
+  <Header />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "name": "CC4.Marketing Blog Authors",
+    "url": "https://cc4.marketing/blog/authors",
+    "mainEntity": authors.map((a) => ({
+      "@type": "Person",
+      "name": a.name,
+      "jobTitle": a.role,
+      "description": a.bio,
+      "url": "https://cc4.marketing/blog/authors",
+      ...(a.links.site ? { "sameAs": [a.links.substack, a.links.github, a.links.site].filter(Boolean) } : { "sameAs": [a.links.substack].filter(Boolean) }),
+    })),
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://cc4.marketing" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://cc4.marketing/blog" },
+        { "@type": "ListItem", "position": 3, "name": "Authors" },
+      ],
+    },
+  })} />
+
+  <section class="authors-hero">
+    <div class="authors-hero-pattern"></div>
+    <div class="authors-hero-inner">
+      <span class="authors-hero-label">The Team</span>
+      <h1 class="authors-hero-title">Authors</h1>
+      <p class="authors-hero-desc">Marketers writing for marketers. Everything on this blog comes from real workflows we use every day.</p>
+    </div>
+  </section>
+
+  <section class="authors-body">
+    <div class="authors-body-inner">
+      {authors.map((author) => (
+        <div class="author-card">
+          <div class="author-avatar">
+            <img src={author.avatar} alt={author.name} class="author-avatar-img" width="80" height="80" loading="lazy" />
+          </div>
+          <div class="author-info">
+            <h2 class="author-name">{author.name}</h2>
+            <span class="author-role">{author.role}</span>
+            <p class="author-bio">{author.bio}</p>
+            <div class="author-links">
+              {author.links.substack && (
+                <a href={author.links.substack} target="_blank" rel="noopener noreferrer" class="author-link">
+                  Substack
+                </a>
+              )}
+              {author.links.github && (
+                <a href={author.links.github} target="_blank" rel="noopener noreferrer" class="author-link">
+                  GitHub
+                </a>
+              )}
+              {author.links.site && (
+                <a href={author.links.site} class="author-link">
+                  Website
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="authors-cta">
+    <div class="authors-cta-inner">
+      <h3>Want to contribute?</h3>
+      <p>We're open to guest posts on AI marketing, Claude Code workflows, and automation strategies.</p>
+      <a href="https://cc4marketing.substack.com" target="_blank" rel="noopener" class="authors-cta-btn">Get in touch via Substack</a>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  /* Hero */
+  .authors-hero {
+    position: relative;
+    padding: 140px 24px 60px;
+    text-align: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(92, 58, 107, 0.06) 100%);
+  }
+
+  .authors-hero-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    background-image: radial-gradient(circle at 1px 1px, var(--charcoal) 1px, transparent 0);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .authors-hero-inner {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .authors-hero-label {
+    display: inline-block;
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--plum);
+    background: rgba(92, 58, 107, 0.1);
+    padding: 6px 14px;
+    margin-bottom: 20px;
+  }
+
+  .authors-hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5em, 6vw, 4em);
+    color: var(--text-primary);
+    margin: 0 0 16px;
+    line-height: 1.1;
+  }
+
+  .authors-hero-desc {
+    font-size: 1.15em;
+    color: var(--text-secondary);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* Body */
+  .authors-body {
+    padding: 60px 24px 40px;
+  }
+
+  .authors-body-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  /* Author card */
+  .author-card {
+    display: flex;
+    gap: 32px;
+    padding: 32px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.25s ease;
+  }
+
+  .author-card:hover {
+    box-shadow: 8px 8px 0 var(--mustard);
+  }
+
+  .author-avatar {
+    flex-shrink: 0;
+  }
+
+  .author-avatar-img {
+    width: 80px;
+    height: 80px;
+    border: 2px solid var(--rust);
+    object-fit: cover;
+    display: block;
+  }
+
+  .author-info {
+    flex: 1;
+  }
+
+  .author-name {
+    font-family: var(--font-display);
+    font-size: 1.5em;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+    line-height: 1.2;
+  }
+
+  .author-role {
+    display: inline-block;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--rust);
+    margin-bottom: 12px;
+  }
+
+  .author-bio {
+    font-size: 0.95em;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0 0 16px;
+  }
+
+  .author-links {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .author-link {
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--rust);
+    border: 1.5px solid var(--rust);
+    padding: 5px 14px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .author-link:hover {
+    background: var(--rust);
+    color: var(--cream);
+  }
+
+  /* CTA */
+  .authors-cta {
+    padding: 0 24px 80px;
+  }
+
+  .authors-cta-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+    border: 2px dashed var(--border-color);
+    padding: 40px 32px;
+  }
+
+  .authors-cta-inner h3 {
+    font-family: var(--font-display);
+    font-size: 1.4em;
+    color: var(--plum);
+    margin: 0 0 8px;
+  }
+
+  .authors-cta-inner p {
+    color: var(--text-secondary);
+    font-size: 0.95em;
+    margin: 0 0 20px;
+    line-height: 1.5;
+  }
+
+  .authors-cta-btn {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 0.85em;
+    color: var(--cream);
+    background: var(--plum);
+    padding: 10px 24px;
+    border: 2px solid var(--plum);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .authors-cta-btn:hover {
+    background: transparent;
+    color: var(--plum);
+  }
+
+  @media (max-width: 768px) {
+    .authors-hero {
+      padding: 120px 20px 40px;
+    }
+
+    .author-card {
+      flex-direction: column;
+      gap: 20px;
+      padding: 24px;
+    }
+
+    .author-avatar-img {
+      width: 64px;
+      height: 64px;
+    }
+  }
+</style>

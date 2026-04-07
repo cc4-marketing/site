@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 
+export const prerender = false;
+
 export const POST: APIRoute = async ({ request }) => {
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
@@ -18,7 +20,8 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const githubToken = import.meta.env.GITHUB_TOKEN;
+    const { env } = await import('cloudflare:workers');
+    const githubToken = (env as any).GITHUB_TOKEN;
     if (!githubToken) {
       console.error('GITHUB_TOKEN not configured');
       return new Response(

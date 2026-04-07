@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F5F1E8"/>
+      <stop offset="100%" style="stop-color:#E8E4DB"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+
+  <!-- Top accent bar -->
+  <rect x="0" y="0" width="1200" height="8" fill="#B85C3C"/>
+  <!-- Bottom accent bar -->
+  <rect x="0" y="622" width="1200" height="8" fill="#2D2D2D"/>
+
+  <!-- Left accent bar -->
+  <rect x="60" y="100" width="8" height="430" fill="#D4A84B"/>
+
+  <!-- Main content card -->
+  <rect x="100" y="120" width="1000" height="390" fill="#FFFFFF" stroke="#2D2D2D" stroke-width="4"/>
+
+  <!-- Shadow -->
+  <rect x="108" y="128" width="1000" height="390" fill="#D4A84B" opacity="0.3"/>
+
+  <!-- CC4 badge -->
+  <rect x="140" y="160" width="120" height="60" rx="4" fill="#B85C3C"/>
+  <text x="200" y="202" font-family="Arial Black, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="#F5F1E8">CC4</text>
+
+  <!-- BLOG badge -->
+  <rect x="280" y="168" width="80" height="44" rx="4" fill="#5C3A6B"/>
+  <text x="320" y="198" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#F5F1E8">BLOG</text>
+
+  <!-- Main title -->
+  <text x="140" y="290" font-family="Georgia, serif" font-size="52" font-weight="bold" fill="#2D2D2D">AI Marketing</text>
+  <text x="140" y="356" font-family="Georgia, serif" font-size="52" font-weight="bold" fill="#B85C3C">Insights &amp; Guides</text>
+
+  <!-- Subtitle -->
+  <text x="140" y="420" font-family="Arial, sans-serif" font-size="22" fill="#2D2D2D" opacity="0.8">Practical strategies for marketers using Claude Code</text>
+  <text x="140" y="455" font-family="Arial, sans-serif" font-size="22" fill="#2D2D2D" opacity="0.8">Tutorials, workflows, and automation playbooks</text>
+
+  <!-- Right side decorative elements -->
+  <rect x="880" y="160" width="180" height="40" fill="#6B8E23"/>
+  <text x="970" y="188" font-family="Arial, sans-serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#F5F1E8">SEO + AI MARKETING</text>
+
+  <!-- Topic pills -->
+  <rect x="880" y="220" width="120" height="32" rx="4" fill="none" stroke="#2D2D2D" stroke-width="2"/>
+  <text x="940" y="242" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" fill="#2D2D2D">Campaign Briefs</text>
+
+  <rect x="880" y="264" width="100" height="32" rx="4" fill="none" stroke="#2D2D2D" stroke-width="2"/>
+  <text x="930" y="286" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" fill="#2D2D2D">SEO Strategy</text>
+
+  <rect x="880" y="308" width="130" height="32" rx="4" fill="none" stroke="#2D2D2D" stroke-width="2"/>
+  <text x="945" y="330" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" fill="#2D2D2D">Content at Scale</text>
+
+  <rect x="880" y="352" width="150" height="32" rx="4" fill="none" stroke="#2D2D2D" stroke-width="2"/>
+  <text x="955" y="374" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" fill="#2D2D2D">Marketing Automation</text>
+
+  <!-- URL -->
+  <text x="970" y="480" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#B85C3C">cc4.marketing/blog</text>
+</svg>

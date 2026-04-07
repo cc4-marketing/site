@@ -102,5 +102,18 @@
     "status": "draft",
     "published_at": null,
     "created_at": "2026-03-18T00:00:00.000Z"
+  },
+  {
+    "id": "bc_site_006",
+    "slug": "site-blog-emdash-astro6",
+    "title": "Blog section with Emdash CMS and Astro 6 upgrade",
+    "summary": "Launched /blog powered by Emdash CMS on Cloudflare D1. Upgraded from Astro 5 to Astro 6 with @astrojs/cloudflare adapter. Blog features SEO-optimized posts, author pages, structured data, custom OG images, and Substack newsletter CTA. Two launch posts published.",
+    "type": "added",
+    "version": "0.3.0",
+    "modules": ["site", "blog"],
+    "machine_summary": "cc4-marketing/site v0.3.0. Astro 5→6 upgrade with @astrojs/cloudflare adapter (server mode). Emdash CMS integration with D1 database and R2 storage. New /blog section with SSR post index and detail pages (PortableText rendering). /blog/authors static page with Person schema. BlogPosting + CollectionPage + AboutPage structured data. Custom og-blog.png OG image. Blog cover illustrations per post. Migrated /api/subscribe from custom worker.js to Astro API route using cloudflare:workers env. Added live.config.ts for Astro Live Collections. Nav updated with Blog link. Sitemap priority 0.9 for blog routes. llms.txt updated with blog section.",
+    "status": "published",
+    "published_at": "2026-04-08T08:00:00.000Z",
+    "created_at": "2026-04-08T08:00:00.000Z"
   }
 ]

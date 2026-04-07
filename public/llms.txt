@@ -7,10 +7,17 @@ CC4.Marketing is an open-source course that teaches AI-powered marketing workflo
 
 ## Site Structure
 - Homepage: https://cc4.marketing/
+- Blog: https://cc4.marketing/blog
+- Blog Authors: https://cc4.marketing/blog/authors
 - Course Modules: https://cc4.marketing/modules/{module}/{lesson-slug}
 - Changelog: https://cc4.marketing/changelog
 - Download/Subscribe: https://cc4.marketing/download
 - Brand Guidelines: https://cc4.marketing/brand-guide
+
+## Blog
+The blog publishes practical guides, tutorials, and insights on AI-powered marketing with Claude Code. Content is SEO-focused and distinct from the Substack newsletter (which covers announcements and community updates).
+
+Blog posts are server-rendered from an Emdash CMS (Cloudflare D1). Individual posts at: https://cc4.marketing/blog/{post-slug}
 
 ## Course Modules
 - Module 0: Getting Started (4 lessons, 30 min) — Installation, setup, first task

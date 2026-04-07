@@ -2,6 +2,13 @@
 
 > This is the extended version of llms.txt with complete lesson details. For a concise overview, see: https://cc4.marketing/llms.txt
 
+## Blog
+The CC4.Marketing blog publishes practical guides on AI-powered marketing with Claude Code.
+- Blog index: https://cc4.marketing/blog
+- Authors: https://cc4.marketing/blog/authors
+- Content: SEO tutorials, campaign brief workflows, marketing automation guides
+- Posts are server-rendered from Emdash CMS at /blog/{post-slug}
+
 ## Module 0: Getting Started (4 lessons, ~30 minutes)
 
 ### Lesson 0.0 — Introduction (10 min)
