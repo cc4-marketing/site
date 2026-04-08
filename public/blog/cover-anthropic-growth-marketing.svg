@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5F1E8"/>
+      <stop offset="50%" stop-color="#EDE8DC"/>
+      <stop offset="100%" stop-color="#E5DDD0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background (flat fallback + gradient overlay) -->
+  <rect width="1200" height="630" fill="#F5F1E8"/>
+  <rect width="1200" height="630" fill="url(#bg3)"/>
+
+  <!-- Dot pattern -->
+  <pattern id="dots3" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1" fill="#2C2C2C" opacity="0.06"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#dots3)"/>
+
+  <!-- Top accent -->
+  <rect x="0" y="0" width="1200" height="6" fill="#B85C3C"/>
+  <!-- Left decorative bar -->
+  <rect x="40" y="60" width="6" height="510" fill="#5C3A6B"/>
+
+  <!-- Eyebrow label -->
+  <rect x="80" y="80" width="180" height="24" fill="#2C2C2C"/>
+  <text x="170" y="97" font-family="Arial, sans-serif" font-size="12" font-weight="bold" letter-spacing="1.5" text-anchor="middle" fill="#F5F1E8">CASE STUDY</text>
+
+  <!-- Left panel: Single operator -->
+  <!-- Operator card shadow -->
+  <rect x="96" y="136" width="340" height="420" fill="#E8B923" opacity="0.4"/>
+  <!-- Operator card -->
+  <rect x="80" y="120" width="340" height="420" fill="#FFFFFF" stroke="#2C2C2C" stroke-width="3"/>
+  <!-- Header -->
+  <rect x="80" y="120" width="340" height="52" fill="#2C2C2C"/>
+  <text x="250" y="153" font-family="Georgia, serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#F5F1E8">ONE MARKETER</text>
+
+  <!-- Figure silhouette -->
+  <circle cx="250" cy="235" r="38" fill="#B85C3C"/>
+  <path d="M 182 342 Q 182 282 250 282 Q 318 282 318 342 L 318 360 L 182 360 Z" fill="#B85C3C"/>
+  <!-- Subtle gloss -->
+  <circle cx="240" cy="225" r="8" fill="#FFFFFF" opacity="0.15"/>
+
+  <!-- Stats strip -->
+  <rect x="100" y="388" width="300" height="1" fill="#2C2C2C" opacity="0.2"/>
+  <text x="250" y="418" font-family="Georgia, serif" font-size="36" font-weight="bold" text-anchor="middle" fill="#2C2C2C">5 CHANNELS</text>
+  <text x="250" y="442" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" fill="#666666">paid search · paid social · app stores</text>
+  <text x="250" y="460" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" fill="#666666">email · SEO</text>
+
+  <!-- No engineering badge -->
+  <rect x="110" y="484" width="280" height="36" fill="#5C3A6B"/>
+  <text x="250" y="508" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#F5F1E8">NO ENGINEERING SUPPORT</text>
+
+  <!-- Connector arrow from operator to output grid -->
+  <line x1="420" y1="330" x2="488" y2="330" stroke="#2C2C2C" stroke-width="3"/>
+  <polygon points="484,322 500,330 484,338" fill="#2C2C2C"/>
+  <text x="454" y="320" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#B85C3C">CLAUDE CODE</text>
+
+  <!-- Right panel: Ad variation grid (10x output) -->
+  <rect x="500" y="120" width="620" height="300" fill="#FFFFFF" stroke="#2C2C2C" stroke-width="3"/>
+  <rect x="500" y="120" width="620" height="36" fill="#5C3A6B"/>
+  <text x="810" y="144" font-family="Arial, sans-serif" font-size="13" font-weight="bold" letter-spacing="1.2" text-anchor="middle" fill="#F5F1E8">AD VARIATIONS · GENERATED IN MINUTES</text>
+
+  <!-- Row 1 -->
+  <g>
+    <rect x="520" y="174" width="110" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="528" y="182" width="60" height="5" rx="2" fill="#B85C3C"/>
+    <rect x="528" y="192" width="90" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="528" y="200" width="80" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="528" y="208" width="70" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="528" y="218" width="44" height="10" fill="#E8B923"/>
+
+    <rect x="640" y="174" width="110" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="648" y="182" width="60" height="5" rx="2" fill="#5C3A6B"/>
+    <rect x="648" y="192" width="90" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="648" y="200" width="70" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="648" y="208" width="85" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="648" y="218" width="44" height="10" fill="#E8B923"/>
+
+    <rect x="760" y="174" width="110" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="768" y="182" width="60" height="5" rx="2" fill="#6B8E23"/>
+    <rect x="768" y="192" width="90" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="768" y="200" width="60" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="768" y="208" width="80" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="768" y="218" width="44" height="10" fill="#E8B923"/>
+
+    <rect x="880" y="174" width="110" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="888" y="182" width="60" height="5" rx="2" fill="#B85C3C"/>
+    <rect x="888" y="192" width="90" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="888" y="200" width="75" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="888" y="208" width="80" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="888" y="218" width="44" height="10" fill="#E8B923"/>
+
+    <rect x="1000" y="174" width="100" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="1008" y="182" width="54" height="5" rx="2" fill="#5C3A6B"/>
+    <rect x="1008" y="192" width="80" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="1008" y="200" width="64" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="1008" y="208" width="72" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="1008" y="218" width="40" height="10" fill="#E8B923"/>
+  </g>
+
+  <!-- Row 2 -->
+  <g opacity="0.85">
+    <rect x="520" y="246" width="110" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="528" y="254" width="60" height="5" rx="2" fill="#6B8E23"/>
+    <rect x="528" y="264" width="90" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="528" y="272" width="75" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="528" y="280" width="70" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="528" y="290" width="44" height="10" fill="#B85C3C"/>
+
+    <rect x="640" y="246" width="110" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="648" y="254" width="60" height="5" rx="2" fill="#B85C3C"/>
+    <rect x="648" y="264" width="90" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="648" y="272" width="60" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="648" y="280" width="85" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="648" y="290" width="44" height="10" fill="#B85C3C"/>
+
+    <rect x="760" y="246" width="110" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="768" y="254" width="60" height="5" rx="2" fill="#5C3A6B"/>
+    <rect x="768" y="264" width="90" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="768" y="272" width="70" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="768" y="280" width="80" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="768" y="290" width="44" height="10" fill="#B85C3C"/>
+
+    <rect x="880" y="246" width="110" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="888" y="254" width="60" height="5" rx="2" fill="#6B8E23"/>
+    <rect x="888" y="264" width="90" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="888" y="272" width="75" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="888" y="280" width="78" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="888" y="290" width="44" height="10" fill="#B85C3C"/>
+
+    <rect x="1000" y="246" width="100" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="1008" y="254" width="54" height="5" rx="2" fill="#B85C3C"/>
+    <rect x="1008" y="264" width="80" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="1008" y="272" width="64" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="1008" y="280" width="72" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="1008" y="290" width="40" height="10" fill="#B85C3C"/>
+  </g>
+
+  <!-- Row 3 (fading) -->
+  <g opacity="0.55">
+    <rect x="520" y="318" width="110" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="528" y="326" width="60" height="5" rx="2" fill="#B85C3C"/>
+    <rect x="528" y="336" width="90" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="528" y="344" width="70" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="528" y="352" width="80" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="528" y="362" width="44" height="10" fill="#5C3A6B"/>
+
+    <rect x="640" y="318" width="110" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="648" y="326" width="60" height="5" rx="2" fill="#6B8E23"/>
+    <rect x="648" y="336" width="90" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="648" y="344" width="75" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="648" y="352" width="65" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="648" y="362" width="44" height="10" fill="#5C3A6B"/>
+
+    <rect x="760" y="318" width="110" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="768" y="326" width="60" height="5" rx="2" fill="#B85C3C"/>
+    <rect x="768" y="336" width="90" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="768" y="344" width="70" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="768" y="352" width="80" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="768" y="362" width="44" height="10" fill="#5C3A6B"/>
+
+    <rect x="880" y="318" width="110" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="888" y="326" width="60" height="5" rx="2" fill="#5C3A6B"/>
+    <rect x="888" y="336" width="90" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="888" y="344" width="80" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="888" y="352" width="65" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="888" y="362" width="44" height="10" fill="#5C3A6B"/>
+
+    <rect x="1000" y="318" width="100" height="60" fill="#FAFAFA" stroke="#2C2C2C" stroke-width="1"/>
+    <rect x="1008" y="326" width="54" height="5" rx="2" fill="#6B8E23"/>
+    <rect x="1008" y="336" width="80" height="4" rx="2" fill="#2C2C2C" opacity="0.4"/>
+    <rect x="1008" y="344" width="64" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="1008" y="352" width="72" height="4" rx="2" fill="#2C2C2C" opacity="0.3"/>
+    <rect x="1008" y="362" width="40" height="10" fill="#5C3A6B"/>
+  </g>
+
+  <!-- Bottom shadow of grid -->
+  <rect x="504" y="420" width="620" height="5" fill="#E8B923" opacity="0.5"/>
+
+  <!-- 10X badge -->
+  <rect x="500" y="450" width="200" height="100" fill="#2C2C2C" stroke="#E8B923" stroke-width="3"/>
+  <text x="600" y="512" font-family="Georgia, serif" font-size="54" font-weight="bold" text-anchor="middle" fill="#E8B923">10x</text>
+  <text x="600" y="535" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#A8A8A8">more ad variations</text>
+
+  <!-- Time savings badge -->
+  <rect x="716" y="450" width="200" height="48" fill="#B85C3C"/>
+  <text x="816" y="481" font-family="Arial, sans-serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#F5F1E8">2 HRS → 15 MIN</text>
+
+  <!-- Time label -->
+  <text x="816" y="520" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666666">per ad, across channels</text>
+  <rect x="720" y="532" width="192" height="4" fill="#E8B923" opacity="0.5"/>
+
+  <!-- Ten months badge -->
+  <rect x="932" y="450" width="168" height="48" fill="#5C3A6B"/>
+  <text x="1016" y="481" font-family="Arial, sans-serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#F5F1E8">10 MONTHS</text>
+
+  <text x="1016" y="520" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666666">to build the stack</text>
+  <rect x="936" y="532" width="160" height="4" fill="#E8B923" opacity="0.5"/>
+
+  <!-- Footer strip -->
+  <rect x="80" y="570" width="1040" height="36" fill="#FFFFFF" stroke="#2C2C2C" stroke-width="2"/>
+  <text x="100" y="593" font-family="Georgia, serif" font-size="14" font-weight="bold" fill="#2C2C2C">ANTHROPIC GROWTH MARKETING</text>
+  <text x="1100" y="593" font-family="Arial, sans-serif" font-size="12" text-anchor="end" fill="#B85C3C">CC4.MARKETING</text>
+
+  <!-- Bottom accent -->
+  <rect x="0" y="624" width="1200" height="6" fill="#2C2C2C"/>
+</svg>

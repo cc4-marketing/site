@@ -32,6 +32,7 @@ const modulePages = [
 const blogPages = [
   '/blog/claude-code-for-marketing-guide-2026',
   '/blog/write-campaign-brief-with-ai',
+  '/blog/anthropic-growth-marketing-claude-code',
 ].map((p) => `https://cc4.marketing${p}`);
 
 // https://astro.build/config
