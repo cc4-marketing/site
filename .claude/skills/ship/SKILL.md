@@ -12,6 +12,7 @@ Ship changes to production in a single flow. Runs build verification, commits, p
 `/ship` — auto-generate commit message from changes
 `/ship [message]` — use custom commit message
 `/ship --dry` — build and test only, don't commit/push
+`/ship --no-changelog` — skip the auto-changelog step even if the commit is `feat:`/`fix:`
 
 ## Instructions
 
@@ -62,6 +63,37 @@ ls dist/client/*/index.html 2>/dev/null | wc -l
    - `docs:` — documentation
    - `style:` — formatting/style
 3. Stage relevant files (NOT `.env`, `.dev.vars`, `node_modules`, `.wrangler`).
+
+#### Step 3a: Auto-changelog for feat/fix commits
+
+**Before committing**, check whether the drafted commit message starts with `feat:` or `fix:`. If so, the commit is user-visible and should be reflected in the changelog.
+
+1. Read `CHANGELOG.md` and confirm the commit's subject isn't already represented under `## [Unreleased]` (look for substring match on the main phrase).
+2. If it's already there, skip to step 4 below.
+3. Otherwise, propose a changelog entry derived from the commit subject:
+   - **Type**: `Added` for `feat:`, `Fixed` for `fix:`
+   - **Bullet**: rewrite the commit subject in changelog voice (present-tense, user-facing, no conventional-commit prefix). For example:
+     - `feat: add /publish-post skill` → `- New /publish-post skill for blog post publishing`
+     - `fix: correct og:image fallback on blog pages` → `- OG image now correctly points to the post's cover instead of the site default`
+4. Edit `CHANGELOG.md` in place:
+   - Find the `## [Unreleased]` section
+   - Find or create the matching `### Added` / `### Fixed` subsection (ordering: Added, Changed, Deprecated, Removed, Fixed, Security)
+   - Append the new bullet
+5. Stage `CHANGELOG.md` alongside the other changes so it rides in the same commit.
+6. **Do NOT update `changelog-worker/data/entries.json` or sync to KV here.** That's deferred to `/release` so KV writes are batched. The `[Unreleased]` section in CHANGELOG.md is the source of truth between releases.
+
+**When to skip 3a:**
+- Commit is `chore:`, `docs:`, `style:`, `refactor:`, `test:`, `build:`, `ci:`, or `release:` — no changelog entry
+- Commit message was passed explicitly as `/ship "release: ..."` or similar
+- The user passed `--no-changelog` (honor it — don't touch CHANGELOG.md)
+- `[Unreleased]` already contains the same change (substring match)
+
+**When to ask first:**
+- The commit subject is generic (`feat: improvements`) — ask the user for a better changelog bullet before writing
+- The commit spans multiple unrelated changes — ask whether to split into multiple bullets
+
+#### Step 3b: Commit
+
 4. Commit with the message + co-author:
 
 ```bash
@@ -128,19 +160,35 @@ If there were any warnings or issues during the process, list them at the end.
 
 ## Common Scenarios
 
-### New blog post added via Emdash admin
-After creating a post in `/_emdash/admin`, the blog pages auto-render (SSR). But to add the new post to the sitemap:
-1. Add the post URL to `blogPages` array in `astro.config.mjs`
-2. Run `/ship "feat: add {post-title} to sitemap"`
+### New blog post
+Use the dedicated `/publish-post` skill — it handles the D1 insert, sitemap update, and calls `/ship` at the end. Don't invoke `/ship` directly for a new post.
 
-### Dependency update
+### New feature (auto-changelog kicks in)
+```
+/ship "feat: add /publish-post skill for blog post publishing"
+```
+`/ship` will auto-propose a `### Added` bullet for `## [Unreleased]` and stage `CHANGELOG.md` in the same commit. Confirm or edit the bullet when prompted.
+
+### Bug fix (auto-changelog kicks in)
+```
+/ship "fix: correct og:image fallback on blog detail pages"
+```
+Auto-proposes a `### Fixed` bullet.
+
+### Dependency update (no changelog)
 ```
 /ship "chore: update dependencies"
 ```
 
-### Quick fix
+### Docs or internal refactor (no changelog)
 ```
-/ship "fix: correct typo in module 2 lesson title"
+/ship "docs: document Emdash D1 publishing workflow"
+/ship "refactor: extract markdown parser into helper module"
+```
+
+### Feature you explicitly don't want in the changelog
+```
+/ship "feat: internal dashboard improvements" --no-changelog
 ```
 
 ## Key Files

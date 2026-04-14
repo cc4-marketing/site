@@ -59,13 +59,37 @@ Change `"version": "{OLD_VERSION}"` to `"version": "{NEW_VERSION}"`.
 
 ### Step 6: Update changelog KV entries
 
-1. Read `changelog-worker/data/entries.json`.
-2. Change all entries with `"version": "unreleased"` to `"version": "{NEW_VERSION}"`.
-3. Save the file.
-4. Upload to Cloudflare KV:
-   ```bash
-   cd changelog-worker && npx wrangler kv key put --remote --namespace-id=0056bfd0472e481387acaec3f6e8a721 "entries" --path=data/entries.json
+`/ship` adds bullets to `CHANGELOG.md` `## [Unreleased]` but does NOT touch `changelog-worker/data/entries.json` — KV writes are batched here at release time. This step has two substeps:
+
+**Step 6a: Sync CHANGELOG.md bullets into entries.json**
+
+1. Read the `## [Unreleased]` section from `CHANGELOG.md` (the content captured in Step 3).
+2. Read `changelog-worker/data/entries.json`.
+3. For each bullet in each subsection (Added, Changed, Fixed, etc.) that doesn't already have a matching entry in `entries.json` (substring match on title/summary), create a new entry:
+   ```json
+   {
+     "id": "bc_site_{3_random_lowercase_chars}",
+     "slug": "{slugified-bullet}",
+     "title": "{bullet text, trimmed, ≤60 chars}",
+     "summary": "{bullet text, full}",
+     "type": "{added|changed|fixed|deprecated|removed|security — from subsection}",
+     "version": "{NEW_VERSION}",
+     "modules": ["site"],
+     "machine_summary": "{concise technical summary}",
+     "status": "published",
+     "published_at": "{TODAY_ISO}",
+     "created_at": "{TODAY_ISO}"
+   }
    ```
+4. For entries that already exist in `entries.json` with `"version": "unreleased"` (because someone used `/changelog-add` directly), bump them to the new version.
+
+**Step 6b: Upload to Cloudflare KV**
+
+```bash
+cd changelog-worker && npx wrangler kv key put --remote --namespace-id=0056bfd0472e481387acaec3f6e8a721 "entries" --path=data/entries.json
+```
+
+This single upload publishes every accumulated `/ship` bullet to the live changelog in one pass.
 
 ### Step 7: Build and verify
 
