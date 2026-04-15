@@ -25,6 +25,10 @@ jobs:
         run: npm ci
       - name: Build Astro site
         run: npm run build
+      - name: OG build smoke test
+        run: npm run og:smoke
+      - name: Worker bundle size guard
+        run: npm run og:size-guard
       - name: Deploy to Cloudflare Workers
         run: npx wrangler@4 deploy
         env:

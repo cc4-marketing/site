@@ -6,6 +6,9 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /_astro/
+Disallow: /og-preview
+Disallow: /og/preview.png
+Disallow: /og/debug
 
 # Google
 User-agent: Googlebot

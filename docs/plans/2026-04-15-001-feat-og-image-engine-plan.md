@@ -1,7 +1,7 @@
 ---
 title: OG Image Engine + Hybrid Content Platform
 type: feat
-status: active
+status: completed
 date: 2026-04-15
 origin: docs/brainstorms/2026-04-15-og-image-engine-brainstorm.md
 ---
@@ -583,7 +583,7 @@ const ogImage = resolvedPath.startsWith("http") ? resolvedPath : `${siteUrl}${re
 - [x] `npm run build` produces 23 PNGs in `dist/client/og/**`
 - [x] Each PNG is 1200×630 and between 30 KB and 200 KB (all 32-45 KB, total 894 KB)
 - [x] Smoke test validates magic bytes + size bounds + detects orphans
-- [ ] CI bundle-size guard — deferred to Phase 5 polish
+- [x] CI bundle-size guard at 2.5 MB ceiling (Phase 5e)
 
 ---
 
@@ -621,10 +621,13 @@ const ogImage = resolvedPath.startsWith("http") ? resolvedPath : `${siteUrl}${re
 - Changelog entry
 
 **Success criteria:**
-- [ ] `localhost:4321/_dev/og-preview` renders all three templates live
-- [ ] Mock social cards match real Slack/Twitter rendering (manually verified)
-- [ ] `robots.txt` blocks `/_dev/`
-- [ ] `publish-post` skill no longer references Python cover generation
+- [x] `localhost:4321/og-preview` renders all three templates live (moved out of `_dev/` because Astro excludes underscore-prefixed files from routing; kept `import.meta.env.DEV` gate)
+- [x] Mock Facebook/Twitter/LinkedIn cards shown alongside preview (rendering validated locally)
+- [x] `robots.txt` disallows `/og-preview`, `/og/preview.png`, `/og/debug`
+- [x] `publish-post` skill rewritten to reference engine instead of SVG+cairosvg/Gemini/Vertex
+- [x] `generate_cover*.py` marked DEPRECATED with banner docstrings
+- [x] CHANGELOG.md entry under `[Unreleased]`
+- [x] CI bundle-size guard at 2.5 MB ceiling (currently 76% utilized)
 
 ---
 

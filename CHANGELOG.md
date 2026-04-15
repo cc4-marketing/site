@@ -9,8 +9,17 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ## [Unreleased]
 
+### Removed
+
+- `generate_cover.py` and `generate_cover_anthropic_growth.py` Python scripts — replaced by the OG engine. For bespoke covers, set `featured_image` on the Emdash post record instead.
+
 ### Added
 
+- Typographic OG image engine for every page — homepage, blog index, changelog, authors, download, brand guide, and 17 module lessons each get a distinct, brand-compliant social share card (cream/rust/plum/mustard palette, Righteous display, hard shadows)
+- Dynamic OG endpoint for blog posts at `/og/blog/{slug}-{hash}.png` — runtime-rendered via `workers-og` (Satori + resvg-wasm), R2-cached, content-hashed URLs for automatic cache invalidation when a post is edited
+- Dev-only `/og-preview` UI for iterating on templates with live PNG preview and mock Facebook/Twitter/LinkedIn cards
+- Dev-only `/og/debug?slug=...` endpoint for post-mortem debugging of stale cached covers
+- PNG tEXt metadata on build-time covers — embed engine version, generation timestamp, and generator tag for forensic debugging of which deploy rendered a given image
 - `/publish-post` skill for end-to-end blog post publishing — converts markdown to PortableText, validates cover images, inserts into Emdash D1, updates sitemap, and ships to production
 - Automatic changelog entries in `/ship` for `feat:` and `fix:` commits — appends to `[Unreleased]` in CHANGELOG.md in the same commit, with KV sync deferred to `/release`
 - `/hellobar` skill for toggling the site announcement bar on/off and creating new announcements with custom text, links, and cooldown

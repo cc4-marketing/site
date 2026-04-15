@@ -10,6 +10,7 @@
     "astro": "astro",
     "og:build": "tsx src/lib/og/build.ts",
     "og:smoke": "tsx src/lib/og/smoke-test.ts",
+    "og:size-guard": "tsx src/lib/og/size-guard.ts",
     "test": "vitest run"
   },
   "dependencies": {
