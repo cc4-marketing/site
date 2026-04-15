@@ -23,7 +23,7 @@ The file must have YAML frontmatter (see schema below).
 ```
 /publish-post
 ```
-With no argument, ask the user for the article title, excerpt, slug (optional), cover path (optional), and body content. Then write a temporary markdown file to `/tmp/new-post-{slug}.md` with frontmatter + body and proceed as Mode A.
+With no argument, ask the user for the article title, excerpt, slug (optional), **author slug** (required — list existing bylines first via `wrangler d1 execute ... SELECT slug, display_name FROM _emdash_bylines` so the user can pick), cover path (optional), and body content. Then write a temporary markdown file to `/tmp/new-post-{slug}.md` with frontmatter + body and proceed as Mode A.
 
 Additional flags (optional):
 - `--dry` — run all validation and emit SQL, but don't execute, update sitemap, or ship
@@ -35,12 +35,26 @@ Additional flags (optional):
 title: "How to X"                          # required, ≤ 60 chars for SEO
 slug: how-to-x                             # optional; derived from title
 excerpt: "Meta description around 155 chars — shown in SERP and OG/Twitter cards."  # required
-cover: /blog/cover-how-to-x.png            # optional; defaults to /blog/cover-{slug}.png
+author: tri-vo                             # optional; must match a byline slug in _emdash_bylines. Drives the avatar + name on the OG card.
+cover: /blog/cover-how-to-x.png            # optional; defaults to /blog/cover-{slug}.png. Omit for engine-generated OG.
 cover_alt: "Descriptive alt text"          # optional; defaults to generic
 published_at: 2026-04-09T09:00:00Z         # optional; defaults to now UTC
 keywords: [ai marketing, claude code]      # optional
 ---
 ```
+
+### Authors
+
+The `author` frontmatter field is a byline **slug** (not the display name). The publish helper resolves it to a byline ID against `_emdash_bylines` on remote D1 and fails loudly if no match exists.
+
+To list existing bylines: `npx wrangler d1 execute cc4-emdash --remote --command "SELECT slug, display_name FROM _emdash_bylines"`
+
+To add a new byline:
+1. Upload avatar to R2: `npx wrangler r2 object put cc4-media/bylines/<slug>.png --file=<path> --remote --content-type="image/png"`
+2. Insert media row (use `media` table; `id` = 26-char ULID, `storage_key` = `bylines/<slug>.png`, `status` = `ready`)
+3. Insert byline row into `_emdash_bylines` with `slug`, `display_name`, `avatar_media_id` pointing at the media row
+
+Without `author` set, the post is attributed to "CC4.Marketing Team" with a fallback initials circle.
 
 ## Instructions
 

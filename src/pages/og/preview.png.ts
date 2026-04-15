@@ -27,11 +27,31 @@ export const GET: APIRoute = async ({ url }) => {
   let html: string;
 
   if (template === 'blog') {
+    const avatarUrl = q.get('avatarUrl');
+    let avatarDataUri: string | undefined;
+    if (avatarUrl) {
+      try {
+        const r = await fetch(avatarUrl.startsWith('http') ? avatarUrl : new URL(avatarUrl, url));
+        if (r.ok) {
+          const ct = r.headers.get('content-type') ?? 'image/png';
+          const buf = new Uint8Array(await r.arrayBuffer());
+          let binary = '';
+          for (let i = 0; i < buf.byteLength; i++) binary += String.fromCharCode(buf[i]);
+          avatarDataUri = `data:${ct};base64,${btoa(binary)}`;
+        }
+      } catch {
+        // fall through to initials
+      }
+    }
     const bylines = (q.get('bylines') ?? '')
       .split(',')
       .map((s) => s.trim())
       .filter(Boolean)
-      .map((displayName) => ({ displayName }));
+      .map((displayName, i) => ({
+        displayName,
+        roleLabel: i === 0 ? q.get('role') ?? undefined : undefined,
+        avatarDataUri: i === 0 ? avatarDataUri : undefined,
+      }));
     html = renderBlogTemplate({
       title: q.get('title') ?? 'Untitled',
       excerpt: q.get('excerpt') ?? undefined,
