@@ -338,20 +338,28 @@ class PostRecord:
     excerpt: str
     cover_src: str
     cover_alt: str
+    has_explicit_cover: bool
     published_at: str
     content_blocks: list[dict[str, Any]]
     byline_id: str | None = None
     byline_cb_id: str | None = None
 
     def to_sql(self) -> str:
-        featured = {
-            "id": f"cover-{self.slug}",
-            "src": self.cover_src,
-            "alt": self.cover_alt,
-            "width": 1200,
-            "height": 630,
-        }
-        featured_json = json.dumps(featured, ensure_ascii=False)
+        # featured_image is only written when the author explicitly set a
+        # cover path. Without it, the column is NULL so BaseLayout falls
+        # through to the OG engine.
+        if self.has_explicit_cover:
+            featured = {
+                "id": f"cover-{self.slug}",
+                "src": self.cover_src,
+                "alt": self.cover_alt,
+                "width": 1200,
+                "height": 630,
+            }
+            featured_sql = f"'{sql_escape(json.dumps(featured, ensure_ascii=False))}'"
+        else:
+            featured_sql = "NULL"
+
         content_json = json.dumps(self.content_blocks, ensure_ascii=False)
 
         byline_val = f"'{self.byline_id}'" if self.byline_id else "NULL"
@@ -364,7 +372,7 @@ class PostRecord:
             f"    '{self.slug}',\n"
             f"    'published',\n"
             f"    '{sql_escape(self.title)}',\n"
-            f"    '{sql_escape(featured_json)}',\n"
+            f"    {featured_sql},\n"
             f"    '{sql_escape(content_json)}',\n"
             f"    '{sql_escape(self.excerpt)}',\n"
             f"    {byline_val},\n"
@@ -408,8 +416,12 @@ def build_record(md_path: Path) -> PostRecord:
         raise ValueError("frontmatter missing required field: excerpt")
 
     slug = meta.get("slug") or slugify(title)
-    cover_src = meta.get("cover") or f"/blog/cover-{slug}.png"
-    cover_alt = meta.get("cover_alt") or f"Cover illustration for: {title}"
+    # Explicit cover path opts into the static override. Without it, the
+    # record's featured_image stays unset and the OG engine renders the
+    # typographic cover at request time.
+    has_explicit_cover = "cover" in meta
+    cover_src = meta.get("cover") or ""
+    cover_alt = meta.get("cover_alt") or (f"Cover illustration for: {title}" if has_explicit_cover else "")
 
     published_at = meta.get("published_at")
     if not published_at:
@@ -440,6 +452,7 @@ def build_record(md_path: Path) -> PostRecord:
         excerpt=excerpt,
         cover_src=cover_src,
         cover_alt=cover_alt,
+        has_explicit_cover=has_explicit_cover,
         published_at=published_at,
         content_blocks=content_blocks,
         byline_id=byline_id,
@@ -470,8 +483,11 @@ def main() -> int:
 
     if not args.skip_checks:
         check_slug_available(record.slug)
-        check_cover(record.cover_src, record.slug)
-        print("Checks passed: slug available, cover valid")
+        if record.has_explicit_cover:
+            check_cover(record.cover_src, record.slug)
+            print("Checks passed: slug available, cover valid")
+        else:
+            print("Checks passed: slug available (cover handled by OG engine)")
 
     sql = record.to_sql()
     sql_path = Path(f"/tmp/insert_post_{record.slug}.sql")
