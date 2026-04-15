@@ -194,7 +194,14 @@ const breadcrumbSchema = {
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
   {showCourseSchema && <script type="application/ld+json" set:html={JSON.stringify(courseSchema)} />}
-  {showBreadcrumb && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />}
+  {/* BaseLayout only knows the "Home" item, which is a useless 1-item
+      BreadcrumbList. Emit only when the calling page has supplied an
+      itemListElement chain with ≥2 items (currently none do, so this
+      effectively never fires from BaseLayout — pages provide their own
+      BreadcrumbList script). */}
+  {showBreadcrumb && breadcrumbSchema.itemListElement.length >= 2 && (
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  )}
 </head>
 <body>
   <HelloBar {...promoConfig.helloBar} />

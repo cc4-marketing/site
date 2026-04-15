@@ -94,6 +94,18 @@ const articleSchema = {
     ],
   },
 };
+
+// Top-level BreadcrumbList — Google reads this independent of the
+// BlogPosting nesting and uses it to render breadcrumb trails in SERP.
+const breadcrumbListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  'itemListElement': [
+    { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://cc4.marketing/' },
+    { '@type': 'ListItem', 'position': 2, 'name': 'Blog', 'item': 'https://cc4.marketing/blog/' },
+    { '@type': 'ListItem', 'position': 3, 'name': post.data.title, 'item': `https://cc4.marketing/blog/${slug}/` },
+  ],
+};
 ---
 
 <BaseLayout
@@ -111,6 +123,7 @@ const articleSchema = {
   <Header />
 
   <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbListSchema)} />
 
   <article class="blog-post">
     <div class="blog-post-inner">
