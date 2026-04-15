@@ -5,7 +5,8 @@ import { siteData } from '../config/siteData';
 <header class="header">
   <div class="container">
     <a href="/" class="logo">CC4.Marketing</a>
-    <nav class="nav">
+
+    <nav class="nav nav-desktop" aria-label="Primary">
       {siteData.navItems.map(item => (
         <a
           href={item.href}
@@ -14,15 +15,58 @@ import { siteData } from '../config/siteData';
           rel={item.external ? 'noopener noreferrer' : undefined}
         >
           {item.label}
-          {item.label === 'Changelog' && <span class="nav-dot" id="nav-dot"></span>}
+          {item.label === 'Changelog' && <span class="nav-dot"></span>}
         </a>
       ))}
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
         <span class="theme-icon">🌙</span>
       </button>
     </nav>
+
+    <div class="mobile-controls">
+      <button class="theme-toggle theme-toggle-mobile" id="theme-toggle-mobile" aria-label="Toggle dark mode">
+        <span class="theme-icon">🌙</span>
+      </button>
+      <button
+        id="nav-toggle"
+        class="nav-toggle"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-drawer"
+      >
+        <span class="hamburger-lines" aria-hidden="true"></span>
+      </button>
+    </div>
   </div>
 </header>
+
+<div id="mobile-scrim" class="mobile-scrim" hidden></div>
+<nav
+  id="mobile-drawer"
+  class="mobile-drawer"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Site navigation"
+  hidden
+>
+  <button id="nav-close" class="nav-close" type="button" aria-label="Close menu">✕</button>
+  <ul class="mobile-nav-list">
+    {siteData.navItems.map(item => (
+      <li>
+        <a
+          href={item.href}
+          class={`mobile-nav-link ${item.label === 'Changelog' ? 'nav-link--changelog' : ''}`}
+          target={item.external ? '_blank' : undefined}
+          rel={item.external ? 'noopener noreferrer' : undefined}
+        >
+          {item.label}
+          {item.label === 'Changelog' && <span class="nav-dot nav-dot-mobile"></span>}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
 
 <style>
   .header {
@@ -115,10 +159,147 @@ import { siteData } from '../config/siteData';
     transition: transform 0.3s ease;
   }
 
-  @media (max-width: 768px) {
-    .nav {
-      gap: 16px;
+  /* Mobile header right-side controls: hidden on desktop */
+  .mobile-controls {
+    display: none;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Hamburger button */
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .hamburger-lines,
+  .hamburger-lines::before,
+  .hamburger-lines::after {
+    display: block;
+    height: 2px;
+    width: 22px;
+    background: var(--text-primary);
+    transition: transform 200ms ease, opacity 200ms ease, background 200ms ease;
+    border-radius: 2px;
+  }
+
+  .hamburger-lines {
+    position: relative;
+  }
+
+  .hamburger-lines::before,
+  .hamburger-lines::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .hamburger-lines::before { transform: translateY(-7px); }
+  .hamburger-lines::after  { transform: translateY(7px); }
+
+  .nav-toggle[aria-expanded="true"] .hamburger-lines { background: transparent; }
+  .nav-toggle[aria-expanded="true"] .hamburger-lines::before { transform: translateY(0) rotate(45deg); }
+  .nav-toggle[aria-expanded="true"] .hamburger-lines::after  { transform: translateY(0) rotate(-45deg); }
+
+  /* Scrim + drawer */
+  .mobile-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 500;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  .mobile-scrim.visible { opacity: 1; }
+
+  .mobile-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(320px, 80vw);
+    background: var(--cream);
+    z-index: 501;
+    padding: 72px 24px 24px;
+    transform: translateX(100%);
+    transition: transform 250ms ease;
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12);
+    overflow-y: auto;
+  }
+
+  .mobile-drawer.visible { transform: translateX(0); }
+
+  .mobile-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mobile-nav-link {
+    display: block;
+    padding: 16px 8px;
+    font-size: 1.125em;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border-color);
+    opacity: 0.95;
+    transition: color 0.2s ease;
+  }
+
+  .mobile-nav-link:hover,
+  .mobile-nav-link:focus-visible {
+    color: var(--rust);
+  }
+
+  .nav-dot-mobile {
+    position: relative;
+    top: auto;
+    right: auto;
+    display: inline-block;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  .nav-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: 0;
+    font-size: 1.5em;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-drawer,
+    .mobile-scrim,
+    .hamburger-lines,
+    .hamburger-lines::before,
+    .hamburger-lines::after {
+      transition: none;
     }
+  }
+
+  @media (max-width: 768px) {
+    .nav-desktop { display: none; }
+    .mobile-controls { display: inline-flex; }
   }
 </style>
 
@@ -131,50 +312,132 @@ import { siteData } from '../config/siteData';
   }
 
   function updateThemeIcon(theme: string | null) {
-    const icon = document.querySelector('.theme-icon');
-    if (icon) {
-      icon.textContent = theme === 'dark' ? '☀️' : '🌙';
-    }
+    const icons = document.querySelectorAll('.theme-icon');
+    icons.forEach(icon => { icon.textContent = theme === 'dark' ? '☀️' : '🌙'; });
   }
 
   function toggleTheme() {
     const html = document.documentElement;
     const currentTheme = html.getAttribute('data-theme') || 'light';
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
+
     html.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
     updateThemeIcon(newTheme);
   }
 
-  const themeToggle = document.getElementById('theme-toggle');
-  if (themeToggle) {
-    themeToggle.addEventListener('click', toggleTheme);
-  }
+  document.querySelectorAll('#theme-toggle, #theme-toggle-mobile').forEach(btn => {
+    btn.addEventListener('click', toggleTheme);
+  });
 
-  // Initialize theme on page load
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initTheme);
   } else {
     initTheme();
   }
 
-  // Changelog notification dot
+  // Changelog notification dot (desktop + mobile)
   (async function() {
-    const dot = document.getElementById('nav-dot');
-    if (!dot) return;
+    const dots = document.querySelectorAll('.nav-dot');
+    if (!dots.length) return;
+    const hide = () => dots.forEach(d => d.classList.add('hidden'));
     try {
       const res = await fetch('https://cc4-changelog.mtri-vo.workers.dev/api/changelog');
       if (!res.ok) return;
       const data = await res.json();
       const latest = (data.entries || [])[0];
-      if (!latest) { dot.classList.add('hidden'); return; }
+      if (!latest) { hide(); return; }
       const seen = localStorage.getItem('cc4-changelog-seen');
-      if (seen === latest.id) dot.classList.add('hidden');
+      if (seen === latest.id) hide();
       if (window.location.pathname === '/changelog' || window.location.pathname === '/changelog/') {
         localStorage.setItem('cc4-changelog-seen', latest.id);
-        dot.classList.add('hidden');
+        hide();
       }
     } catch { /* silent */ }
+  })();
+
+  // Mobile drawer nav
+  (function initMobileNav() {
+    const toggle = document.getElementById('nav-toggle');
+    const closeBtn = document.getElementById('nav-close');
+    const drawer = document.getElementById('mobile-drawer');
+    const scrim = document.getElementById('mobile-scrim');
+    if (!toggle || !drawer || !scrim) return;
+
+    let lastFocused: HTMLElement | null = null;
+    const desktopMq = window.matchMedia('(min-width: 769px)');
+
+    function isOpen() {
+      return toggle!.getAttribute('aria-expanded') === 'true';
+    }
+
+    function open() {
+      lastFocused = document.activeElement as HTMLElement;
+      drawer!.hidden = false;
+      scrim!.hidden = false;
+      // force reflow so the transition runs from hidden state
+      void (drawer as HTMLElement).offsetWidth;
+      drawer!.classList.add('visible');
+      scrim!.classList.add('visible');
+      toggle!.setAttribute('aria-expanded', 'true');
+      toggle!.setAttribute('aria-label', 'Close menu');
+      document.body.style.overflow = 'hidden';
+      const firstFocusable = drawer!.querySelector<HTMLElement>('a, button');
+      if (firstFocusable) firstFocusable.focus();
+      document.addEventListener('keydown', onKeydown);
+    }
+
+    function close() {
+      drawer!.classList.remove('visible');
+      scrim!.classList.remove('visible');
+      toggle!.setAttribute('aria-expanded', 'false');
+      toggle!.setAttribute('aria-label', 'Open menu');
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', onKeydown);
+      window.setTimeout(() => {
+        if (!isOpen()) {
+          drawer!.hidden = true;
+          scrim!.hidden = true;
+        }
+      }, 260);
+      if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    }
+
+    function onKeydown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close();
+        return;
+      }
+      if (e.key === 'Tab') {
+        const focusables = drawer!.querySelectorAll<HTMLElement>('a, button');
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    toggle.addEventListener('click', () => (isOpen() ? close() : open()));
+    closeBtn?.addEventListener('click', close);
+    scrim.addEventListener('click', close);
+    drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+
+    // Auto-close if viewport crosses back to desktop while open
+    const onMqChange = (e: MediaQueryListEvent) => {
+      if (e.matches && isOpen()) close();
+    };
+    if (desktopMq.addEventListener) {
+      desktopMq.addEventListener('change', onMqChange);
+    } else {
+      // Safari <14 fallback
+      (desktopMq as MediaQueryList & { addListener: (cb: (e: MediaQueryListEvent) => void) => void }).addListener(onMqChange);
+    }
   })();
 </script>
