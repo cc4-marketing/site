@@ -3,10 +3,12 @@ import HelloBar from '../components/HelloBar.astro';
 import FloatingSideBanner from '../components/FloatingSideBanner.astro';
 import CodeBlockCopy from '../components/CodeBlockCopy.astro';
 import { promoConfig } from '../config/promo';
+import { resolveOgImage, type OgPageKey, type OgPostInput } from '../lib/og/url';
 
 interface Props {
   title: string;
   description?: string;
+  /** Explicit image URL/path. When set, takes precedence over the OG engine. */
   image?: string;
   type?: 'website' | 'article';
   publishedDate?: string;
@@ -19,12 +21,16 @@ interface Props {
   showCourseSchema?: boolean;
   /** Set false to suppress base BreadcrumbList (when page provides its own) */
   showBreadcrumb?: boolean;
+  /** Blog post fields — triggers the hashed runtime OG URL. */
+  ogPost?: OgPostInput;
+  /** Static page key — resolves to /og/pages/{key}.png (build-time asset). */
+  ogPageKey?: OgPageKey;
 }
 
-const { 
-  title, 
+const {
+  title,
   description = "Master AI-powered marketing with Claude Code. Learn to work 10x faster with interactive lessons taught inside Claude Code itself.",
-  image = "/og-image.png",
+  image,
   type = "website",
   publishedDate,
   modifiedDate,
@@ -34,6 +40,8 @@ const {
   noindex = false,
   showCourseSchema = false,
   showBreadcrumb = true,
+  ogPost,
+  ogPageKey,
 } = Astro.props;
 
 const siteUrl = "https://cc4.marketing";
@@ -41,7 +49,17 @@ const currentPath = Astro.url.pathname;
 const canonicalUrl = canonical || `${siteUrl}${currentPath}`;
 const titleSuffix = type === "article" ? " | CC4M" : " | Claude Code for Marketers";
 const fullTitle = (title.includes("CC4") || title.includes("Claude Code for Marketers")) ? title : `${title}${titleSuffix}`;
-const ogImage = image.startsWith("http") ? image : `${siteUrl}${image}`;
+
+// Engine kill-switch — set OG_ENGINE_ENABLED=false in Cloudflare to fall back
+// to static defaults without a redeploy.
+const engineEnabled = (import.meta.env.OG_ENGINE_ENABLED ?? 'true') !== 'false';
+const resolvedImagePath = image ?? await resolveOgImage(
+  { path: currentPath, siteUrl, engineEnabled },
+  { post: ogPost, pageKey: ogPageKey },
+);
+const ogImage = resolvedImagePath.startsWith("http")
+  ? resolvedImagePath
+  : `${siteUrl}${resolvedImagePath}`;
 
 // JSON-LD Structured Data
 const websiteSchema = {

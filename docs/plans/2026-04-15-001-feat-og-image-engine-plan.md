@@ -537,10 +537,10 @@ const ogImage = resolvedPath.startsWith("http") ? resolvedPath : `${siteUrl}${re
 - Manual QA checklist in PR description: 8 pages × check `<meta property="og:image">` contents
 
 **Success criteria:**
-- [ ] All 8 static page categories emit distinct OG URLs (no regression — existing `image={...}` props still work)
-- [ ] Article JSON-LD `image` field matches `og:image` meta tag
-- [ ] No TypeScript errors
-- [ ] No visual regressions on live pages (OG tags are in `<head>`, don't affect UX)
+- [x] All 8 static page categories emit distinct OG URLs (no regression — `image={...}` still works as explicit override)
+- [x] Article JSON-LD `image` field matches `og:image` meta tag
+- [x] No TypeScript errors (build clean)
+- [x] No visual regressions (OG tags are in `<head>`)
 
 ---
 
