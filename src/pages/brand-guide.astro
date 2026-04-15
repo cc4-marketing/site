@@ -8,7 +8,7 @@ import Footer from '../components/Footer.astro';
 const brandGuideContent = await import('../../docs/brand-guidelines.md?raw').then(m => m.default).catch(() => 'Error loading brand guidelines.');
 ---
 
-<BaseLayout title="Brand Guidelines" description="Visual identity, voice, and tone for the CC4.Marketing platform." showCourseSchema={false} showBreadcrumb={false}>
+<BaseLayout title="Brand Guidelines" description="Visual identity, voice, and tone for the CC4.Marketing platform." ogPageKey="brand-guide" showCourseSchema={false} showBreadcrumb={false}>
   <Header />
   
   <div class="brand-hero">

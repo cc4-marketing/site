@@ -6,6 +6,7 @@ import { PortableText, Image } from 'emdash/ui';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import { resolveOgImage, type OgPostInput } from '../../lib/og/url';
 
 const { slug } = Astro.params;
 const { entry: post } = await getEmDashEntry('posts', slug!);
@@ -13,6 +14,23 @@ const { entry: post } = await getEmDashEntry('posts', slug!);
 if (!post) {
   return Astro.redirect('/404');
 }
+
+// Fields the OG engine needs (both for the hashed URL and for JSON-LD parity).
+const ogPost: OgPostInput = {
+  slug: slug!,
+  title: post.data.title,
+  excerpt: post.data.excerpt,
+  bylineIds: (post.data.bylines ?? []).map((b: { byline: { id: string } }) => b.byline.id),
+  updatedAt: post.data.updatedAt ?? post.data.publishedAt ?? new Date(0),
+  featuredImageSrc: post.data.featured_image?.src,
+};
+const resolvedOgPath = await resolveOgImage(
+  { path: Astro.url.pathname, siteUrl: 'https://cc4.marketing', engineEnabled: true },
+  { post: ogPost },
+);
+const resolvedOgUrl = resolvedOgPath.startsWith('http')
+  ? resolvedOgPath
+  : `https://cc4.marketing${resolvedOgPath}`;
 
 // Generate per-post keywords from title words + base set
 const stopWords = new Set(['a', 'an', 'the', 'and', 'or', 'to', 'in', 'for', 'of', 'with', 'how', 'is', 'at', 'by', 'on', 'its', 'your', 'from', 'this', 'that', 'are', 'was', 'be', 'as', 'it', 'do', 'not', 'but', 'all', 'their', 'has', 'have', 'can']);
@@ -46,7 +64,7 @@ const articleSchema = {
   'datePublished': post.data.publishedAt?.toISOString(),
   'dateModified': post.data.updatedAt?.toISOString(),
   'url': `https://cc4.marketing/blog/${slug}/`,
-  'image': post.data.featured_image?.src ? `https://cc4.marketing${post.data.featured_image.src}` : 'https://cc4.marketing/og-blog.png',
+  'image': resolvedOgUrl,
   'author': {
     '@type': 'Person',
     'name': 'Tri Vo',
@@ -84,7 +102,7 @@ const articleSchema = {
   type="article"
   publishedDate={post.data.publishedAt?.toISOString()}
   modifiedDate={post.data.updatedAt?.toISOString()}
-  image={post.data.featured_image?.src || '/og-blog.png'}
+  ogPost={ogPost}
   author="Tri Vo"
   keywords={postKeywords}
   showCourseSchema={false}

@@ -6,6 +6,24 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import emdash from 'emdash/astro';
 import { d1, r2 } from '@emdash-cms/cloudflare';
+import fs from 'node:fs';
+
+/** Loads .ttf/.woff files as Uint8Array modules so Satori can consume them at runtime on Workers. */
+function rawFonts(exts) {
+  return {
+    name: 'vite-plugin-raw-fonts',
+    enforce: 'pre',
+    transform(_code, id) {
+      if (exts.some((ext) => id.endsWith(ext))) {
+        const buffer = fs.readFileSync(id);
+        return {
+          code: `export default new Uint8Array([${buffer.join(',')}])`,
+          map: null,
+        };
+      }
+    },
+  };
+}
 
 // All module lesson URLs (SSR, not auto-discovered by sitemap plugin)
 const modulePages = [
@@ -97,4 +115,8 @@ export default defineConfig({
       storage: r2({ binding: 'MEDIA' }),
     }),
   ],
+  vite: {
+    plugins: [rawFonts(['.ttf', '.woff'])],
+    assetsInclude: ['**/*.ttf', '**/*.woff'],
+  },
 });
