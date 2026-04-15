@@ -63,6 +63,13 @@ export default defineConfig({
     mdx(),
     sitemap({
       customPages: [...modulePages, ...blogPages],
+      // Exclude dev-only routes from the sitemap. These are gated behind
+      // import.meta.env.DEV (404 in production) and Disallowed in robots.txt;
+      // including them in the sitemap sends a contradictory signal to crawlers.
+      filter: (page) =>
+        !page.includes('/og-preview') &&
+        !page.includes('/og/preview') &&
+        !page.includes('/og/debug'),
       serialize(item) {
         const url = item.url;
 
