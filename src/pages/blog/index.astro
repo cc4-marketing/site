@@ -24,7 +24,7 @@ function formatDate(date: Date | null | undefined): string {
 
 <BaseLayout
   title="Blog — AI Marketing Insights"
-  description="Practical guides, tutorials, and insights on using Claude Code for marketing. SEO strategies, campaign automation, and AI-powered content creation."
+  description="Practical guides and tutorials on using Claude Code for marketing — SEO strategies, campaign automation, AI content creation, and real-world case studies. Explore our latest posts."
   keywords={['AI marketing blog', 'Claude Code tutorials', 'marketing automation', 'AI content strategy', 'SEO with AI']}
   image="/og-blog.png"
   showCourseSchema={false}
@@ -37,14 +37,14 @@ function formatDate(date: Date | null | undefined): string {
     "@type": "CollectionPage",
     "name": "CC4.Marketing Blog",
     "description": "Practical guides, tutorials, and insights on using Claude Code for marketing.",
-    "url": "https://cc4.marketing/blog",
-    "isPartOf": { "@type": "WebSite", "name": "CC4.Marketing", "url": "https://cc4.marketing" },
-    "publisher": { "@type": "Organization", "name": "CC4.Marketing", "url": "https://cc4.marketing" },
+    "url": "https://cc4.marketing/blog/",
+    "isPartOf": { "@type": "WebSite", "name": "CC4.Marketing", "url": "https://cc4.marketing/" },
+    "publisher": { "@type": "Organization", "name": "CC4.Marketing", "url": "https://cc4.marketing/" },
     "breadcrumb": {
       "@type": "BreadcrumbList",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://cc4.marketing" },
-        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://cc4.marketing/blog" }
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://cc4.marketing/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://cc4.marketing/blog/" }
       ]
     }
   })} />
@@ -71,7 +71,7 @@ function formatDate(date: Date | null | undefined): string {
       ) : (
         <div class="blog-grid">
           {published.map((post) => (
-            <a href={`/blog/${post.data.slug}`} class="blog-card">
+            <a href={`/blog/${post.data.slug}/`} class="blog-card">
               {post.data.featured_image?.src && (
                 <div class="blog-card-image">
                   <img src={post.data.featured_image.src} alt={post.data.featured_image.alt || post.data.title} loading="lazy" />

@@ -14,6 +14,11 @@ if (!post) {
   return Astro.redirect('/404');
 }
 
+// Generate per-post keywords from title words + base set
+const stopWords = new Set(['a', 'an', 'the', 'and', 'or', 'to', 'in', 'for', 'of', 'with', 'how', 'is', 'at', 'by', 'on', 'its', 'your', 'from', 'this', 'that', 'are', 'was', 'be', 'as', 'it', 'do', 'not', 'but', 'all', 'their', 'has', 'have', 'can']);
+const titleWords = post.data.title.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter((w: string) => w.length > 2 && !stopWords.has(w));
+const postKeywords = [...new Set([...titleWords.slice(0, 6), 'Claude Code', 'AI marketing'])];
+
 function formatDate(date: Date | null | undefined): string {
   if (!date) return '';
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -81,7 +86,7 @@ const articleSchema = {
   modifiedDate={post.data.updatedAt?.toISOString()}
   image={post.data.featured_image?.src || '/og-blog.png'}
   author="Tri Vo"
-  keywords={['AI marketing', 'Claude Code', 'marketing automation', 'AI content strategy']}
+  keywords={postKeywords}
   showCourseSchema={false}
   showBreadcrumb={false}
 >
@@ -135,13 +140,13 @@ const articleSchema = {
       {/* Prev/Next */}
       <nav class="blog-post-nav">
         {prevPost ? (
-          <a href={`/blog/${prevPost.data.slug}`} class="blog-nav-link blog-nav-prev">
+          <a href={`/blog/${prevPost.data.slug}/`} class="blog-nav-link blog-nav-prev">
             <span class="blog-nav-label">&larr; Previous</span>
             <span class="blog-nav-title">{prevPost.data.title}</span>
           </a>
         ) : <div />}
         {nextPost ? (
-          <a href={`/blog/${nextPost.data.slug}`} class="blog-nav-link blog-nav-next">
+          <a href={`/blog/${nextPost.data.slug}/`} class="blog-nav-link blog-nav-next">
             <span class="blog-nav-label">Next &rarr;</span>
             <span class="blog-nav-title">{nextPost.data.title}</span>
           </a>

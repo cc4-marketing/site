@@ -16,6 +16,22 @@ For changes to the interactive course content, see the [course repo](https://git
 - `/hellobar` skill for toggling the site announcement bar on/off and creating new announcements with custom text, links, and cooldown
 - Hello bar updated to promote the Anthropic growth marketing case study blog post
 
+### Fixed
+
+- Course schema no longer duplicated on lesson, download, brand guide, and changelog pages — now only on homepage
+- Broken 1-item breadcrumbs removed from lesson and secondary pages
+- Blog post title tags shortened (`| CC4M` suffix for articles vs full site name) to stay under 60 chars
+- Blog post meta descriptions trimmed to 150-160 char target
+- Per-post meta keywords generated from title instead of identical hardcoded set
+- Internal blog links now include trailing slashes (eliminates unnecessary 301 redirects)
+- Schema URLs use trailing slashes consistently across all JSON-LD blocks
+- WebSite publisher schema now includes logo (consistent with BlogPosting publisher)
+- Course schema enriched with `offers` (free) and `image` for Google rich result eligibility
+- Orphaned font preconnect hints removed from layout (no Google Fonts loaded)
+- `llms.txt` and `llms-full.txt` updated with all 3 individual blog post URLs and descriptions
+- Blog index meta description expanded with CTA and CollectionPage URL trailing slash fixed
+- Homepage title and meta description expanded for better SERP coverage
+
 ## [0.3.0] - 2026-04-08
 
 ### Added

@@ -32,14 +32,15 @@ const {
   keywords = ["Claude Code", "marketing", "AI marketing", "content marketing", "marketing automation", "Claude AI", "marketing course"],
   canonical,
   noindex = false,
-  showCourseSchema = true,
+  showCourseSchema = false,
   showBreadcrumb = true,
 } = Astro.props;
 
 const siteUrl = "https://cc4.marketing";
 const currentPath = Astro.url.pathname;
 const canonicalUrl = canonical || `${siteUrl}${currentPath}`;
-const fullTitle = (title.includes("CC4") || title.includes("Claude Code for Marketers")) ? title : `${title} | Claude Code for Marketers`;
+const titleSuffix = type === "article" ? " | CC4M" : " | Claude Code for Marketers";
+const fullTitle = (title.includes("CC4") || title.includes("Claude Code for Marketers")) ? title : `${title}${titleSuffix}`;
 const ogImage = image.startsWith("http") ? image : `${siteUrl}${image}`;
 
 // JSON-LD Structured Data
@@ -48,12 +49,18 @@ const websiteSchema = {
   "@type": "WebSite",
   "name": "Claude Code for Marketers",
   "alternateName": "CC4.Marketing",
-  "url": siteUrl,
+  "url": `${siteUrl}/`,
   "description": "Interactive course teaching AI-powered marketing workflows with Claude Code",
   "publisher": {
     "@type": "Organization",
     "name": "CC4.Marketing",
-    "url": siteUrl
+    "url": `${siteUrl}/`,
+    "logo": {
+      "@type": "ImageObject",
+      "url": `${siteUrl}/og-image.png`,
+      "width": 1200,
+      "height": 630
+    }
   }
 };
 
@@ -62,14 +69,21 @@ const courseSchema = {
   "@type": "Course",
   "name": "Claude Code for Marketers",
   "description": "Master AI-powered marketing workflows. Learn to work 10x faster with interactive lessons.",
+  "url": `${siteUrl}/`,
+  "image": `${siteUrl}/og-image.png`,
   "provider": {
     "@type": "Organization",
     "name": "CC4.Marketing",
-    "url": siteUrl
+    "url": `${siteUrl}/`
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
   },
   "educationalLevel": "Beginner to Intermediate",
   "teaches": ["AI Marketing", "Content Creation", "Marketing Automation", "Claude Code"],
-  "numberOfCredits": "17 lessons",
   "timeRequired": "PT10H",
   "inLanguage": "en",
   "isAccessibleForFree": true,
@@ -89,7 +103,7 @@ const breadcrumbSchema = {
       "@type": "ListItem",
       "position": 1,
       "name": "Home",
-      "item": siteUrl
+      "item": `${siteUrl}/`
     }
   ]
 };
@@ -152,9 +166,8 @@ const breadcrumbSchema = {
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   
-  <!-- Preconnect for fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Preconnect for analytics -->
+  <link rel="preconnect" href="https://beamanalytics.b-cdn.net">
   
   <!-- Theme Color -->
   <meta name="theme-color" content="#B85C3C">

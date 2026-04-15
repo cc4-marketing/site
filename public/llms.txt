@@ -17,7 +17,10 @@ CC4.Marketing is an open-source course that teaches AI-powered marketing workflo
 ## Blog
 The blog publishes practical guides, tutorials, and insights on AI-powered marketing with Claude Code. Content is SEO-focused and distinct from the Substack newsletter (which covers announcements and community updates).
 
-Blog posts are server-rendered from an Emdash CMS (Cloudflare D1). Individual posts at: https://cc4.marketing/blog/{post-slug}
+### Published Posts
+- [How to Use Claude Code for Marketing: A Complete 2026 Guide](https://cc4.marketing/blog/claude-code-for-marketing-guide-2026/)
+- [How to Write a Campaign Brief with AI in 10 Minutes](https://cc4.marketing/blog/write-campaign-brief-with-ai/)
+- [How Anthropic's Growth Marketing Team Uses Claude Code to 10x Output](https://cc4.marketing/blog/anthropic-growth-marketing-claude-code/)
 
 ## Course Modules
 - Module 0: Getting Started (4 lessons, 30 min) — Installation, setup, first task

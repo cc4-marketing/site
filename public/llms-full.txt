@@ -4,10 +4,14 @@
 
 ## Blog
 The CC4.Marketing blog publishes practical guides on AI-powered marketing with Claude Code.
-- Blog index: https://cc4.marketing/blog
-- Authors: https://cc4.marketing/blog/authors
+- Blog index: https://cc4.marketing/blog/
+- Authors: https://cc4.marketing/blog/authors/
 - Content: SEO tutorials, campaign brief workflows, marketing automation guides
-- Posts are server-rendered from Emdash CMS at /blog/{post-slug}
+
+### Published Posts
+- [How to Use Claude Code for Marketing: A Complete 2026 Guide](https://cc4.marketing/blog/claude-code-for-marketing-guide-2026/) — Comprehensive guide for non-technical marketers covering campaign briefs, copy generation, competitive analysis, analytics, and SEO workflows.
+- [How to Write a Campaign Brief with AI in 10 Minutes](https://cc4.marketing/blog/write-campaign-brief-with-ai/) — Step-by-step guide to generating structured campaign briefs using Claude Code, with audience analysis, channel strategy, and multi-perspective review.
+- [How Anthropic's Growth Marketing Team Uses Claude Code to 10x Output](https://cc4.marketing/blog/anthropic-growth-marketing-claude-code/) — Case study: one non-technical hire running paid search, paid social, app stores, email, and SEO with Claude Code — automated ad creative, Figma plugin, Meta Ads MCP server, and a memory-driven iteration system.
 
 ## Module 0: Getting Started (4 lessons, ~30 minutes)
 
