@@ -153,55 +153,225 @@ def parse_frontmatter(md_text: str) -> tuple[dict[str, Any], str]:
 
 
 # ---------- Markdown → PortableText ---------------------------------------
+#
+# PortableText is Sanity's rich-text format: an array of blocks, each a
+# paragraph / heading / list item / blockquote with inline spans carrying
+# marks (strong, em, code, link refs). The parser below handles the subset
+# we actually author:
+#
+#   block styles:  normal, h2, h3, blockquote
+#   list types:    bullet (-, *), number (1., 2.)
+#   inline marks:  **strong**, *em*, _em_, `code`, [link](url)
+#   other:         --- as horizontal rule (emitted as an empty <hr/>-like
+#                  block the frontend can ignore or render as a divider)
 
-def make_block(style: str, text: str) -> dict[str, Any]:
-    return {
+_INLINE_PATTERNS = [
+    # (regex, mark_or_kind) — order matters; `**` must be tried before `*`
+    (re.compile(r"\*\*(.+?)\*\*"), "strong"),
+    (re.compile(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)"), "em"),
+    (re.compile(r"(?<![A-Za-z0-9])_(.+?)_(?![A-Za-z0-9])"), "em"),
+    (re.compile(r"`([^`]+)`"), "code"),
+    (re.compile(r"\[([^\]]+)\]\(([^)]+)\)"), "link"),
+]
+
+
+def _parse_inline(text: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Parses inline markdown into a list of PortableText spans + markDefs.
+
+    Returns (spans, markDefs). Uses a tokenization pass: find the leftmost
+    match across all patterns, emit a plain span for the preceding text,
+    then a marked span for the match, then recurse on the remainder.
+    """
+    spans: list[dict[str, Any]] = []
+    mark_defs: list[dict[str, Any]] = []
+
+    def emit_plain(t: str) -> None:
+        if not t:
+            return
+        spans.append({"_type": "span", "_key": gen_key(), "marks": [], "text": t})
+
+    def emit_marked(t: str, marks: list[str]) -> None:
+        if not t:
+            return
+        spans.append({"_type": "span", "_key": gen_key(), "marks": marks, "text": t})
+
+    cursor = 0
+    while cursor < len(text):
+        # Find the earliest match of any pattern.
+        best: tuple[re.Match[str], str] | None = None
+        for pat, kind in _INLINE_PATTERNS:
+            m = pat.search(text, cursor)
+            if not m:
+                continue
+            if best is None or m.start() < best[0].start():
+                best = (m, kind)
+        if best is None:
+            emit_plain(text[cursor:])
+            break
+        match, kind = best
+        emit_plain(text[cursor : match.start()])
+        if kind == "link":
+            label, href = match.group(1), match.group(2)
+            mark_key = gen_key()
+            mark_defs.append({"_key": mark_key, "_type": "link", "href": href})
+            # Recursively parse the label for nested marks.
+            label_spans, label_defs = _parse_inline(label)
+            mark_defs.extend(label_defs)
+            for s in label_spans:
+                s["marks"] = [*s.get("marks", []), mark_key]
+                spans.append(s)
+        else:
+            # strong / em / code — recursively parse content for nested marks
+            # (e.g. a **strong** segment may contain `code` inside it).
+            inner = match.group(1)
+            inner_spans, inner_defs = _parse_inline(inner)
+            mark_defs.extend(inner_defs)
+            for s in inner_spans:
+                s["marks"] = [kind, *s.get("marks", [])]
+                spans.append(s)
+        cursor = match.end()
+
+    # Collapse adjacent spans with identical marks so the output is compact.
+    merged: list[dict[str, Any]] = []
+    for s in spans:
+        if merged and merged[-1].get("marks") == s.get("marks"):
+            merged[-1]["text"] += s["text"]
+            continue
+        merged.append(s)
+    return merged, mark_defs
+
+
+def _build_block(
+    style: str,
+    text: str,
+    list_item: str | None = None,
+    level: int | None = None,
+) -> dict[str, Any]:
+    spans, mark_defs = _parse_inline(text)
+    if not spans:
+        spans = [{"_type": "span", "_key": gen_key(), "marks": [], "text": ""}]
+    block: dict[str, Any] = {
         "_type": "block",
         "_key": gen_key(),
         "style": style,
-        "children": [
-            {"_type": "span", "_key": gen_key(), "text": text},
-        ],
+        "markDefs": mark_defs,
+        "children": spans,
     }
+    if list_item:
+        block["listItem"] = list_item
+        block["level"] = level or 1
+    return block
+
+
+# Kept for backwards compatibility with any callers that didn't use inline.
+def make_block(style: str, text: str) -> dict[str, Any]:
+    return _build_block(style, text)
 
 
 def markdown_to_portable_text(body: str) -> list[dict[str, Any]]:
     """Convert markdown body into a PortableText block array.
 
-    Rules:
-        - Blank-line-separated chunks become blocks
-        - A chunk starting with `## ` becomes an h2 block
-        - A chunk starting with `### ` becomes an h3 block
-        - Everything else becomes a `normal` block; internal newlines are
-          collapsed to single spaces (standard markdown paragraph behavior)
+    Handles: h2/h3 headings, bold / italic / code / links, blockquotes,
+    bullet + numbered lists, and `---` horizontal rules. Lines within a
+    single paragraph are collapsed to spaces (standard markdown).
     """
     blocks: list[dict[str, Any]] = []
-    for raw_chunk in re.split(r"\n\s*\n", body.strip()):
-        chunk = raw_chunk.strip()
-        if not chunk:
+    lines = body.strip().split("\n")
+    i = 0
+
+    def is_blank(idx: int) -> bool:
+        return idx >= len(lines) or not lines[idx].strip()
+
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+
+        if not stripped:
+            i += 1
             continue
 
-        if chunk.startswith("## "):
-            # Only accept single-line headings
-            heading_text = chunk[3:].split("\n", 1)[0].strip()
-            blocks.append(make_block("h2", heading_text))
-            # If there's trailing body after the heading in the same chunk,
-            # emit it as a normal block too
-            if "\n" in chunk:
-                rest = chunk.split("\n", 1)[1].strip()
-                if rest:
-                    blocks.append(make_block("normal", " ".join(rest.split())))
-        elif chunk.startswith("### "):
-            heading_text = chunk[4:].split("\n", 1)[0].strip()
-            blocks.append(make_block("h3", heading_text))
-            if "\n" in chunk:
-                rest = chunk.split("\n", 1)[1].strip()
-                if rest:
-                    blocks.append(make_block("normal", " ".join(rest.split())))
-        else:
-            # Paragraph: collapse newlines within the chunk to spaces
-            paragraph = " ".join(chunk.split())
-            blocks.append(make_block("normal", paragraph))
+        # Horizontal rule
+        if re.fullmatch(r"-{3,}|\*{3,}|_{3,}", stripped):
+            blocks.append({
+                "_type": "block",
+                "_key": gen_key(),
+                "style": "normal",
+                "markDefs": [],
+                "children": [{"_type": "span", "_key": gen_key(), "marks": [], "text": ""}],
+                "listItem": None,
+            })
+            # Represent the HR as an empty paragraph; a cleaner option would
+            # be a custom block type, but PortableText renderers generally
+            # tolerate empty normal blocks as spacers.
+            i += 1
+            continue
+
+        # Headings (only ## and ###)
+        if stripped.startswith("### "):
+            blocks.append(_build_block("h3", stripped[4:].strip()))
+            i += 1
+            continue
+        if stripped.startswith("## "):
+            blocks.append(_build_block("h2", stripped[3:].strip()))
+            i += 1
+            continue
+        if stripped.startswith("# "):
+            # Demote H1 to H2 — the page already has an H1 from the title.
+            blocks.append(_build_block("h2", stripped[2:].strip()))
+            i += 1
+            continue
+
+        # Blockquote (single level; consecutive > lines merged)
+        if stripped.startswith("> "):
+            quote_lines: list[str] = []
+            while i < len(lines) and lines[i].strip().startswith("> "):
+                quote_lines.append(lines[i].strip()[2:])
+                i += 1
+            blocks.append(_build_block("blockquote", " ".join(quote_lines)))
+            continue
+
+        # Unordered list
+        if re.match(r"^[-*] ", stripped):
+            while i < len(lines) and re.match(r"^[-*] ", lines[i].strip()):
+                blocks.append(
+                    _build_block(
+                        "normal",
+                        lines[i].strip()[2:],
+                        list_item="bullet",
+                        level=1,
+                    )
+                )
+                i += 1
+            continue
+
+        # Ordered list
+        if re.match(r"^\d+\.\s", stripped):
+            while i < len(lines) and re.match(r"^\d+\.\s", lines[i].strip()):
+                item = re.sub(r"^\d+\.\s", "", lines[i].strip())
+                blocks.append(_build_block("normal", item, list_item="number", level=1))
+                i += 1
+            continue
+
+        # Paragraph — accumulate lines until blank or special marker.
+        para_lines: list[str] = [stripped]
+        j = i + 1
+        while j < len(lines):
+            nxt = lines[j].strip()
+            if not nxt:
+                break
+            # Stop at any block-level marker.
+            if (
+                nxt.startswith("#")
+                or nxt.startswith("> ")
+                or re.match(r"^[-*] ", nxt)
+                or re.match(r"^\d+\.\s", nxt)
+                or re.fullmatch(r"-{3,}|\*{3,}|_{3,}", nxt)
+            ):
+                break
+            para_lines.append(nxt)
+            j += 1
+        blocks.append(_build_block("normal", " ".join(para_lines)))
+        i = j
 
     return blocks
 

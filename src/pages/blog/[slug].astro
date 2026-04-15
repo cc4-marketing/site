@@ -24,6 +24,11 @@ const ogPost: OgPostInput = {
   updatedAt: post.data.updatedAt ?? post.data.publishedAt ?? new Date(0),
   featuredImageSrc: post.data.featured_image?.src,
 };
+
+// Author is pulled from the post's primary byline (Emdash). Falls back to
+// the house team byline so older un-backfilled posts still render cleanly.
+const primaryByline = post.data.bylines?.[0]?.byline;
+const authorName = primaryByline?.displayName ?? 'CC4.Marketing Team';
 const resolvedOgPath = await resolveOgImage(
   { path: Astro.url.pathname, siteUrl: 'https://cc4.marketing', engineEnabled: true },
   { post: ogPost },
@@ -67,7 +72,7 @@ const articleSchema = {
   'image': resolvedOgUrl,
   'author': {
     '@type': 'Person',
-    'name': 'Tri Vo',
+    'name': authorName,
     'url': 'https://cc4.marketing/blog/authors/',
   },
   'publisher': {
@@ -115,7 +120,7 @@ const breadcrumbListSchema = {
   publishedDate={post.data.publishedAt?.toISOString()}
   modifiedDate={post.data.updatedAt?.toISOString()}
   ogPost={ogPost}
-  author="Tri Vo"
+  author={authorName}
   keywords={postKeywords}
   showCourseSchema={false}
   showBreadcrumb={false}
@@ -139,7 +144,7 @@ const breadcrumbListSchema = {
         )}
         <div class="blog-post-byline">
           <span class="byline-label">By</span>
-          <a href="/blog/authors/" class="byline-author">CC4.Marketing Team</a>
+          <a href="/blog/authors/" class="byline-author">{authorName}</a>
         </div>
       </header>
 
