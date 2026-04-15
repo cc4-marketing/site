@@ -463,10 +463,10 @@ const ogImage = resolvedPath.startsWith("http") ? resolvedPath : `${siteUrl}${re
 - 12+ unit tests covering hash determinism, URL routing rules, kill-switch behavior
 
 **Success criteria:**
-- [ ] `resolveOgImage()` returns correct URL for all 5 routing rules
-- [ ] Hash is deterministic across runs (same inputs → same 8-char hex)
-- [ ] Hash changes when `OG_TEMPLATE_VERSION` bumps
-- [ ] Unit tests pass
+- [x] `resolveOgImage()` returns correct URL for all 5 routing rules
+- [x] Hash is deterministic across runs (same inputs → same 8-char hex)
+- [x] Hash changes when `OG_TEMPLATE_VERSION` bumps
+- [x] Unit tests pass (32 tests green)
 
 ---
 
