@@ -13,6 +13,7 @@ For changes to the interactive course content, see the [course repo](https://git
 
 - `/publish-post` skill for end-to-end blog post publishing — converts markdown to PortableText, validates cover images, inserts into Emdash D1, updates sitemap, and ships to production
 - Automatic changelog entries in `/ship` for `feat:` and `fix:` commits — appends to `[Unreleased]` in CHANGELOG.md in the same commit, with KV sync deferred to `/release`
+- `/hellobar` skill for toggling the site announcement bar on/off and creating new announcements with custom text, links, and cooldown
 
 ## [0.3.0] - 2026-04-08
 
