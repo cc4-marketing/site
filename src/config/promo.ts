@@ -7,11 +7,11 @@ export const promoConfig = {
     // Hello Bar (top banner)
     helloBar: {
         enabled: true,
-        text: "ClaudeKit Marketing v1.3.0 just dropped",
-        linkText: "See what's new",
-        linkUrl: "https://claudekit.cc/updates/claudekit-marketing/v1-3-0-the-biggest-update-yet?ref=BIZE9CYY",
-        storageKey: "hellobar-claudekit-v130",
-        cooldownDays: 3  // Re-show after 3 days
+        text: "New blog post: How Anthropic 10x'd growth marketing",
+        linkText: "Read now",
+        linkUrl: "https://cc4.marketing/blog/anthropic-growth-marketing-claude-code",
+        storageKey: "hellobar-new-blog-post-how-anthropic",
+        cooldownDays: 3
     },
 
     // Floating Side Banner (appears on scroll) — global
