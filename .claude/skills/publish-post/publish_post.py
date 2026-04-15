@@ -71,6 +71,40 @@ def gen_key() -> str:
     return secrets.token_hex(5)
 
 
+# ---------- Byline lookup --------------------------------------------------
+
+def resolve_byline_id(slug: str) -> str:
+    """Look up a byline ID from remote D1 by slug.
+
+    Raises a helpful error if no matching byline exists — we never
+    silently publish a post without the author the user chose.
+    """
+    cmd = [
+        "npx", "wrangler", "d1", "execute", "cc4-emdash", "--remote",
+        "--command", f"SELECT id FROM _emdash_bylines WHERE slug='{sql_escape(slug)}' LIMIT 1",
+        "--json",
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+    if result.returncode != 0:
+        raise RuntimeError(f"byline lookup failed: {result.stderr.strip()}")
+    try:
+        payload = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        raise RuntimeError(f"byline lookup returned non-JSON: {result.stdout[:200]}")
+    # wrangler --json returns [{results: [...], success: true, meta: ...}]
+    rows: list[dict[str, Any]] = []
+    if isinstance(payload, list) and payload:
+        rows = payload[0].get("results") or []
+    elif isinstance(payload, dict):
+        rows = payload.get("results") or []
+    if not rows:
+        raise ValueError(
+            f"no byline with slug '{slug}' in _emdash_bylines. "
+            "Insert one first (see SKILL.md) or pick a different author."
+        )
+    return rows[0]["id"]
+
+
 # ---------- Frontmatter parsing -------------------------------------------
 
 FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n(.*)$", re.DOTALL)
@@ -306,6 +340,8 @@ class PostRecord:
     cover_alt: str
     published_at: str
     content_blocks: list[dict[str, Any]]
+    byline_id: str | None = None
+    byline_cb_id: str | None = None
 
     def to_sql(self) -> str:
         featured = {
@@ -318,10 +354,11 @@ class PostRecord:
         featured_json = json.dumps(featured, ensure_ascii=False)
         content_json = json.dumps(self.content_blocks, ensure_ascii=False)
 
-        return (
+        byline_val = f"'{self.byline_id}'" if self.byline_id else "NULL"
+        post_insert = (
             "INSERT INTO ec_posts (\n"
             "    id, slug, status, title, featured_image, content, excerpt,\n"
-            "    published_at, created_at, updated_at, version, locale\n"
+            "    primary_byline_id, published_at, created_at, updated_at, version, locale\n"
             ") VALUES (\n"
             f"    '{self.id}',\n"
             f"    '{self.slug}',\n"
@@ -330,6 +367,7 @@ class PostRecord:
             f"    '{sql_escape(featured_json)}',\n"
             f"    '{sql_escape(content_json)}',\n"
             f"    '{sql_escape(self.excerpt)}',\n"
+            f"    {byline_val},\n"
             f"    '{self.published_at}',\n"
             f"    '{self.published_at}',\n"
             f"    '{self.published_at}',\n"
@@ -337,6 +375,23 @@ class PostRecord:
             f"    'en'\n"
             ");\n"
         )
+
+        if not self.byline_id or not self.byline_cb_id:
+            return post_insert
+
+        byline_link = (
+            "INSERT INTO _emdash_content_bylines (\n"
+            "    id, collection_slug, content_id, byline_id, sort_order, created_at\n"
+            ") VALUES (\n"
+            f"    '{self.byline_cb_id}',\n"
+            f"    'posts',\n"
+            f"    '{self.id}',\n"
+            f"    '{self.byline_id}',\n"
+            f"    0,\n"
+            f"    '{self.published_at}'\n"
+            ");\n"
+        )
+        return post_insert + byline_link
 
 
 # ---------- Main -----------------------------------------------------------
@@ -367,6 +422,17 @@ def build_record(md_path: Path) -> PostRecord:
     if not content_blocks:
         raise ValueError("markdown body is empty; nothing to publish")
 
+    # Author is optional at the frontmatter level; when present, it must
+    # match an existing byline slug in _emdash_bylines. Defaults handled
+    # downstream — no byline means the OG template renders "CC4.Marketing
+    # Team" as the fallback.
+    author_slug = meta.get("author")
+    byline_id: str | None = None
+    byline_cb_id: str | None = None
+    if author_slug:
+        byline_id = resolve_byline_id(author_slug)
+        byline_cb_id = gen_id()
+
     return PostRecord(
         id=gen_id(),
         slug=slug,
@@ -376,6 +442,8 @@ def build_record(md_path: Path) -> PostRecord:
         cover_alt=cover_alt,
         published_at=published_at,
         content_blocks=content_blocks,
+        byline_id=byline_id,
+        byline_cb_id=byline_cb_id,
     )
 
 

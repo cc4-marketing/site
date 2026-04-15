@@ -5,6 +5,8 @@ import { parseSlugHash } from '../../../lib/og/url';
 import { renderOgImage, isValidPng } from '../../../lib/og/renderer';
 import { renderBlogTemplate, type BylineForOg } from '../../../lib/og/templates/blog';
 
+type EmdashByline = { byline: { id?: string; displayName: string; avatarMediaId?: string | null }; roleLabel?: string | null };
+
 export const prerender = false;
 
 const PNG_CACHE_CONTROL = 'public, max-age=31536000, immutable';
@@ -89,10 +91,15 @@ export const GET: APIRoute = async ({ params, url }) => {
     });
   }
 
+  const bylinesWithAvatars = await resolveBylinesWithAvatars(
+    post.bylines as EmdashByline[] | undefined,
+    env as { DB?: D1Database; MEDIA?: R2Bucket },
+  );
+
   const html = renderBlogTemplate({
     title: post.title ?? 'Untitled',
     excerpt: post.excerpt,
-    bylines: bylinesForOg(post.bylines as Array<{ byline: { displayName: string }; roleLabel?: string | null }> | undefined),
+    bylines: bylinesWithAvatars,
   });
 
   let renderResp: Response;
@@ -140,14 +147,73 @@ export const GET: APIRoute = async ({ params, url }) => {
   return out;
 };
 
-function bylinesForOg(
-  bylines: Array<{ byline: { displayName: string }; roleLabel?: string | null }> | undefined,
-): BylineForOg[] {
-  if (!bylines) return [];
-  return bylines.map((b) => ({
-    displayName: b.byline.displayName,
-    roleLabel: b.roleLabel ?? undefined,
-  }));
+/**
+ * For each byline, look up its avatar (media.storage_key) and fetch the
+ * bytes from R2 so Satori can embed them as a base64 data URI. Non-fatal
+ * on any lookup failure — the template falls back to an initials circle.
+ */
+async function resolveBylinesWithAvatars(
+  bylines: EmdashByline[] | undefined,
+  env: { DB?: D1Database; MEDIA?: R2Bucket },
+): Promise<BylineForOg[]> {
+  if (!bylines || bylines.length === 0) return [];
+
+  const mediaIds = bylines
+    .map((b) => b.byline.avatarMediaId)
+    .filter((id): id is string => !!id);
+
+  // Batch-resolve media → storage_key in one D1 query.
+  const storageKeys = new Map<string, string>();
+  if (env.DB && mediaIds.length > 0) {
+    try {
+      const placeholders = mediaIds.map(() => '?').join(',');
+      const result = await env.DB.prepare(
+        `SELECT id, storage_key FROM media WHERE id IN (${placeholders})`,
+      )
+        .bind(...mediaIds)
+        .all<{ id: string; storage_key: string }>();
+      for (const row of result.results ?? []) {
+        if (row.storage_key) storageKeys.set(row.id, row.storage_key);
+      }
+    } catch (err) {
+      console.error('og.media_lookup_failed', { err: String(err) });
+    }
+  }
+
+  const results: BylineForOg[] = [];
+  for (const b of bylines) {
+    let avatarDataUri: string | undefined;
+    const mediaId = b.byline.avatarMediaId ?? undefined;
+    const key = mediaId ? storageKeys.get(mediaId) : undefined;
+    if (key && env.MEDIA) {
+      try {
+        const obj = await env.MEDIA.get(key);
+        if (obj) {
+          const bytes = new Uint8Array(await obj.arrayBuffer());
+          const contentType = obj.httpMetadata?.contentType ?? 'image/png';
+          avatarDataUri = `data:${contentType};base64,${bytesToBase64(bytes)}`;
+        }
+      } catch (err) {
+        console.error('og.avatar_fetch_failed', { key, err: String(err) });
+      }
+    }
+    results.push({
+      displayName: b.byline.displayName,
+      roleLabel: b.roleLabel ?? undefined,
+      avatarDataUri,
+    });
+  }
+  return results;
+}
+
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.byteLength; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, Math.min(i + chunk, bytes.byteLength)));
+  }
+  // btoa is available on Workers runtime
+  return btoa(binary);
 }
 
 function pngResponse(bytes: Uint8Array): Response {

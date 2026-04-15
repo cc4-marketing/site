@@ -3,6 +3,8 @@ import { OG_COLORS, OG_SITE } from '../config';
 export interface BylineForOg {
   displayName: string;
   roleLabel?: string | null;
+  /** Base64 data URI for the avatar image (already encoded upstream). */
+  avatarDataUri?: string;
 }
 
 export interface BlogTemplateInput {
@@ -30,65 +32,114 @@ function sanitize(text: string): string {
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&nbsp;/g, ' ')
-    // Remove any literal tag-breaking chars after entity decode.
     .replace(/[<>]/g, '')
     .replace(/&(?!#?\w+;)/g, 'and')
-    // Strip emoji + extended pictographic runs.
     .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F02F}\u{FE0F}]/gu, '')
-    // Collapse whitespace introduced by stripping.
     .replace(/\s+/g, ' ')
     .trim();
 }
 
-/** Title font size steps down when the title would wrap awkwardly. */
+/**
+ * Title is smaller than the pre-avatar variant because the excerpt now
+ * takes vertical space below it. Cap at ~2 visual lines for readability.
+ */
 function titleFontSize(title: string): number {
-  if (title.length <= 40) return 84;
-  if (title.length <= 60) return 72;
-  if (title.length <= 80) return 60;
-  return 52;
+  if (title.length <= 40) return 68;
+  if (title.length <= 60) return 58;
+  if (title.length <= 80) return 50;
+  return 44;
 }
 
-/** Renders a comma-separated byline string, collapsing 5+ into "+N more". */
-function formatBylines(bylines: BylineForOg[] | undefined): string {
-  if (!bylines || bylines.length === 0) return 'CC4.Marketing Team';
-  const names = bylines.map((b) => sanitize(b.displayName)).filter(Boolean);
-  if (names.length === 0) return 'CC4.Marketing Team';
-  if (names.length <= 3) return names.join(', ');
-  const shown = names.slice(0, 3).join(', ');
-  return `${shown} +${names.length - 3} more`;
+/** Truncate excerpt to roughly 2 lines at 24px (~130 chars). */
+function clampExcerpt(excerpt: string): string {
+  const clean = sanitize(excerpt);
+  if (clean.length <= 130) return clean;
+  return clean.slice(0, 127).replace(/[\s,;:.!?]+$/, '') + '…';
+}
+
+interface PrimaryByline {
+  name: string;
+  role: string;
+  avatarDataUri?: string;
+  initial: string;
+}
+
+function primaryByline(bylines: BylineForOg[] | undefined): PrimaryByline {
+  if (!bylines || bylines.length === 0) {
+    return { name: 'CC4.Marketing Team', role: 'cc4.marketing', initial: 'C' };
+  }
+  const first = bylines[0];
+  const name = sanitize(first.displayName) || 'CC4.Marketing Team';
+  const extraCount = bylines.length - 1;
+  const roleBase = first.roleLabel ? sanitize(first.roleLabel) : 'Author';
+  const role = extraCount > 0 ? `${roleBase} · +${extraCount} more` : roleBase;
+  return {
+    name,
+    role,
+    avatarDataUri: first.avatarDataUri,
+    initial: name.charAt(0).toUpperCase() || 'C',
+  };
 }
 
 function categoryLabel(category: string | undefined): string {
   return sanitize(category ?? 'Blog').toUpperCase();
 }
 
+function avatarBlock(byline: PrimaryByline): string {
+  const size = 96;
+  if (byline.avatarDataUri) {
+    return `<div style="display:flex;width:${size}px;height:${size}px;border-radius:${size / 2}px;border:3px solid ${OG_COLORS.charcoal};background:${OG_COLORS.cream};overflow:hidden;margin-right:20px;flex-shrink:0;">
+      <img src="${byline.avatarDataUri}" width="${size - 6}" height="${size - 6}" style="display:flex;width:${size - 6}px;height:${size - 6}px;object-fit:cover;" />
+    </div>`;
+  }
+  // Initials fallback — rust circle, cream initial, charcoal ring
+  return `<div style="display:flex;width:${size}px;height:${size}px;border-radius:${size / 2}px;border:3px solid ${OG_COLORS.charcoal};background:${OG_COLORS.rust};align-items:center;justify-content:center;margin-right:20px;flex-shrink:0;">
+    <div style="display:flex;font-family:Righteous;font-size:42px;color:${OG_COLORS.cream};line-height:1;">${byline.initial}</div>
+  </div>`;
+}
+
 /**
  * Renders the Satori-compatible HTML for a blog post OG card.
  * Brand-aligned: cream background, charcoal border, mustard title panel
- * with plum offset shadow, rust brand lockup.
+ * with plum offset shadow, rust brand lockup. Now with a circular avatar
+ * and excerpt subtitle in the byline footer.
  */
 export function renderBlogTemplate(input: BlogTemplateInput): string {
   const title = sanitize(input.title);
-  const bylineText = formatBylines(input.bylines);
+  const excerpt = input.excerpt ? clampExcerpt(input.excerpt) : '';
+  const byline = primaryByline(input.bylines);
   const category = categoryLabel(input.category);
   const fontSize = titleFontSize(title);
 
   return `
-    <div style="display:flex;flex-direction:column;justify-content:space-between;width:100%;height:100%;background:${OG_COLORS.cream};padding:64px 80px;box-sizing:border-box;border:6px solid ${OG_COLORS.charcoal};">
+    <div style="display:flex;flex-direction:column;justify-content:space-between;width:100%;height:100%;background:${OG_COLORS.cream};padding:48px 64px;box-sizing:border-box;border:6px solid ${OG_COLORS.charcoal};">
       <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
         <div style="display:flex;background:${OG_COLORS.rust};color:${OG_COLORS.cream};padding:10px 22px;font-family:Outfit;font-weight:700;font-size:24px;">${OG_SITE.name}</div>
         <div style="display:flex;background:${OG_COLORS.olive};color:${OG_COLORS.cream};padding:8px 18px;font-family:Outfit;font-weight:700;font-size:18px;letter-spacing:2px;">${category}</div>
       </div>
-      <div style="display:flex;flex-direction:column;position:relative;max-width:960px;">
-        <div style="display:flex;background:${OG_COLORS.plum};width:100%;height:100%;position:absolute;top:14px;left:14px;"></div>
-        <div style="display:flex;background:${OG_COLORS.mustard};padding:28px 36px;position:relative;border:3px solid ${OG_COLORS.charcoal};">
+      <div style="display:flex;flex-direction:column;position:relative;max-width:1040px;">
+        <div style="display:flex;background:${OG_COLORS.plum};width:100%;height:100%;position:absolute;top:12px;left:12px;"></div>
+        <div style="display:flex;flex-direction:column;background:${OG_COLORS.mustard};padding:24px 32px;position:relative;border:3px solid ${OG_COLORS.charcoal};">
           <div style="display:flex;font-family:Righteous;font-size:${fontSize}px;color:${OG_COLORS.charcoal};line-height:1.05;">${title}</div>
+          ${
+            excerpt
+              ? `<div style="display:flex;font-family:Outfit;font-weight:400;font-size:22px;color:${OG_COLORS.charcoal};margin-top:14px;line-height:1.4;max-width:960px;">${excerpt}</div>`
+              : ''
+          }
         </div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:flex-end;width:100%;">
-        <div style="display:flex;flex-direction:column;">
-          <div style="display:flex;font-family:Outfit;font-weight:400;font-size:18px;color:${OG_COLORS.charcoal};opacity:0.65;letter-spacing:1px;">WRITTEN BY</div>
-          <div style="display:flex;font-family:Outfit;font-weight:700;font-size:28px;color:${OG_COLORS.charcoal};margin-top:4px;">${bylineText}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+        <div style="display:flex;align-items:center;">
+          ${avatarBlock(byline)}
+          <div style="display:flex;flex-direction:column;">
+            <div style="display:flex;font-family:Outfit;font-weight:400;font-size:16px;color:${OG_COLORS.charcoal};opacity:0.6;letter-spacing:1px;">WRITTEN BY</div>
+            <div style="display:flex;font-family:Outfit;font-weight:700;font-size:28px;color:${OG_COLORS.charcoal};margin-top:2px;">${byline.name}</div>
+            ${
+              byline.role
+                ? `<div style="display:flex;font-family:Outfit;font-weight:400;font-size:16px;color:${OG_COLORS.charcoal};opacity:0.65;margin-top:2px;">${byline.role}</div>`
+                : ''
+            }
+          </div>
         </div>
         <div style="display:flex;align-items:center;">
           <div style="display:flex;width:18px;height:18px;background:${OG_COLORS.rust};margin-right:10px;"></div>
