@@ -18,7 +18,14 @@ import { html as satoriHtml } from 'satori-html';
 import { Resvg } from '@resvg/resvg-js';
 import { renderModuleLessonTemplate } from './templates/module-lesson';
 import { renderGenericTemplate, type GenericTemplateInput } from './templates/generic';
-import { OG_DIMENSIONS } from './config';
+import { OG_DIMENSIONS, OG_TEMPLATE_VERSION } from './config';
+import { injectPngText } from './png-metadata';
+
+const BUILD_STAMP = {
+  'engine-version': String(OG_TEMPLATE_VERSION),
+  'generated-at': new Date().toISOString(),
+  'generator': 'cc4.marketing/og',
+};
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '../../..');
@@ -54,7 +61,9 @@ async function renderToPng(htmlString: string): Promise<Buffer> {
     fonts,
   });
   const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: OG_DIMENSIONS.width } });
-  return resvg.render().asPng();
+  const rawPng = resvg.render().asPng();
+  const stamped = injectPngText(new Uint8Array(rawPng), BUILD_STAMP);
+  return Buffer.from(stamped);
 }
 
 interface ModuleFrontmatter {

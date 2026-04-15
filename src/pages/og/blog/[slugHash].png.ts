@@ -12,6 +12,7 @@ const SHORT_CACHE_CONTROL = 'public, max-age=60';
 const NOT_FOUND_CACHE_CONTROL = 'public, max-age=300';
 
 export const GET: APIRoute = async ({ params, url }) => {
+  const startedAt = Date.now();
   const parsed = parseSlugHash(params.slugHash ?? '');
   if (!parsed) {
     return notFound();
@@ -44,6 +45,16 @@ export const GET: APIRoute = async ({ params, url }) => {
       if (cache && ctx?.waitUntil) {
         ctx.waitUntil(cache.put(cacheReq, resp.clone()));
       }
+      console.log(
+        JSON.stringify({
+          type: 'og.generate',
+          slug,
+          cacheLayer: 'r2',
+          pngBytes: body.byteLength,
+          renderMs: Date.now() - startedAt,
+          ok: true,
+        }),
+      );
       return resp;
     }
   }
@@ -121,6 +132,7 @@ export const GET: APIRoute = async ({ params, url }) => {
       slug,
       cacheLayer: 'miss',
       pngBytes: png.byteLength,
+      renderMs: Date.now() - startedAt,
       ok: true,
     }),
   );

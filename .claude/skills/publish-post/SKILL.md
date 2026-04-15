@@ -52,36 +52,17 @@ keywords: [ai marketing, claude code]      # optional
 
 ### Step 2: Cover image
 
-Check whether the cover PNG already exists at `public/blog/cover-{slug}.png`:
+**No manual cover step needed.** The OG engine auto-generates a typographic cover for every published post at `/og/blog/{slug}-{hash}.png`, rendered on demand via `workers-og` (Satori + resvg-wasm) and cached in R2 + Cloudflare edge cache. `BaseLayout.astro` emits the correct hashed URL in `og:image` and the article JSON-LD schema.
 
-```bash
-ls public/blog/cover-{slug}.png
-```
+**When to override** with a bespoke illustrated/photographic cover:
+1. Author `public/blog/cover-{slug}.{svg,png}` by hand (or use the `compound-engineering:gemini-imagegen` skill).
+2. Set `featured_image` in the post's Emdash record — the engine's precedence rules give `featured_image.src` priority over the auto-generated URL.
 
-**If it exists:** skip to Step 3.
+The legacy `public/blog/cover-*` covers for existing posts are still in place and take precedence (they set `featured_image` in D1). New posts without `featured_image` automatically use the engine.
 
-**If it doesn't exist:** help the user generate it. Three options, in order of reliability:
+**Dev preview:** iterate on templates at `http://localhost:4321/og-preview` (dev server only).
 
-1. **Hand-authored SVG + cairosvg** (most reliable — use this by default):
-   - Look at `public/blog/cover-*.svg` for the house style (editorial brutalist, cream `#F5F1E8` / rust `#B85C3C` / plum `#5C3A6B`, 1200×630)
-   - Author `public/blog/cover-{slug}.svg`
-   - Rasterize:
-     ```bash
-     DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib uv run python -c "
-     import cairosvg
-     cairosvg.svg2png(
-         url='public/blog/cover-{slug}.svg',
-         write_to='public/blog/cover-{slug}.png',
-         output_width=1200,
-         output_height=630,
-     )
-     "
-     ```
-   - **Never use ImageMagick** for gradient SVGs — it silently renders them as solid black.
-
-2. **Gemini API (`compound-engineering:gemini-imagegen` skill):** requires `GEMINI_API_KEY` set.
-
-3. **Vertex AI via `generate_cover.py`:** requires billing enabled on `gen-lang-client-0013409905` (check first — was disabled as of 2026-04-09).
+If a post needs a bespoke cover, skip to the override path below; otherwise move on to Step 3.
 
 ### Step 3: Dry run the publisher
 
@@ -94,10 +75,8 @@ uv run python .claude/skills/publish-post/publish_post.py <markdown_file>
 The script performs these checks:
 1. Frontmatter parses and has required fields (title, excerpt)
 2. Slug is not already in `ec_posts` (queries remote D1)
-3. Cover exists at the expected path
-4. Cover is exactly 1200×630
-5. Cover is not a solid-black rectangle (pixel sample check)
-6. Markdown body converts to valid PortableText (≥1 block)
+3. Cover checks (3-5) only run when `featured_image` is set in frontmatter — the engine handles the generic case. If set, cover must exist at the expected path, be exactly 1200×630, and not a solid-black rectangle (pixel sample check).
+4. Markdown body converts to valid PortableText (≥1 block)
 
 If any check fails, **stop** and show the user the error. Fix the issue (rename slug, re-render cover, etc.) before proceeding.
 
@@ -137,17 +116,18 @@ After `/ship` reports success, run:
 # Verify the live page renders
 /usr/bin/curl -sL -w "%{http_code}" -o /dev/null "https://cc4.marketing/blog/{slug}"
 
-# Verify the og:image points at the new cover (not the fallback /og-blog.png)
-/usr/bin/curl -s "https://cc4.marketing/blog/{slug}" | grep -E 'og:image|twitter:image'
+# Verify the og:image points at a valid URL (engine-hashed OR manual override)
+/usr/bin/curl -s "https://cc4.marketing/blog/{slug}" | grep -oE 'og:image" content="[^"]*"'
 
 # Verify the sitemap contains the new URL
 /usr/bin/curl -s "https://cc4.marketing/sitemap-0.xml" | grep "{slug}"
 
-# Verify the cover asset shipped
-/usr/bin/curl -sI "https://cc4.marketing/blog/cover-{slug}.png" | head -1
+# If engine-generated: fetch the OG URL itself to confirm the runtime endpoint returns 200
+OG_URL=$(/usr/bin/curl -s "https://cc4.marketing/blog/{slug}" | grep -oE 'https://cc4.marketing/og/[^"]*\.png' | head -1)
+/usr/bin/curl -sI "$OG_URL" | head -1
 ```
 
-**All four must pass.** If `og:image` still points at `/og-blog.png`, the cover PNG didn't ship — investigate `git status` to see if the cover was staged, and re-run `/ship` if needed.
+**All three must pass.** If `og:image` is `/og-blog.png`, the engine kill-switch is active or BaseLayout isn't receiving `ogPost`. If the OG URL returns 500, check `og.generate` logs in Logpush for render errors.
 
 ### Step 8: Report
 

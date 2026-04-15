@@ -1,0 +1,340 @@
+---
+// Dev-only preview UI for the OG image engine. Lets you tweak template
+// params and preview the PNG alongside mock Facebook/Twitter/LinkedIn cards.
+//
+// Double-gated: the leading underscore in _dev/ is Astro's convention for
+// "not a route" (works in most setups), and the page itself returns 404
+// when import.meta.env.DEV is false, so a misconfigured build still can't
+// expose it.
+
+export const prerender = false;
+
+if (!import.meta.env.DEV) {
+  return Astro.redirect('/404');
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>OG Preview · CC4.Marketing (dev)</title>
+  <style>
+    :root {
+      --rust: #B85C3C;
+      --olive: #6B8E23;
+      --mustard: #E8B923;
+      --plum: #5C3A6B;
+      --cream: #F5F1E8;
+      --charcoal: #2C2C2C;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--charcoal);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .shell {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      min-height: 100vh;
+    }
+    .sidebar {
+      padding: 24px;
+      background: #fff;
+      border-right: 3px solid var(--charcoal);
+      overflow-y: auto;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 0 0 4px;
+    }
+    .subtitle {
+      color: #666;
+      font-size: 14px;
+      margin: 0 0 20px;
+    }
+    fieldset {
+      border: 2px solid var(--charcoal);
+      padding: 12px;
+      margin: 0 0 16px;
+    }
+    legend {
+      font-weight: 700;
+      padding: 0 6px;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 2px solid var(--charcoal);
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+    textarea { resize: vertical; min-height: 60px; }
+    .warn {
+      color: var(--rust);
+      font-size: 11px;
+      margin-top: -8px;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .warn.active { display: block; }
+    .char-count {
+      font-size: 11px;
+      color: #888;
+      margin-top: -8px;
+      margin-bottom: 12px;
+    }
+    button {
+      padding: 10px 16px;
+      border: 3px solid var(--charcoal);
+      background: var(--mustard);
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 4px 4px 0 var(--charcoal);
+    }
+    button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--charcoal); }
+    .preview {
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .og-image {
+      background: #fff;
+      border: 3px solid var(--charcoal);
+      box-shadow: 8px 8px 0 var(--charcoal);
+      width: 100%;
+      max-width: 1200px;
+      aspect-ratio: 1200 / 630;
+    }
+    .og-image img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .mock {
+      max-width: 560px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      font-family: -apple-system, sans-serif;
+    }
+    .mock-img {
+      aspect-ratio: 1200 / 630;
+      background: #f0f0f0;
+      background-size: cover;
+      background-position: center;
+    }
+    .mock-body {
+      padding: 10px 14px;
+      font-size: 13px;
+    }
+    .mock-host { color: #666; font-size: 11px; text-transform: uppercase; }
+    .mock-title { font-weight: 600; color: #1d2129; margin: 2px 0; }
+    .mock-desc { color: #606770; font-size: 12px; line-height: 1.4; }
+    .mock-twitter { border-radius: 16px; }
+    .mock-linkedin { border-radius: 4px; }
+    .mock-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      color: #666;
+    }
+    .mocks {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      max-width: 1200px;
+    }
+    @media (max-width: 1000px) {
+      .mocks { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <h1>OG Preview</h1>
+      <p class="subtitle">Dev-only harness for iterating on templates.</p>
+      <form id="form">
+        <fieldset>
+          <legend>Template</legend>
+          <select name="template" id="template">
+            <option value="blog">blog</option>
+            <option value="module-lesson">module-lesson</option>
+            <option value="generic">generic</option>
+          </select>
+        </fieldset>
+
+        <fieldset>
+          <legend>Common</legend>
+          <label>Title</label>
+          <input name="title" id="title" value="How Anthropic 10x'd Growth Marketing" maxlength="200" />
+          <div class="char-count" id="title-count"></div>
+          <div class="warn" id="title-warn">⚠ Title over 60 chars — font will step down</div>
+        </fieldset>
+
+        <fieldset id="blog-fields">
+          <legend>Blog</legend>
+          <label>Excerpt</label>
+          <textarea name="excerpt" id="excerpt">A deep dive into Claude Code workflows.</textarea>
+          <div class="char-count" id="excerpt-count"></div>
+          <div class="warn" id="excerpt-warn">⚠ Excerpt over 160 chars — search snippets may truncate</div>
+          <label>Bylines (comma-separated)</label>
+          <input name="bylines" id="bylines" value="Tri Vo" />
+          <label>Category</label>
+          <input name="category" id="category" value="AI Marketing" />
+        </fieldset>
+
+        <fieldset id="module-fields" style="display:none">
+          <legend>Module Lesson</legend>
+          <label>Module</label>
+          <input name="module" id="module" type="number" min="0" value="1" />
+          <label>Lesson</label>
+          <input name="lesson" id="lesson" type="number" min="1" value="1" />
+          <label>Description</label>
+          <textarea name="description" id="description">Learn to use agents for parallel workflows, multi-perspective feedback, and complex campaigns</textarea>
+          <label>Duration</label>
+          <input name="duration" id="duration" value="35 min" />
+        </fieldset>
+
+        <fieldset id="generic-fields" style="display:none">
+          <legend>Generic</legend>
+          <label>Subtitle</label>
+          <textarea name="subtitle" id="subtitle">Work 10x faster with AI — 17 free interactive lessons.</textarea>
+          <label>Badge</label>
+          <input name="badge" id="badge" value="FREE COURSE" />
+          <label>Accent</label>
+          <select name="accent" id="accent">
+            <option value="rust">rust</option>
+            <option value="olive">olive</option>
+            <option value="mustard">mustard</option>
+            <option value="plum">plum</option>
+          </select>
+        </fieldset>
+
+        <button type="submit">Render</button>
+      </form>
+    </aside>
+
+    <main class="preview">
+      <div>
+        <div class="mock-label">OG Image (1200×630)</div>
+        <div class="og-image"><img id="og-img" alt="" /></div>
+      </div>
+      <div class="mocks">
+        <div>
+          <div class="mock-label">Facebook</div>
+          <div class="mock">
+            <div class="mock-img" id="fb-img"></div>
+            <div class="mock-body">
+              <div class="mock-host">cc4.marketing</div>
+              <div class="mock-title" id="fb-title"></div>
+              <div class="mock-desc" id="fb-desc"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="mock-label">Twitter / X</div>
+          <div class="mock mock-twitter">
+            <div class="mock-img" id="tw-img"></div>
+            <div class="mock-body">
+              <div class="mock-host">From cc4.marketing</div>
+              <div class="mock-title" id="tw-title"></div>
+              <div class="mock-desc" id="tw-desc"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="mock-label">LinkedIn</div>
+          <div class="mock mock-linkedin">
+            <div class="mock-img" id="li-img"></div>
+            <div class="mock-body">
+              <div class="mock-host">cc4.marketing</div>
+              <div class="mock-title" id="li-title"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    const form = document.getElementById('form');
+    const tplSelect = document.getElementById('template');
+    const fields = {
+      blog: document.getElementById('blog-fields'),
+      'module-lesson': document.getElementById('module-fields'),
+      generic: document.getElementById('generic-fields'),
+    };
+    function syncTemplateVisibility() {
+      for (const [key, el] of Object.entries(fields)) {
+        el.style.display = tplSelect.value === key ? '' : 'none';
+      }
+    }
+    tplSelect.addEventListener('change', syncTemplateVisibility);
+    syncTemplateVisibility();
+
+    const titleEl = document.getElementById('title');
+    const titleCount = document.getElementById('title-count');
+    const titleWarn = document.getElementById('title-warn');
+    const excerptEl = document.getElementById('excerpt');
+    const excerptCount = document.getElementById('excerpt-count');
+    const excerptWarn = document.getElementById('excerpt-warn');
+    function updateCounts() {
+      titleCount.textContent = `${titleEl.value.length} chars`;
+      titleWarn.classList.toggle('active', titleEl.value.length > 60);
+      excerptCount.textContent = `${excerptEl.value.length} chars`;
+      excerptWarn.classList.toggle('active', excerptEl.value.length > 160);
+    }
+    titleEl.addEventListener('input', updateCounts);
+    excerptEl.addEventListener('input', updateCounts);
+    updateCounts();
+
+    function render() {
+      const data = new FormData(form);
+      const params = new URLSearchParams();
+      for (const [k, v] of data.entries()) {
+        if (typeof v === 'string' && v.length > 0) params.set(k, v);
+      }
+      const url = `/og/preview.png?${params.toString()}&_t=${Date.now()}`;
+      document.getElementById('og-img').src = url;
+      for (const id of ['fb-img', 'tw-img', 'li-img']) {
+        document.getElementById(id).style.backgroundImage = `url("${url}")`;
+      }
+      const title = params.get('title') ?? '';
+      const desc = params.get('excerpt') ?? params.get('subtitle') ?? params.get('description') ?? '';
+      document.getElementById('fb-title').textContent = title;
+      document.getElementById('fb-desc').textContent = desc;
+      document.getElementById('tw-title').textContent = title;
+      document.getElementById('tw-desc').textContent = desc;
+      document.getElementById('li-title').textContent = title;
+    }
+    form.addEventListener('submit', (e) => { e.preventDefault(); render(); });
+    render();
+  </script>
+</body>
+</html>
