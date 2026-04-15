@@ -4,9 +4,12 @@
   "version": "0.3.0",
   "scripts": {
     "dev": "astro dev",
+    "prebuild": "tsx src/lib/og/build.ts",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "og:build": "tsx src/lib/og/build.ts",
+    "og:smoke": "tsx src/lib/og/smoke-test.ts",
     "test": "vitest run"
   },
   "dependencies": {
@@ -24,6 +27,10 @@
     "workers-og": "^0.0.27"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "satori": "^0.26.0",
+    "satori-html": "^0.3.2",
+    "tsx": "^4.21.0",
     "vitest": "^4.1.4"
   }
 }
