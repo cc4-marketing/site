@@ -9,7 +9,7 @@ export const promoConfig = {
         enabled: true,
         text: "New blog post: How Anthropic 10x'd growth marketing",
         linkText: "Read now",
-        linkUrl: "https://cc4.marketing/blog/anthropic-growth-marketing-claude-code",
+        linkUrl: "https://cc4.marketing/blog/anthropic-growth-marketing-claude-code/",
         storageKey: "hellobar-new-blog-post-how-anthropic",
         cooldownDays: 3
     },
