@@ -52,7 +52,7 @@ const blogPages = [
   '/blog/write-campaign-brief-with-ai/',
   '/blog/anthropic-growth-marketing-claude-code/',
   '/blog/ai-workflows-not-automation/',
-  '/blog/the-last-mile-of-shipping',
+  '/blog/the-last-mile-of-shipping/',
 ].map((p) => `https://cc4.marketing${p}`);
 
 // https://astro.build/config
