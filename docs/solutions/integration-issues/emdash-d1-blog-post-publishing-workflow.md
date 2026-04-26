@@ -238,3 +238,7 @@ All covers are 1200×630, editorial brutalist palette (`#F5F1E8` cream / `#B85C3
 - `public/blog/cover-claude-code-marketing-guide.svg` + `.png`
 - `public/blog/cover-campaign-brief-ai.svg` + `.png`
 - `public/blog/cover-anthropic-growth-marketing.svg` + `.png`
+
+## Related
+
+- [PortableText missing code/image block handlers](../ui-bugs/portabletext-missing-code-image-handlers-BlogPublisher-20260426.md) — what happens when `publish_post.py` doesn't handle ` ``` ` or `![img]()` syntax, and how to add custom block renderers to the blog template

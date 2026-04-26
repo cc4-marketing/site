@@ -7,10 +7,10 @@ export const promoConfig = {
     // Hello Bar (top banner)
     helloBar: {
         enabled: true,
-        text: "New blog post: How Anthropic 10x'd growth marketing",
+        text: "New post: The Last Mile of Shipping Is the Hardest Part",
         linkText: "Read now",
-        linkUrl: "https://cc4.marketing/blog/anthropic-growth-marketing-claude-code/",
-        storageKey: "hellobar-new-blog-post-how-anthropic",
+        linkUrl: "https://cc4.marketing/blog/the-last-mile-of-shipping/",
+        storageKey: "hellobar-last-mile-of-shipping",
         cooldownDays: 3
     },
 
