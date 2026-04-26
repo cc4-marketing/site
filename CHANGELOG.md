@@ -15,6 +15,7 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ### Added
 
+- New blog post by Tri Vo: ["The Last Mile of Shipping Is the Hardest Part"](https://cc4.marketing/blog/the-last-mile-of-shipping/) — on turning manual release steps into a system of slash commands
 - New blog post by Alice Marketer: ["AI Works Best When It Looks at What You've Already Shipped"](https://cc4.marketing/blog/ai-workflows-not-automation/) — on extracting real workflows from shipped work instead of inventing new frameworks
 - Typographic OG image engine for every page — homepage, blog index, changelog, authors, download, brand guide, and 17 module lessons each get a distinct, brand-compliant social share card (cream/rust/plum/mustard palette, Righteous display, hard shadows)
 - Dynamic OG endpoint for blog posts at `/og/blog/{slug}-{hash}.png` — runtime-rendered via `workers-og` (Satori + resvg-wasm), R2-cached, content-hashed URLs for automatic cache invalidation when a post is edited

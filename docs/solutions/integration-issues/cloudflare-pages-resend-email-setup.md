@@ -117,3 +117,4 @@ The API key is now read from `vars` (which works with CLI deploys), and the `fro
 - `functions/api/subscribe.js` -- the Pages Function that sends email via Resend
 - `wrangler.jsonc` -- project config with vars binding
 - `changelog-worker/wrangler.jsonc` -- separate Cloudflare Worker (uses KV, different deploy model)
+- [Resend Audiences subscriber storage](./resend-audiences-subscriber-storage-newsletter-20260421.md) -- adding contact list storage + Dashboard env var setup for Git-integrated deploys
