@@ -352,6 +352,35 @@ def markdown_to_portable_text(body: str) -> list[dict[str, Any]]:
                 i += 1
             continue
 
+        # Fenced code block
+        if stripped.startswith("```"):
+            lang = stripped[3:].strip() or "text"
+            code_lines = []
+            i += 1
+            while i < len(lines) and not lines[i].strip().startswith("```"):
+                code_lines.append(lines[i])
+                i += 1
+            i += 1  # skip closing ```
+            blocks.append({
+                "_type": "code",
+                "_key": gen_key(),
+                "language": lang,
+                "code": "\n".join(code_lines),
+            })
+            continue
+
+        # Standalone image line
+        img_match = re.match(r"^!\[([^\]]*)\]\(([^)]+)\)$", stripped)
+        if img_match:
+            blocks.append({
+                "_type": "blogImage",
+                "_key": gen_key(),
+                "url": img_match.group(2),
+                "alt": img_match.group(1),
+            })
+            i += 1
+            continue
+
         # Paragraph — accumulate lines until blank or special marker.
         para_lines: list[str] = [stripped]
         j = i + 1
@@ -363,6 +392,8 @@ def markdown_to_portable_text(body: str) -> list[dict[str, Any]]:
             if (
                 nxt.startswith("#")
                 or nxt.startswith("> ")
+                or nxt.startswith("![")
+                or nxt.startswith("```")
                 or re.match(r"^[-*] ", nxt)
                 or re.match(r"^\d+\.\s", nxt)
                 or re.fullmatch(r"-{3,}|\*{3,}|_{3,}", nxt)
@@ -464,10 +495,11 @@ def update_sitemap(slug: str) -> None:
     astro.config.mjs. Idempotent — no-op if the route is already present.
     """
     text = ASTRO_CONFIG.read_text()
-    new_route = f"'/blog/{slug}'"
+    new_route = f"'/blog/{slug}/'"
 
-    if new_route in text:
-        print(f"sitemap: /blog/{slug} already in blogPages, skipping")
+    # Check both with and without trailing slash to avoid duplicates
+    if new_route in text or f"'/blog/{slug}'" in text:
+        print(f"sitemap: /blog/{slug}/ already in blogPages, skipping")
         return
 
     # Find the blogPages array and insert before the closing bracket.

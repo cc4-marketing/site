@@ -7,6 +7,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { resolveOgImage, type OgPostInput } from '../../lib/og/url';
+import BlogContent from '../../components/BlogContent.astro';
 
 const { slug } = Astro.params;
 const { entry: post } = await getEmDashEntry('posts', slug!);
@@ -163,7 +164,7 @@ const breadcrumbListSchema = {
 
       {/* Content */}
       <div class="blog-post-content prose">
-        {post.data.content && <PortableText value={post.data.content} />}
+        {post.data.content && <BlogContent blocks={post.data.content} />}
       </div>
 
       {/* Newsletter CTA */}

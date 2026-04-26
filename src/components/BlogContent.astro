@@ -1,0 +1,59 @@
+---
+import { PortableText } from 'emdash/ui';
+
+interface Props {
+  blocks: any[];
+}
+
+const { blocks } = Astro.props;
+
+// Group consecutive standard blocks so PortableText handles list wrapping.
+// Custom types (code, blogImage) break the group and render directly.
+type Segment =
+  | { kind: 'portable'; blocks: any[] }
+  | { kind: 'code'; language: string; code: string; key: string }
+  | { kind: 'image'; url: string; alt: string; key: string };
+
+const segments: Segment[] = [];
+let current: any[] = [];
+
+for (const block of blocks) {
+  if (block._type === 'code') {
+    if (current.length) { segments.push({ kind: 'portable', blocks: current }); current = []; }
+    segments.push({ kind: 'code', language: block.language || 'text', code: block.code, key: block._key });
+  } else if (block._type === 'blogImage') {
+    if (current.length) { segments.push({ kind: 'portable', blocks: current }); current = []; }
+    segments.push({ kind: 'image', url: block.url, alt: block.alt || '', key: block._key });
+  } else {
+    current.push(block);
+  }
+}
+if (current.length) segments.push({ kind: 'portable', blocks: current });
+---
+
+{segments.map((seg) => {
+  if (seg.kind === 'code') {
+    return (
+      <pre><code class={`language-${seg.language}`}>{seg.code}</code></pre>
+    );
+  }
+  if (seg.kind === 'image') {
+    return (
+      <figure class="blog-inline-image">
+        <img src={seg.url} alt={seg.alt} loading="lazy" />
+      </figure>
+    );
+  }
+  return <PortableText value={seg.blocks} />;
+})}
+
+<style>
+  .blog-inline-image {
+    margin: 2rem 0;
+    text-align: center;
+  }
+  .blog-inline-image img {
+    max-width: 100%;
+    border-radius: 4px;
+  }
+</style>
