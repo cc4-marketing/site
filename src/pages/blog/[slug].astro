@@ -30,6 +30,10 @@ const ogPost: OgPostInput = {
 // the house team byline so older un-backfilled posts still render cleanly.
 const primaryByline = post.data.bylines?.[0]?.byline;
 const authorName = primaryByline?.displayName ?? 'CC4.Marketing Team';
+const authorSlug = authorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const authorUrl = authorName === 'CC4.Marketing Team'
+  ? 'https://cc4.marketing/blog/authors/'
+  : `https://cc4.marketing/blog/authors/#${authorSlug}`;
 const resolvedOgPath = await resolveOgImage(
   { path: Astro.url.pathname, siteUrl: 'https://cc4.marketing', engineEnabled: true },
   { post: ogPost },
@@ -39,7 +43,7 @@ const resolvedOgUrl = resolvedOgPath.startsWith('http')
   : `https://cc4.marketing${resolvedOgPath}`;
 
 // Generate per-post keywords from title words + base set
-const stopWords = new Set(['a', 'an', 'the', 'and', 'or', 'to', 'in', 'for', 'of', 'with', 'how', 'is', 'at', 'by', 'on', 'its', 'your', 'from', 'this', 'that', 'are', 'was', 'be', 'as', 'it', 'do', 'not', 'but', 'all', 'their', 'has', 'have', 'can']);
+const stopWords = new Set(['a', 'an', 'the', 'and', 'or', 'to', 'in', 'for', 'of', 'with', 'how', 'is', 'at', 'by', 'on', 'its', 'your', 'from', 'this', 'that', 'are', 'was', 'be', 'as', 'it', 'do', 'not', 'but', 'all', 'their', 'has', 'have', 'can', 'out', 'get', 'use', 'way', 'part', 'last', 'mile', 'best', 'why', 'what', 'when', 'will', 'into', 'our', 'more', 'most', 'new', 'its', 'one', 'two', 'just', 'now', 'then', 'also', 'very', 'like', 'make', 'work', 'need', 'look', 'even', 'back', 'only', 'well', 'than', 'over', 'after']);
 const titleWords = post.data.title.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter((w: string) => w.length > 2 && !stopWords.has(w));
 const postKeywords = [...new Set([...titleWords.slice(0, 6), 'Claude Code', 'AI marketing'])];
 
@@ -74,7 +78,7 @@ const articleSchema = {
   'author': {
     '@type': 'Person',
     'name': authorName,
-    'url': 'https://cc4.marketing/blog/authors/',
+    'url': authorUrl,
   },
   'publisher': {
     '@type': 'Organization',
@@ -82,9 +86,9 @@ const articleSchema = {
     'url': 'https://cc4.marketing/',
     'logo': {
       '@type': 'ImageObject',
-      'url': 'https://cc4.marketing/og-image.png',
-      'width': 1200,
-      'height': 630,
+      'url': 'https://cc4.marketing/apple-touch-icon.png',
+      'width': 180,
+      'height': 180,
     },
   },
   'mainEntityOfPage': {
@@ -145,7 +149,7 @@ const breadcrumbListSchema = {
         )}
         <div class="blog-post-byline">
           <span class="byline-label">By</span>
-          <a href="/blog/authors/" class="byline-author">{authorName}</a>
+          <a href={authorUrl.replace('https://cc4.marketing', '')} class="byline-author">{authorName}</a>
         </div>
       </header>
 
