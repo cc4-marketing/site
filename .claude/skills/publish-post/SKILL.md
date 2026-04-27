@@ -34,7 +34,7 @@ Additional flags (optional):
 ---
 title: "How to X"                          # required, ≤ 60 chars for SEO
 slug: how-to-x                             # optional; derived from title
-excerpt: "Meta description around 155 chars — shown in SERP and OG/Twitter cards."  # required
+excerpt: "Meta description ≤ 160 chars — shown in SERP and OG/Twitter cards."  # required, hard limit 160 chars
 author: tri-vo                             # optional; must match a byline slug in _emdash_bylines. Drives the avatar + name on the OG card.
 cover: /blog/cover-how-to-x.png            # optional; defaults to /blog/cover-{slug}.png. Omit for engine-generated OG.
 cover_alt: "Descriptive alt text"          # optional; defaults to generic
@@ -111,10 +111,46 @@ This re-runs the checks, regenerates the ID (fresh ULID), and runs `wrangler d1 
 ### Step 5: Verify the insert
 
 ```bash
-npx wrangler d1 execute cc4-emdash --remote --command "SELECT id, slug, status, title, published_at FROM ec_posts WHERE slug='{slug}';"
+npx wrangler d1 execute cc4-emdash --remote --command "SELECT id, slug, status, title, published_at, featured_image FROM ec_posts WHERE slug='{slug}';"
 ```
 
 The post should show `status: published` with the expected title and timestamp.
+
+**Check `featured_image`.** If it is `null` and the post has a bespoke cover at `public/blog/cover-{slug}.png`, set it now — the blog index grid reads this column and will show no thumbnail without it:
+
+```bash
+npx wrangler d1 execute cc4-emdash --remote --command "
+UPDATE ec_posts
+SET featured_image = '{\"src\":\"https://cc4.marketing/blog/cover-{slug}.png\",\"width\":1200,\"height\":630,\"alt\":\"{descriptive alt text}\"}'
+WHERE slug = '{slug}';
+"
+```
+
+If no bespoke cover exists, `featured_image` can stay null — the OG engine handles the social card and the blog index will simply show no thumbnail (acceptable for engine-only posts).
+
+> If a cover PNG needs creating from an existing screenshot, use `sips` (macOS built-in — no Pillow needed):
+> ```bash
+> sips --resampleWidth 1200 source.png --out /tmp/tmp.png
+> sips --cropToHeightWidth 630 1200 /tmp/tmp.png --out public/blog/cover-{slug}.png
+> ```
+
+### Step 5b: Update llms.txt and llms-full.txt
+
+Both files must be updated so AI crawlers (Perplexity, Claude, etc.) can discover the new post.
+
+**`public/llms.txt`** — append to the `### Published Posts` section:
+
+```markdown
+- [{Post Title}](https://cc4.marketing/blog/{slug}/)
+```
+
+**`public/llms-full.txt`** — append to the `### Published Posts` section with a one-sentence description:
+
+```markdown
+- [{Post Title}](https://cc4.marketing/blog/{slug}/) — {one-sentence description of the post's topic and value}
+```
+
+Stage both files alongside the cover PNG so they ship in the same commit.
 
 ### Step 6: Ship
 
@@ -149,16 +185,16 @@ OG_URL=$(/usr/bin/curl -s "https://cc4.marketing/blog/{slug}" | grep -oE 'https:
 ✅ Post published
 
 Title: {title}
-URL: https://cc4.marketing/blog/{slug}
-Cover: https://cc4.marketing/blog/cover-{slug}.png
+URL: https://cc4.marketing/blog/{slug}/
 D1 id: {post_id}
 Deploy: {workflow_run_url}
 
 SEO verified:
-  ✓ og:image → new cover
-  ✓ twitter:image → new cover
-  ✓ sitemap contains /blog/{slug}
-  ✓ cover asset 200
+  ✓ og:image → {engine-hashed URL or cover URL}
+  ✓ sitemap contains /blog/{slug}/
+  ✓ featured_image in D1: {set|null (engine-only)}
+  ✓ llms.txt updated
+  ✓ llms-full.txt updated
 ```
 
 ## Mode B: inline content gathering
@@ -179,6 +215,8 @@ When `/publish-post` is called with no file argument, gather fields conversation
 - **Never** skip the cover pixel-sample check — a 1200×630 black rectangle will pass dimension checks but ship broken OG images
 - **Never** execute with `--skip-checks` unless debugging — the defaults are correct
 - **Never** hand-edit SQL files — use the helper script so escaping is correct
+- **Always** check `featured_image` in D1 after insert (Step 5) — the blog index grid shows no thumbnail when this column is null, even if the cover PNG exists on disk
+- **Always** update `llms.txt` and `llms-full.txt` before shipping — AI crawlers discover posts through these files
 - If the INSERT succeeds but `/ship` fails, the post is live on the D1 side but has no cover asset in production. Diagnose the ship failure and re-run `/ship`, not `/publish-post`
 - Rollback: `npx wrangler d1 execute cc4-emdash --remote --command "DELETE FROM ec_posts WHERE slug='{slug}';"` — but you should rarely need this
 
@@ -188,6 +226,8 @@ When `/publish-post` is called with no file argument, gather fields conversation
 - `src/pages/blog/[slug].astro` — the SSR route that reads the post from D1 via Emdash
 - `astro.config.mjs` — contains the `blogPages` array for sitemap
 - `public/blog/` — where cover images live (PNG + SVG source)
+- `public/llms.txt` — AI discovery index; must include every published post URL
+- `public/llms-full.txt` — extended AI reference; includes post URLs with descriptions
 - `docs/solutions/integration-issues/emdash-d1-blog-post-publishing-workflow.md` — the full workflow reference
 
 ## Related skills

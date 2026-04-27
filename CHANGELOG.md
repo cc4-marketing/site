@@ -15,6 +15,10 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ### Added
 
+- FAQPage and HowTo structured data on eligible blog posts — the marketing guide gets a FAQPage schema and the campaign brief post gets a HowTo schema with 5 steps, enabling Google rich results for both
+- Expanded meta descriptions on all 17 course lessons (from 63–101 chars to 148–160 chars) for improved SERP snippet quality
+- Question-form H2 headings in key lessons (Introduction, Agents, Campaign Brief, SEO) for featured snippet targeting
+
 - New blog post by Tri Vo: ["castmd: Vibe Coding a Chrome Extension for LLMs"](https://cc4.marketing/blog/castmd-vibe-coding-chrome-extension/) — on rebuilding a forgotten Chrome extension into a focused LLM input tool using vibe coding with Claude Code
 - New blog post by Tri Vo: ["The Last Mile of Shipping Is the Hardest Part"](https://cc4.marketing/blog/the-last-mile-of-shipping/) — on turning manual release steps into a system of slash commands
 - New blog post by Alice Marketer: ["AI Works Best When It Looks at What You've Already Shipped"](https://cc4.marketing/blog/ai-workflows-not-automation/) — on extracting real workflows from shipped work instead of inventing new frameworks
