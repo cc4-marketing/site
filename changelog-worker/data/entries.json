@@ -6,7 +6,9 @@
     "summary": "Course website with 17 lesson pages, dark mode, Substack subscription, donation support, SEO, and retro-futuristic design.",
     "type": "added",
     "version": "0.1.0",
-    "modules": ["site"],
+    "modules": [
+      "site"
+    ],
     "machine_summary": "Initial release of cc4-marketing/site. Astro 5 static site with 3 modules (17 MDX lessons), dark mode, Substack email capture, PayPal/Ko-fi donations, GitHub feedback, JSON-LD SEO, GitHub Pages + Cloudflare deployment.",
     "status": "published",
     "published_at": "2025-11-25T00:00:00.000Z",
@@ -19,7 +21,9 @@
     "summary": "17 interactive lessons taught inside Claude Code with slash commands. Practice project as a strategist at Markit agency for Planerio (B2B SaaS).",
     "type": "added",
     "version": "1.0.0",
-    "modules": ["course"],
+    "modules": [
+      "course"
+    ],
     "machine_summary": "cc4-marketing/cc4.marketing v1.0.0. 17 lessons via slash commands (/start-0-0 through /start-2-6). Markit agency practice project, CM and CF plugins, CLAUDE.md course context.",
     "status": "published",
     "published_at": "2025-11-25T18:02:00.000Z",
@@ -32,7 +36,9 @@
     "summary": "Added download page with Google Form email capture, comprehensive SEO meta tags, Open Graph, Twitter Cards, JSON-LD schemas, and social sharing assets.",
     "type": "added",
     "version": "1.1.0",
-    "modules": ["course"],
+    "modules": [
+      "course"
+    ],
     "machine_summary": "cc4-marketing/cc4.marketing v1.1.0. Email capture at /download with Google Form integration. Full SEO: meta tags, OG, Twitter Cards, JSON-LD (WebSite, Course, BreadcrumbList). Favicon suite. Secret bonus content.",
     "status": "published",
     "published_at": "2025-11-25T19:21:00.000Z",
@@ -45,7 +51,11 @@
     "summary": "Aligned course with current AI-powered marketing landscape. Updated all lesson content, tools, and examples to reflect 2026 best practices.",
     "type": "changed",
     "version": "1.2.0",
-    "modules": ["course", "module-1", "module-2"],
+    "modules": [
+      "course",
+      "module-1",
+      "module-2"
+    ],
     "machine_summary": "cc4-marketing/cc4.marketing v1.2.0. Major content refresh for March 2026. Fixed Planerio positioning/ICP drift across modules, resolved content consistency issues, standardized course-context.json as single source of truth, rewrote README for public release.",
     "status": "published",
     "published_at": "2026-03-16T18:28:00.000Z",
@@ -58,7 +68,10 @@
     "summary": "Moved site configuration to siteData.ts, added brand guidelines page and GitHub PR contribution guide, cleaned up unused components.",
     "type": "changed",
     "version": "0.2.0",
-    "modules": ["site", "docs"],
+    "modules": [
+      "site",
+      "docs"
+    ],
     "machine_summary": "cc4-marketing/site. Created siteData.ts centralizing nav, modules, features, stats. Added brand-guide.astro and GitHub PR guide lesson. Removed unused email subscription API and navigation components.",
     "status": "published",
     "published_at": "2026-03-12T00:00:00.000Z",
@@ -71,8 +84,12 @@
     "summary": "Fixed lesson counts to 17 across JSON-LD and homepage, corrected Module 0 to 4 lessons, normalized Ko-fi links, fixed SEO title duplication, and updated quickstart steps for Substack flow.",
     "type": "fixed",
     "version": "0.2.0",
-    "modules": ["site", "seo", "homepage"],
-    "machine_summary": "cc4-marketing/site. Corrected lesson count 16/18→17 in JSON-LD and homepage. Module 0 card 3→4 lessons. Normalized Ko-fi URLs. Fixed BaseLayout title template duplication. Updated install steps for Substack subscribe flow.",
+    "modules": [
+      "site",
+      "seo",
+      "homepage"
+    ],
+    "machine_summary": "cc4-marketing/site. Corrected lesson count 16/18\u219217 in JSON-LD and homepage. Module 0 card 3\u21924 lessons. Normalized Ko-fi URLs. Fixed BaseLayout title template duplication. Updated install steps for Substack subscribe flow.",
     "status": "published",
     "published_at": "2026-03-16T15:57:00.000Z",
     "created_at": "2026-03-16T15:57:00.000Z"
@@ -84,7 +101,11 @@
     "summary": "Full changelog system: timeline page with version grouping and search, homepage What's New section, lesson update banners, /whats-new Claude Code skill, llms.txt for AI agents, and auto-changelog CI.",
     "type": "added",
     "version": "0.2.0",
-    "modules": ["site", "changelog", "homepage"],
+    "modules": [
+      "site",
+      "changelog",
+      "homepage"
+    ],
     "machine_summary": "cc4-marketing/site. BearlyChange on Cloudflare Workers + KV. /changelog page with timeline, filter pills, search. WhatsNew homepage section. ModuleUpdatesBanner on lesson pages. /whats-new skill. llms.txt and llms-full.txt. Auto-changelog GitHub Actions workflow. RSS and JSON Feed. Keep a Changelog convention with types: added, changed, fixed, deprecated, removed, security.",
     "status": "published",
     "published_at": "2026-03-17T00:00:00.000Z",
@@ -97,7 +118,10 @@
     "summary": "The email subscribe experience has been revamped with a new integration for more reliable delivery.",
     "type": "changed",
     "version": "0.2.1",
-    "modules": ["site", "email"],
+    "modules": [
+      "site",
+      "email"
+    ],
     "machine_summary": "cc4-marketing/site. Replaced subscribe flow with Resend API integration via Cloudflare Pages Function at /api/subscribe. Branded HTML welcome email with course download link. CORS and error handling included.",
     "status": "draft",
     "published_at": null,
@@ -110,10 +134,80 @@
     "summary": "Launched /blog powered by Emdash CMS on Cloudflare D1. Upgraded from Astro 5 to Astro 6 with @astrojs/cloudflare adapter. Blog features SEO-optimized posts, author pages, structured data, custom OG images, and Substack newsletter CTA. Two launch posts published.",
     "type": "added",
     "version": "0.3.0",
-    "modules": ["site", "blog"],
-    "machine_summary": "cc4-marketing/site v0.3.0. Astro 5→6 upgrade with @astrojs/cloudflare adapter (server mode). Emdash CMS integration with D1 database and R2 storage. New /blog section with SSR post index and detail pages (PortableText rendering). /blog/authors static page with Person schema. BlogPosting + CollectionPage + AboutPage structured data. Custom og-blog.png OG image. Blog cover illustrations per post. Migrated /api/subscribe from custom worker.js to Astro API route using cloudflare:workers env. Added live.config.ts for Astro Live Collections. Nav updated with Blog link. Sitemap priority 0.9 for blog routes. llms.txt updated with blog section.",
+    "modules": [
+      "site",
+      "blog"
+    ],
+    "machine_summary": "cc4-marketing/site v0.3.0. Astro 5\u21926 upgrade with @astrojs/cloudflare adapter (server mode). Emdash CMS integration with D1 database and R2 storage. New /blog section with SSR post index and detail pages (PortableText rendering). /blog/authors static page with Person schema. BlogPosting + CollectionPage + AboutPage structured data. Custom og-blog.png OG image. Blog cover illustrations per post. Migrated /api/subscribe from custom worker.js to Astro API route using cloudflare:workers env. Added live.config.ts for Astro Live Collections. Nav updated with Blog link. Sitemap priority 0.9 for blog routes. llms.txt updated with blog section.",
     "status": "published",
     "published_at": "2026-04-08T08:00:00.000Z",
     "created_at": "2026-04-08T08:00:00.000Z"
+  },
+  {
+    "id": "bc_site_007",
+    "slug": "site-og-image-engine",
+    "title": "Typographic OG image engine for all pages",
+    "summary": "Auto-generated social share cards for every page using a typographic engine (Satori + resvg-wasm on Cloudflare Workers). Blog posts get runtime-rendered cards with author avatar and excerpt; all other pages get build-time cards. Content-hashed URLs enable automatic cache invalidation.",
+    "type": "added",
+    "version": "unreleased",
+    "modules": [
+      "site",
+      "blog",
+      "seo"
+    ],
+    "machine_summary": "cc4-marketing/site. workers-og Cloudflare Worker using Satori + resvg-wasm. Build-time static OG cards for homepage, blog index, changelog, authors, download, brand-guide, and all 17 module lessons (at /og/pages/{key}.png). Runtime-rendered blog post cards at /og/blog/{slug}-{hash}.png with author circular avatar, post title, and excerpt. R2 cache + content-hashed URLs for automatic invalidation. Dev-only /og-preview UI and /og/debug endpoint. PNG tEXt metadata embeds engine version and generation timestamp.",
+    "status": "published",
+    "published_at": "2026-04-14T08:00:00.000Z",
+    "created_at": "2026-04-14T08:00:00.000Z"
+  },
+  {
+    "id": "bc_site_008",
+    "slug": "site-new-blog-posts-april-2026",
+    "title": "Three new blog posts published",
+    "summary": "Published three new posts: 'castmd: Vibe Coding a Chrome Extension for LLMs' by Tri Vo on rebuilding a Chrome extension with Claude Code; 'The Last Mile of Shipping Is the Hardest Part' by Tri Vo on turning manual release steps into slash commands; and 'AI Works Best When It Looks at What You've Already Shipped' by Alice on extracting real workflows from shipped work.",
+    "type": "added",
+    "version": "unreleased",
+    "modules": [
+      "site",
+      "blog"
+    ],
+    "machine_summary": "cc4-marketing/site. Three posts published to Emdash D1. Slugs: castmd-vibe-coding-chrome-extension (Tri Vo, 2026-04-28), the-last-mile-of-shipping (Tri Vo, 2026-04-20), ai-workflows-not-automation (Alice Marketer, 2026-04-15). All with bespoke 1200x630 cover images, bylines, featured_image set in D1, and entries in llms.txt/llms-full.txt.",
+    "status": "published",
+    "published_at": "2026-04-28T09:00:00.000Z",
+    "created_at": "2026-04-28T09:00:00.000Z"
+  },
+  {
+    "id": "bc_site_009",
+    "slug": "site-seo-structured-data-overhaul",
+    "title": "SEO structured data and meta tag overhaul",
+    "summary": "Fixed Course schema duplication (now only on homepage), corrected publisher logo dimensions to 180x180, added standalone BreadcrumbList schemas to blog index and lesson pages, fixed blog title tags to stay under 60 chars, expanded homepage and blog descriptions, and updated llms.txt with all 6 blog post URLs.",
+    "type": "fixed",
+    "version": "unreleased",
+    "modules": [
+      "site",
+      "seo",
+      "blog"
+    ],
+    "machine_summary": "cc4-marketing/site. BaseLayout: showCourseSchema default false, titleSuffix split (articles get '| CC4M'), publisher logo og-image.png\u2192apple-touch-icon.png (180x180). LessonLayout: 3-level BreadcrumbList (Home\u2192Module N\u2192Lesson), module-enriched title prefix. blog/index.astro: standalone top-level BreadcrumbList script tag. blog/[slug].astro: per-post keywords from title stopword filter, author URL with #anchor for named authors, publisher logo fix. robots.txt: added Google-Extended, Meta-ExternalAgent, Bytespider, cohere-ai. llms.txt + llms-full.txt: all 6 posts listed. sitemap: lastmod added. Homepage description trimmed to 159 chars.",
+    "status": "published",
+    "published_at": "2026-04-28T10:00:00.000Z",
+    "created_at": "2026-04-28T10:00:00.000Z"
+  },
+  {
+    "id": "bc_site_010",
+    "slug": "site-aeo-rich-results-lesson-descriptions",
+    "title": "AEO: rich result schemas and lesson meta descriptions",
+    "summary": "Added FAQPage schema to the Claude Code marketing guide and HowTo schema (5 steps) to the campaign brief post, enabling Google rich results for both. Expanded all 17 lesson meta descriptions from 63-101 to 148-160 chars. Rephrased 8 H2 headings as questions across 4 key lessons for featured snippet targeting.",
+    "type": "added",
+    "version": "unreleased",
+    "modules": [
+      "site",
+      "seo",
+      "blog"
+    ],
+    "machine_summary": "cc4-marketing/site. blog/[slug].astro: slug-keyed extraSchemas map; FAQPage on claude-code-for-marketing-guide-2026 (4 Q&A pairs), HowTo on write-campaign-brief-with-ai (5 steps, totalTime PT10M). All 17 src/content/modules/**/*.mdx description fields expanded to 148-160 chars. Question-form H2 rephrases in 0.0-introduction (2), 1.4-agents (2), 2.1-campaign-brief (2), 2.6-seo-optimization (2).",
+    "status": "published",
+    "published_at": "2026-04-28T11:00:00.000Z",
+    "created_at": "2026-04-28T11:00:00.000Z"
   }
 ]
