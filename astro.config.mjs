@@ -75,6 +75,7 @@ export default defineConfig({
         !page.includes('/og/debug'),
       serialize(item) {
         const url = item.url;
+        item.lastmod = new Date().toISOString();
 
         // Homepage - highest priority
         if (url === 'https://cc4.marketing/') {

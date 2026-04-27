@@ -12,11 +12,14 @@ The CC4.Marketing blog publishes practical guides on AI-powered marketing with C
 - [How to Use Claude Code for Marketing: A Complete 2026 Guide](https://cc4.marketing/blog/claude-code-for-marketing-guide-2026/) — Comprehensive guide for non-technical marketers covering campaign briefs, copy generation, competitive analysis, analytics, and SEO workflows.
 - [How to Write a Campaign Brief with AI in 10 Minutes](https://cc4.marketing/blog/write-campaign-brief-with-ai/) — Step-by-step guide to generating structured campaign briefs using Claude Code, with audience analysis, channel strategy, and multi-perspective review.
 - [How Anthropic's Growth Marketing Team Uses Claude Code to 10x Output](https://cc4.marketing/blog/anthropic-growth-marketing-claude-code/) — Case study: one non-technical hire running paid search, paid social, app stores, email, and SEO with Claude Code — automated ad creative, Figma plugin, Meta Ads MCP server, and a memory-driven iteration system.
+- [AI Works Best When It Looks at What You've Already Shipped](https://cc4.marketing/blog/ai-workflows-not-automation/) — On extracting real AI workflows from shipped work instead of inventing new frameworks — a 7-phase workflow pulled from raw git history.
+- [The Last Mile of Shipping Is the Hardest Part](https://cc4.marketing/blog/the-last-mile-of-shipping/) — On turning the manual, undocumented steps between build and ship into a system of slash commands that compound over time.
+- [castmd: Vibe Coding a Chrome Extension for LLMs](https://cc4.marketing/blog/castmd-vibe-coding-chrome-extension/) — How Tri Vo rebuilt md·convert into castmd — a Chrome extension that converts web pages to Markdown, JSON, or Claude XML — using vibe coding with Claude Code.
 
 ## Module 0: Getting Started (4 lessons, ~30 minutes)
 
 ### Lesson 0.0 — Introduction (10 min)
-Path: /modules/0/introduction
+Path: /modules/0/introduction/
 Description: Welcome to Claude Code for Marketers. Learn what this course covers and how to get the most from it.
 Objectives:
 - Understand what Claude Code is and why it matters for marketers
@@ -24,7 +27,7 @@ Objectives:
 - Get excited about transforming your marketing workflow
 
 ### Lesson 0.1 — Installation (5 min)
-Path: /modules/0/installation
+Path: /modules/0/installation/
 Description: Install Claude Code on your machine using the 2025 native installer. No coding experience required.
 Objectives:
 - Download and install Claude Code
@@ -32,7 +35,7 @@ Objectives:
 - Verify the installation works
 
 ### Lesson 0.2 — Start & Clone (10 min)
-Path: /modules/0/start-clone
+Path: /modules/0/start-clone/
 Description: Launch Claude Code and clone the course materials to your local machine.
 Objectives:
 - Start Claude Code in your terminal
@@ -40,7 +43,7 @@ Objectives:
 - Explore the project structure
 
 ### Lesson 0.3 — GitHub PR Workflow for Marketers (10 min)
-Path: /modules/0/github-pr-guide
+Path: /modules/0/github-pr-guide/
 Description: A simple guide to creating, reviewing, and merging Pull Requests.
 Objectives:
 - Understand what a Pull Request (PR) is
@@ -53,7 +56,7 @@ Objectives:
 ## Module 1: Core Concepts (7 lessons, ~3-4 hours)
 
 ### Lesson 1.1 — Welcome to Markit (20 min)
-Path: /modules/1/welcome
+Path: /modules/1/welcome/
 Description: Introduction to Markit, your hands-on marketing agency project for learning Claude Code.
 Objectives:
 - Understand the Markit project structure
@@ -62,7 +65,7 @@ Objectives:
 - Create your first marketing file
 
 ### Lesson 1.2 — Working with Marketing Files (25 min)
-Path: /modules/1/working-with-files
+Path: /modules/1/working-with-files/
 Description: Learn to organize, find, and manage marketing files efficiently with Claude Code.
 Objectives:
 - Structure marketing project folders effectively
@@ -71,7 +74,7 @@ Objectives:
 - Work with multiple files simultaneously
 
 ### Lesson 1.3 — First Marketing Tasks (30 min)
-Path: /modules/1/first-tasks
+Path: /modules/1/first-tasks/
 Description: Complete real marketing tasks including multi-channel copy, competitive analysis, and content strategy.
 Objectives:
 - Generate on-brand marketing copy for multiple channels
@@ -80,7 +83,7 @@ Objectives:
 - Use Claude for brainstorming and ideation
 
 ### Lesson 1.4 — Using Agents for Marketing (35 min)
-Path: /modules/1/agents
+Path: /modules/1/agents/
 Description: Learn to use agents for parallel workflows, multi-perspective feedback, and complex campaigns.
 Objectives:
 - Understand agents and when to use them
@@ -89,7 +92,7 @@ Objectives:
 - Handle complex multi-step campaigns
 
 ### Lesson 1.5 — Custom Marketing Sub-Agents (30 min)
-Path: /modules/1/custom-agents
+Path: /modules/1/custom-agents/
 Description: Create specialized marketing reviewers for brand voice, SEO, conversion, and quality control.
 Objectives:
 - Create custom marketing reviewer personas
@@ -98,7 +101,7 @@ Objectives:
 - Maintain consistency across campaigns
 
 ### Lesson 1.6 — Project Memory for Marketing (20 min)
-Path: /modules/1/project-memory
+Path: /modules/1/project-memory/
 Description: Use CLAUDE.md to maintain consistent brand context across all your marketing work.
 Objectives:
 - Create a CLAUDE.md file for your marketing project
@@ -107,7 +110,7 @@ Objectives:
 - Maintain consistency across all content
 
 ### Lesson 1.7 — Claude Code Navigation (20 min)
-Path: /modules/1/navigation
+Path: /modules/1/navigation/
 Description: Master file operations, search techniques, and project organization for efficient marketing work.
 Objectives:
 - Learn quick file finding techniques
@@ -120,7 +123,7 @@ Objectives:
 ## Module 2: Advanced Applications (6 lessons, ~4-5 hours)
 
 ### Lesson 2.1 — Write a Campaign Brief (45 min)
-Path: /modules/2/campaign-brief
+Path: /modules/2/campaign-brief/
 Description: Create professional, comprehensive campaign briefs with multi-perspective feedback.
 Objectives:
 - Partner with Claude to create comprehensive campaign briefs
@@ -129,7 +132,7 @@ Objectives:
 - Get multi-perspective feedback on your brief
 
 ### Lesson 2.2 — Develop Content Strategy (40 min)
-Path: /modules/2/content-strategy
+Path: /modules/2/content-strategy/
 Description: Build data-driven content strategies with calendars, topic clusters, and multi-channel planning.
 Objectives:
 - Create data-driven content strategies
@@ -138,7 +141,7 @@ Objectives:
 - Plan multi-channel content distribution
 
 ### Lesson 2.3 — Generate Marketing Copy (35 min)
-Path: /modules/2/marketing-copy
+Path: /modules/2/marketing-copy/
 Description: Create high-converting copy at scale for every marketing channel.
 Objectives:
 - Write effective copy for each marketing channel
@@ -147,7 +150,7 @@ Objectives:
 - Personalize content at scale
 
 ### Lesson 2.4 — Analyze Campaign Data (35 min)
-Path: /modules/2/analytics
+Path: /modules/2/analytics/
 Description: Turn marketing data into actionable insights and executive reports.
 Objectives:
 - Analyze campaign performance data
@@ -156,7 +159,7 @@ Objectives:
 - Build data-driven recommendations
 
 ### Lesson 2.5 — Competitive Analysis (30 min)
-Path: /modules/2/competitive-analysis
+Path: /modules/2/competitive-analysis/
 Description: Research competitors, analyze positioning, and identify strategic opportunities.
 Objectives:
 - Conduct comprehensive competitor analysis
@@ -165,7 +168,7 @@ Objectives:
 - Identify competitive advantages
 
 ### Lesson 2.6 — SEO Optimization (40 min)
-Path: /modules/2/seo-optimization
+Path: /modules/2/seo-optimization/
 Description: Master search engine optimization with keyword research, content optimization, and technical SEO.
 Objectives:
 - Conduct comprehensive keyword research

@@ -7,12 +7,12 @@ CC4.Marketing is an open-source course that teaches AI-powered marketing workflo
 
 ## Site Structure
 - Homepage: https://cc4.marketing/
-- Blog: https://cc4.marketing/blog
-- Blog Authors: https://cc4.marketing/blog/authors
-- Course Modules: https://cc4.marketing/modules/{module}/{lesson-slug}
-- Changelog: https://cc4.marketing/changelog
-- Download/Subscribe: https://cc4.marketing/download
-- Brand Guidelines: https://cc4.marketing/brand-guide
+- Blog: https://cc4.marketing/blog/
+- Blog Authors: https://cc4.marketing/blog/authors/
+- Course Modules: https://cc4.marketing/modules/{module}/{lesson-slug}/
+- Changelog: https://cc4.marketing/changelog/
+- Download/Subscribe: https://cc4.marketing/download/
+- Brand Guidelines: https://cc4.marketing/brand-guide/
 
 ## Blog
 The blog publishes practical guides, tutorials, and insights on AI-powered marketing with Claude Code. Content is SEO-focused and distinct from the Substack newsletter (which covers announcements and community updates).
@@ -21,6 +21,9 @@ The blog publishes practical guides, tutorials, and insights on AI-powered marke
 - [How to Use Claude Code for Marketing: A Complete 2026 Guide](https://cc4.marketing/blog/claude-code-for-marketing-guide-2026/)
 - [How to Write a Campaign Brief with AI in 10 Minutes](https://cc4.marketing/blog/write-campaign-brief-with-ai/)
 - [How Anthropic's Growth Marketing Team Uses Claude Code to 10x Output](https://cc4.marketing/blog/anthropic-growth-marketing-claude-code/)
+- [AI Works Best When It Looks at What You've Already Shipped](https://cc4.marketing/blog/ai-workflows-not-automation/)
+- [The Last Mile of Shipping Is the Hardest Part](https://cc4.marketing/blog/the-last-mile-of-shipping/)
+- [castmd: Vibe Coding a Chrome Extension for LLMs](https://cc4.marketing/blog/castmd-vibe-coding-chrome-extension/)
 
 ## Course Modules
 - Module 0: Getting Started (4 lessons, 30 min) — Installation, setup, first task
