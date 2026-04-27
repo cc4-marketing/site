@@ -81,7 +81,7 @@ Fields:
 5. Save the file.
 6. Show a preview:
    ```
-   ✅ Hello bar updated
+   Hello bar updated
 
    Text: <text>
    CTA: <cta> → <url>
@@ -111,9 +111,9 @@ Fields:
 If the user passed `--ship`, invoke `/ship` after saving the config. The commit message should be:
 - For `on`: `chore: enable hello bar`
 - For `off`: `chore: disable hello bar`
-- For new content: `feat: update hello bar — "<first 40 chars of text>"`
+- For new content: `chore: update hello bar — "<first 40 chars of text>"`
 
-Note: `feat:` triggers auto-changelog in `/ship` (Step 3a). A new hello bar is user-facing, so this is correct. Toggling on/off is `chore:` and skips the changelog.
+Note: Always use `chore:` — hello bar updates are config changes, not user-facing features. Using `feat:` would wrongly trigger auto-changelog entries in `/ship`.
 
 ## Config file format
 

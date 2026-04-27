@@ -53,6 +53,7 @@ const blogPages = [
   '/blog/anthropic-growth-marketing-claude-code/',
   '/blog/ai-workflows-not-automation/',
   '/blog/the-last-mile-of-shipping/',
+  '/blog/castmd-vibe-coding-chrome-extension/',
 ].map((p) => `https://cc4.marketing${p}`);
 
 // https://astro.build/config
