@@ -3,33 +3,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-
-function slugify(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-}
-
-const authors = [
-  {
-    name: 'Tri Vo',
-    role: 'Course Creator & Lead Writer',
-    bio: 'Marketer turned AI workflow builder. Created CC4.Marketing to help non-technical marketers work 10x faster with Claude Code. Writes about practical AI marketing, campaign automation, and the future of human-AI collaboration in marketing teams.',
-    avatar: '/authors/tri.png',
-    links: {
-      substack: 'https://cc4marketing.substack.com',
-      github: 'https://github.com/cc4-marketing',
-      site: 'https://cc4.marketing',
-    },
-  },
-  {
-    name: 'Alice Marketer',
-    role: 'AI Marketing Strategist',
-    bio: 'CC4.Marketing co-admin and resident AI strategist. Specializes in content strategy, SEO optimization, and building AI agent workflows for marketing teams. Focuses on bridging the gap between marketing strategy and AI execution.',
-    avatar: '/authors/alice.png',
-    links: {
-      substack: 'https://cc4marketing.substack.com',
-    },
-  },
-];
+import { AUTHORS as authors, slugifyAuthorName as slugify } from '../../data/authors';
 ---
 
 <BaseLayout
