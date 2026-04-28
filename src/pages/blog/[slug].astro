@@ -290,13 +290,7 @@ const breadcrumbListSchema = {
           {/* Content with anchor IDs on H2s */}
           <div class="blog-post-content prose">
             {post.data.content && (
-              <BlogContent blocks={post.data.content.map((block: any) => {
-                if (block._type === 'block' && block.style === 'h2') {
-                  const text = block.children?.[0]?.text || '';
-                  return { ...block, _id: slugify(text) };
-                }
-                return block;
-              })} />
+              <BlogContent blocks={post.data.content} />
             )}
           </div>
         </div>
