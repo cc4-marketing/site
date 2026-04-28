@@ -15,6 +15,9 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ### Added
 
+- Author profile pages at `/blog/authors/{slug}` — individual author pages with bio, avatar, social links, AI discovery prompt, and filtered list of their published articles. Each author card on the hub page links to their profile.
+- Responsive author grid on `/blog/authors` — converted from single-column to 2-3 column grid layout on desktop, 1 column on mobile. Author cards are now clickable with hover animations.
+- HelloBar now accounts for its own height with `margin-bottom` when visible, preventing overlap with the navigation menu on all pages.
 - Release Highlight Box for blog posts — minimal, prominent callout for product releases with version, download link, landing page, and source code reference. Styled with rust-colored accent and tinted background, added to Threadmark release post.
 - Sticky Table of Contents for blog posts — auto-generated from H2 headings with smooth scroll navigation and active section highlighting. Desktop: right sidebar with sticky positioning. Mobile: collapsible drawer that slides in from left. Works with all existing posts automatically.
 - FAQPage and HowTo structured data on eligible blog posts — the marketing guide gets a FAQPage schema and the campaign brief post gets a HowTo schema with 5 steps, enabling Google rich results for both
