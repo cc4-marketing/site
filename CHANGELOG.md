@@ -15,6 +15,9 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ### Added
 
+- Personal author homepages — each author page now reads like a personal homepage: a long-form first-person intro, a "What I'm working on now" block with a live rust dot, a "Tools I use daily" list, and a "Topics I write about" chip row. Hidden when missing so adding a new author with no Now block doesn't show empty state.
+- Per-author prompt library — every author page ships with 3-4 ready-to-copy prompts: two templated ("Write in their voice", "Find their posts on a topic") interpolated with the author's name/role/topics, plus 0-2 author-written custom prompts. Each prompt has a Copy button.
+- Single source of truth for author data at `src/data/authors.ts`. Adding a new author is one file edit.
 - Author profile pages at `/blog/authors/{slug}` — individual author pages with bio, avatar, social links, AI discovery prompt, and filtered list of their published articles. Each author card on the hub page links to their profile.
 - Responsive author grid on `/blog/authors` — converted from single-column to 2-3 column grid layout on desktop, 1 column on mobile. Author cards are now clickable with hover animations.
 - HelloBar now accounts for its own height with `margin-bottom` when visible, preventing overlap with the navigation menu on all pages.
