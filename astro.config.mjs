@@ -54,6 +54,7 @@ const blogPages = [
   '/blog/ai-workflows-not-automation/',
   '/blog/the-last-mile-of-shipping/',
   '/blog/castmd-vibe-coding-chrome-extension/',
+  '/blog/introducing-threadmark',
 ].map((p) => `https://cc4.marketing${p}`);
 
 // https://astro.build/config
