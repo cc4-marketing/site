@@ -4,6 +4,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Header from '../../../components/Header.astro';
 import Footer from '../../../components/Footer.astro';
 import { AUTHORS, slugifyAuthorName as slugify } from '../../../data/authors';
+import { buildAuthorPrompts } from '../../../lib/author-prompts';
 
 function formatDate(date: Date | null | undefined): string {
   if (!date) return '';
@@ -37,6 +38,8 @@ const metaDescription = firstParagraph.length <= 158
 const hasNow = !!author.now?.text;
 const hasTools = (author.tools?.length ?? 0) > 0;
 const hasTopics = (author.topics?.length ?? 0) > 0;
+
+const promptCards = buildAuthorPrompts(author);
 
 // Get all posts for this author from Emdash
 const { entries: allPosts } = await getEmDashCollection('posts');
@@ -215,11 +218,20 @@ if (hasTopics) {
         </div>
       )}
 
-      <div class="author-ai-prompt">
-        <div class="prompt-label">Learn more about {author.name}</div>
-        <div class="prompt-box">
-          <p>Ask Claude about {author.name}'s approach to AI marketing, their workflow strategies, and practical implementations they've shared in the CC4.Marketing blog.</p>
-        </div>
+      <div class="author-prompts">
+        <h2 class="section-heading">Prompts to use with AI</h2>
+        <p class="prompts-intro">
+          Copy any of these into Claude, ChatGPT, or your AI of choice. They're written
+          to draw on {author.name}'s voice and the work they've shipped on CC4.Marketing.
+        </p>
+        <ul class="prompt-list">
+          {promptCards.map((card) => (
+            <li class="prompt-card">
+              <h3 class="prompt-card-label">{card.label}</h3>
+              <pre class="prompt-card-text">{card.prompt}</pre>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   </section>
@@ -492,31 +504,65 @@ if (hasTopics) {
     border-color: var(--plum);
   }
 
-  /* AI Prompt Box */
-  .author-ai-prompt {
-    padding: 32px 24px;
+  /* Prompt library */
+  .author-prompts {
+    padding: 24px;
     border: 2px solid var(--border-color);
-    background: rgba(92, 58, 107, 0.08);
-    border-radius: 4px;
+    background: rgba(92, 58, 107, 0.05);
   }
 
-  .prompt-label {
-    font-size: 0.75em;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--plum);
-    margin-bottom: 12px;
+  .author-prompts .section-heading {
+    margin-bottom: 8px;
   }
 
-  .prompt-box {
+  .prompts-intro {
     font-size: 0.95em;
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: 1.5;
+    margin: 0 0 24px;
   }
 
-  .prompt-box p {
+  .prompt-list {
+    list-style: none;
+    padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .prompt-card {
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+  }
+
+  /* Cancel the global 24px margin that CodeBlockCopy adds to the wrapper */
+  .prompt-card :global(.code-block-wrapper) {
+    margin: 0;
+  }
+
+  .prompt-card-label {
+    font-family: var(--font-display);
+    font-size: 0.95em;
+    color: var(--rust);
+    margin: 0;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    line-height: 1.3;
+  }
+
+  .prompt-card-text {
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 0.85em;
+    line-height: 1.55;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    margin: 0;
+    padding: 16px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
   }
 
   /* Posts section */
@@ -637,6 +683,15 @@ if (hasTopics) {
 
     .author-now {
       padding: 20px;
+    }
+
+    .author-prompts {
+      padding: 20px;
+    }
+
+    .prompt-card-text {
+      padding: 14px;
+      font-size: 0.8em;
     }
 
     .posts-grid {
