@@ -209,5 +209,37 @@
     "status": "published",
     "published_at": "2026-04-28T11:00:00.000Z",
     "created_at": "2026-04-28T11:00:00.000Z"
+  },
+  {
+    "id": "bc_site_011",
+    "slug": "blog-release-highlight-box-and-sticky-toc",
+    "title": "Blog: release highlight box and sticky table of contents",
+    "summary": "Added Release Highlight Box for product releases with version, download, landing page, and source links. Added auto-generated Sticky Table of Contents from H2 headings with smooth scroll navigation and active section highlighting. Desktop: right sidebar with sticky positioning. Mobile: collapsible drawer.",
+    "type": "added",
+    "version": "unreleased",
+    "modules": [
+      "site",
+      "blog"
+    ],
+    "machine_summary": "cc4-marketing/site. src/components/BlogContent.astro: new releaseHighlight block handler, minimal style (left border, tinted bg). src/pages/blog/[slug].astro: H2 extraction from content, TOC generation at build time, desktop sticky sidebar (.blog-toc-sticky, position: sticky top 100px), mobile drawer (.blog-toc-drawer, fixed left -100% sliding to 0), IntersectionObserver for active highlighting, smooth scroll JS. Threadmark post: 7 H2 sections + v0.4.0 release box.",
+    "status": "published",
+    "published_at": "2026-04-29T02:00:00.000Z",
+    "created_at": "2026-04-29T02:00:00.000Z"
+  },
+  {
+    "id": "bc_site_012",
+    "slug": "blog-toc-anchor-link-fix",
+    "title": "Bug fix: TOC anchor links now scroll to sections",
+    "summary": "Fixed table of contents anchor links not scrolling to target sections. H2 headings rendered by PortableText now have proper id attributes for anchor navigation. Moved ID generation from page template into content renderer.",
+    "type": "fixed",
+    "version": "unreleased",
+    "modules": [
+      "site",
+      "blog"
+    ],
+    "machine_summary": "cc4-marketing/site. src/components/BlogContent.astro: moved H2 detection from [slug].astro into renderer, wrap h2 blocks in <div id={headingId}> to provide anchor targets. Added headingId property to Segment type, slugify() function generates deterministic IDs (lowercase, alphanumeric+hyphens). Fixed smooth scroll navigation and IntersectionObserver active highlighting.",
+    "status": "published",
+    "published_at": "2026-04-29T02:15:00.000Z",
+    "created_at": "2026-04-29T02:15:00.000Z"
   }
 ]

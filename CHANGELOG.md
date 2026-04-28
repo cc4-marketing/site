@@ -15,6 +15,8 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ### Added
 
+- Release Highlight Box for blog posts — minimal, prominent callout for product releases with version, download link, landing page, and source code reference. Styled with rust-colored accent and tinted background, added to Threadmark release post.
+- Sticky Table of Contents for blog posts — auto-generated from H2 headings with smooth scroll navigation and active section highlighting. Desktop: right sidebar with sticky positioning. Mobile: collapsible drawer that slides in from left. Works with all existing posts automatically.
 - FAQPage and HowTo structured data on eligible blog posts — the marketing guide gets a FAQPage schema and the campaign brief post gets a HowTo schema with 5 steps, enabling Google rich results for both
 - Expanded meta descriptions on all 17 course lessons (from 63–101 chars to 148–160 chars) for improved SERP snippet quality
 - Question-form H2 headings in key lessons (Introduction, Agents, Campaign Brief, SEO) for featured snippet targeting
@@ -36,6 +38,7 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ### Fixed
 
+- Blog post table of contents anchor links now scroll to correct sections — H2 headings rendered by PortableText now have proper id attributes for anchor navigation. Fixes smooth scroll navigation and active section highlighting in TOC.
 - Course schema no longer duplicated on lesson, download, brand guide, and changelog pages — now only on homepage
 - Broken 1-item breadcrumbs removed from lesson and secondary pages
 - Blog post title tags shortened (`| CC4M` suffix for articles vs full site name) to stay under 60 chars
