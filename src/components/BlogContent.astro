@@ -12,7 +12,8 @@ const { blocks } = Astro.props;
 type Segment =
   | { kind: 'portable'; blocks: any[] }
   | { kind: 'code'; language: string; code: string; key: string }
-  | { kind: 'image'; url: string; alt: string; key: string };
+  | { kind: 'image'; url: string; alt: string; key: string }
+  | { kind: 'releaseBox'; data: any; key: string };
 
 const segments: Segment[] = [];
 let current: any[] = [];
@@ -24,6 +25,9 @@ for (const block of blocks) {
   } else if (block._type === 'blogImage') {
     if (current.length) { segments.push({ kind: 'portable', blocks: current }); current = []; }
     segments.push({ kind: 'image', url: block.url, alt: block.alt || '', key: block._key });
+  } else if (block._type === 'releaseHighlight') {
+    if (current.length) { segments.push({ kind: 'portable', blocks: current }); current = []; }
+    segments.push({ kind: 'releaseBox', data: block, key: block._key });
   } else {
     current.push(block);
   }
@@ -44,6 +48,19 @@ if (current.length) segments.push({ kind: 'portable', blocks: current });
       </figure>
     );
   }
+  if (seg.kind === 'releaseBox') {
+    const { version, downloadUrl, landingPageUrl, sourceUrl } = seg.data;
+    return (
+      <div class="blog-release-box">
+        <strong>v{version}</strong>
+        <p>
+          Download: <a href={`https://${downloadUrl}`} target="_blank" rel="noopener noreferrer">{downloadUrl}</a><br />
+          Landing page: <a href={`https://${landingPageUrl}`} target="_blank" rel="noopener noreferrer">{landingPageUrl}</a><br />
+          Source: <a href={`https://${sourceUrl}`} target="_blank" rel="noopener noreferrer">{sourceUrl}</a>
+        </p>
+      </div>
+    );
+  }
   return <PortableText value={seg.blocks} />;
 })}
 
@@ -55,5 +72,35 @@ if (current.length) segments.push({ kind: 'portable', blocks: current });
   .blog-inline-image img {
     max-width: 100%;
     border-radius: 4px;
+  }
+
+  .blog-release-box {
+    border-left: 4px solid var(--rust);
+    padding: 20px 24px;
+    margin: 32px 0;
+    background: rgba(184, 92, 60, 0.04);
+  }
+
+  .blog-release-box strong {
+    display: block;
+    margin-bottom: 12px;
+    color: var(--rust);
+    font-weight: 600;
+  }
+
+  .blog-release-box p {
+    margin: 0;
+    font-size: 0.95em;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .blog-release-box a {
+    color: var(--rust);
+    text-decoration: underline;
+  }
+
+  .blog-release-box a:hover {
+    opacity: 0.8;
   }
 </style>

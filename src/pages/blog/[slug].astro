@@ -42,6 +42,18 @@ const resolvedOgUrl = resolvedOgPath.startsWith('http')
   ? resolvedOgPath
   : `https://cc4.marketing${resolvedOgPath}`;
 
+// Extract H2 headings for TOC
+function slugify(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-');
+}
+
+const headings = (post.data.content || [])
+  .filter((block: any) => block._type === 'block' && block.style === 'h2')
+  .map((block: any) => {
+    const text = block.children?.[0]?.text || '';
+    return { text, id: slugify(text) };
+  });
+
 // Generate per-post keywords from title words + base set
 const stopWords = new Set(['a', 'an', 'the', 'and', 'or', 'to', 'in', 'for', 'of', 'with', 'how', 'is', 'at', 'by', 'on', 'its', 'your', 'from', 'this', 'that', 'are', 'was', 'be', 'as', 'it', 'do', 'not', 'but', 'all', 'their', 'has', 'have', 'can', 'out', 'get', 'use', 'way', 'part', 'last', 'mile', 'best', 'why', 'what', 'when', 'will', 'into', 'our', 'more', 'most', 'new', 'its', 'one', 'two', 'just', 'now', 'then', 'also', 'very', 'like', 'make', 'work', 'need', 'look', 'even', 'back', 'only', 'well', 'than', 'over', 'after']);
 const titleWords = post.data.title.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter((w: string) => w.length > 2 && !stopWords.has(w));
@@ -220,39 +232,88 @@ const breadcrumbListSchema = {
   {extraSchema && <script type="application/ld+json" set:html={JSON.stringify(extraSchema)} />}
 
   <article class="blog-post">
-    <div class="blog-post-inner">
-      {/* Header */}
-      <header class="blog-post-header">
-        <a href="/blog/" class="blog-back">&larr; Back to Blog</a>
-        <time class="blog-post-date" datetime={post.data.publishedAt?.toISOString()}>
-          {formatDate(post.data.publishedAt)}
-        </time>
-        <h1 class="blog-post-title">{post.data.title}</h1>
-        {post.data.excerpt && (
-          <p class="blog-post-excerpt">{post.data.excerpt}</p>
-        )}
-        <div class="blog-post-byline">
-          <span class="byline-label">By</span>
-          <a href={authorUrl.replace('https://cc4.marketing', '')} class="byline-author">{authorName}</a>
-        </div>
-      </header>
-
-      {/* Featured image */}
-      {post.data.featured_image?.src && (
-        <div class="blog-post-hero-image">
-          <img
-            src={post.data.featured_image.src}
-            alt={post.data.featured_image.alt || post.data.title}
-            width={post.data.featured_image.width}
-            height={post.data.featured_image.height}
-            loading="eager"
-          />
-        </div>
+    <div class="blog-post-wrapper">
+      {/* TOC Toggle (Mobile Only) */}
+      {headings.length > 0 && (
+        <button class="blog-toc-toggle" aria-label="Toggle table of contents">
+          ☰ Contents
+        </button>
       )}
 
-      {/* Content */}
-      <div class="blog-post-content prose">
-        {post.data.content && <BlogContent blocks={post.data.content} />}
+      {/* TOC Drawer (Mobile) */}
+      {headings.length > 0 && (
+        <nav class="blog-toc-drawer">
+          <h3 style="margin-top: 0;">Contents</h3>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            {headings.map((h) => (
+              <li>
+                <a href={`#${h.id}`} class="toc-drawer-link">{h.text}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+
+      {/* Main Content Grid */}
+      <div class="blog-post-inner">
+        {/* Content Column */}
+        <div class="blog-post-content-col">
+          {/* Header */}
+          <header class="blog-post-header">
+            <a href="/blog/" class="blog-back">&larr; Back to Blog</a>
+            <time class="blog-post-date" datetime={post.data.publishedAt?.toISOString()}>
+              {formatDate(post.data.publishedAt)}
+            </time>
+            <h1 class="blog-post-title">{post.data.title}</h1>
+            {post.data.excerpt && (
+              <p class="blog-post-excerpt">{post.data.excerpt}</p>
+            )}
+            <div class="blog-post-byline">
+              <span class="byline-label">By</span>
+              <a href={authorUrl.replace('https://cc4.marketing', '')} class="byline-author">{authorName}</a>
+            </div>
+          </header>
+
+          {/* Featured image */}
+          {post.data.featured_image?.src && (
+            <div class="blog-post-hero-image">
+              <img
+                src={post.data.featured_image.src}
+                alt={post.data.featured_image.alt || post.data.title}
+                width={post.data.featured_image.width}
+                height={post.data.featured_image.height}
+                loading="eager"
+              />
+            </div>
+          )}
+
+          {/* Content with anchor IDs on H2s */}
+          <div class="blog-post-content prose">
+            {post.data.content && (
+              <BlogContent blocks={post.data.content.map((block: any) => {
+                if (block._type === 'block' && block.style === 'h2') {
+                  const text = block.children?.[0]?.text || '';
+                  return { ...block, _id: slugify(text) };
+                }
+                return block;
+              })} />
+            )}
+          </div>
+        </div>
+
+        {/* TOC Sidebar (Desktop Only) */}
+        {headings.length > 0 && (
+          <nav class="blog-toc-sticky">
+            <h3 style="margin-top: 0; font-size: 0.9em;">Contents</h3>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              {headings.map((h) => (
+                <li>
+                  <a href={`#${h.id}`} class="toc-link">{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
       </div>
 
       {/* Newsletter CTA */}
@@ -281,6 +342,71 @@ const breadcrumbListSchema = {
   </article>
 
   <Footer />
+
+  <script>
+    // TOC smooth scroll and active section highlighting
+    function initTOC() {
+      const tocLinks = document.querySelectorAll('.toc-link, .toc-drawer-link');
+      const headings = document.querySelectorAll('[id^=""]').filter(el => el.tagName === 'H2');
+      const drawerToggle = document.querySelector('.blog-toc-toggle');
+      const drawer = document.querySelector('.blog-toc-drawer');
+
+      // Smooth scroll on link click
+      tocLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = link.getAttribute('href')?.slice(1);
+          const target = document.getElementById(targetId);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+            // Close drawer on mobile after clicking
+            if (drawer && drawer.classList.contains('visible')) {
+              drawer.classList.remove('visible');
+            }
+          }
+        });
+      });
+
+      // Drawer toggle
+      if (drawerToggle && drawer) {
+        drawerToggle.addEventListener('click', () => {
+          drawer.classList.toggle('visible');
+        });
+      }
+
+      // Active section highlighting with IntersectionObserver
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const id = entry.target.id;
+          if (entry.isIntersecting) {
+            tocLinks.forEach(link => {
+              const href = link.getAttribute('href');
+              if (href === `#${id}`) {
+                link.classList.add('active');
+              } else {
+                link.classList.remove('active');
+              }
+            });
+          }
+        });
+      }, { rootMargin: '-80px 0px -80% 0px' });
+
+      // Find all H2 headings (they should have IDs from the template)
+      const allHeadings = document.querySelectorAll('.blog-post-content :is(h2)');
+      allHeadings.forEach(h => {
+        if (h.id) {
+          observer.observe(h);
+        }
+      });
+    }
+
+    // Initialize TOC when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTOC);
+    } else {
+      initTOC();
+    }
+  </script>
 </BaseLayout>
 
 <style>
@@ -288,9 +414,21 @@ const breadcrumbListSchema = {
     padding: 120px 24px 80px;
   }
 
-  .blog-post-inner {
-    max-width: 720px;
+  .blog-post-wrapper {
+    position: relative;
+    max-width: 1000px;
     margin: 0 auto;
+  }
+
+  .blog-post-inner {
+    display: grid;
+    grid-template-columns: 1fr 250px;
+    gap: 40px;
+    max-width: 100%;
+  }
+
+  .blog-post-content-col {
+    min-width: 0;
   }
 
   /* Back link */
@@ -462,6 +600,126 @@ const breadcrumbListSchema = {
     margin: 24px 0;
   }
 
+  /* TOC - Desktop Sticky Sidebar */
+  .blog-toc-sticky {
+    position: sticky;
+    top: 100px;
+    max-height: 70vh;
+    overflow-y: auto;
+    font-size: 0.9em;
+    line-height: 1.6;
+    padding-top: 8px;
+  }
+
+  .blog-toc-sticky h3 {
+    font-family: var(--font-display);
+    font-size: 0.95em;
+    margin: 0 0 12px;
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .blog-toc-sticky ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .blog-toc-sticky li {
+    margin: 0;
+  }
+
+  .toc-link {
+    display: block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-bottom: 8px;
+    padding: 4px 8px;
+    transition: all 0.2s ease;
+    border-left: 2px solid transparent;
+    padding-left: 6px;
+  }
+
+  .toc-link:hover {
+    color: var(--rust);
+    font-weight: 600;
+    border-left-color: var(--rust);
+  }
+
+  .toc-link.active {
+    color: var(--rust);
+    font-weight: 600;
+    border-left-color: var(--rust);
+  }
+
+  /* TOC - Mobile Toggle & Drawer */
+  .blog-toc-toggle {
+    display: none;
+    margin-bottom: 16px;
+    background: transparent;
+    border: 2px solid var(--border-color);
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--rust);
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+  }
+
+  .blog-toc-toggle:hover {
+    border-color: var(--rust);
+  }
+
+  .blog-toc-drawer {
+    display: none;
+    position: fixed;
+    left: -100%;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--bg-primary);
+    z-index: 999;
+    padding: 20px;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+  }
+
+  .blog-toc-drawer.visible {
+    left: 0;
+  }
+
+  .blog-toc-drawer h3 {
+    font-family: var(--font-display);
+    font-size: 1.1em;
+    margin: 0 0 16px;
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .blog-toc-drawer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .blog-toc-drawer li {
+    margin: 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .toc-drawer-link {
+    display: block;
+    padding: 12px 0;
+    color: var(--rust);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .toc-drawer-link:hover {
+    opacity: 0.8;
+  }
+
   /* Newsletter CTA */
   .blog-post-cta {
     border: 2px solid var(--rust);
@@ -549,6 +807,27 @@ const breadcrumbListSchema = {
   @media (max-width: 768px) {
     .blog-post {
       padding: 100px 20px 60px;
+    }
+
+    .blog-post-wrapper {
+      max-width: 100%;
+    }
+
+    .blog-post-inner {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .blog-toc-sticky {
+      display: none;
+    }
+
+    .blog-toc-toggle {
+      display: block;
+    }
+
+    .blog-toc-drawer {
+      display: block;
     }
 
     .blog-post-nav {
