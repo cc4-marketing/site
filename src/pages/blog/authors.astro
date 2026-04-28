@@ -4,6 +4,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 
+function slugify(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
 const authors = [
   {
     name: 'Tri Vo',
@@ -73,7 +77,7 @@ const authors = [
   <section class="authors-body">
     <div class="authors-body-inner">
       {authors.map((author) => (
-        <div class="author-card">
+        <a href={`/blog/authors/${slugify(author.name)}`} class="author-card">
           <div class="author-avatar">
             <img src={author.avatar} alt={author.name} class="author-avatar-img" width="80" height="80" loading="lazy" />
           </div>
@@ -83,23 +87,23 @@ const authors = [
             <p class="author-bio">{author.bio}</p>
             <div class="author-links">
               {author.links.substack && (
-                <a href={author.links.substack} target="_blank" rel="noopener noreferrer" class="author-link">
+                <span class="author-link">
                   Substack
-                </a>
+                </span>
               )}
               {author.links.github && (
-                <a href={author.links.github} target="_blank" rel="noopener noreferrer" class="author-link">
+                <span class="author-link">
                   GitHub
-                </a>
+                </span>
               )}
               {author.links.site && (
-                <a href={author.links.site} class="author-link">
+                <span class="author-link">
                   Website
-                </a>
+                </span>
               )}
             </div>
           </div>
-        </div>
+        </a>
       ))}
     </div>
   </section>
@@ -174,42 +178,49 @@ const authors = [
   }
 
   .authors-body-inner {
-    max-width: 720px;
+    max-width: 1200px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 32px;
   }
 
   /* Author card */
   .author-card {
     display: flex;
-    gap: 32px;
-    padding: 32px;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px;
     border: 2px solid var(--border-color);
     background: var(--bg-secondary);
     box-shadow: var(--shadow-sm);
-    transition: box-shadow 0.25s ease;
+    transition: all 0.25s ease;
+    text-decoration: none;
+    color: inherit;
   }
 
   .author-card:hover {
+    transform: translate(-4px, -4px);
     box-shadow: 8px 8px 0 var(--mustard);
   }
 
   .author-avatar {
     flex-shrink: 0;
+    align-self: center;
   }
 
   .author-avatar-img {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     border: 2px solid var(--rust);
+    border-radius: 50%;
     object-fit: cover;
     display: block;
   }
 
   .author-info {
     flex: 1;
+    text-align: center;
   }
 
   .author-name {
@@ -241,21 +252,20 @@ const authors = [
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 12px;
   }
 
   .author-link {
-    font-size: 0.8em;
+    font-size: 0.75em;
     font-weight: 600;
     color: var(--rust);
-    border: 1.5px solid var(--rust);
-    padding: 5px 14px;
     text-decoration: none;
     transition: all 0.2s ease;
   }
 
   .author-link:hover {
-    background: var(--rust);
-    color: var(--cream);
+    text-decoration: underline;
   }
 
   /* CTA */
@@ -307,15 +317,14 @@ const authors = [
       padding: 120px 20px 40px;
     }
 
-    .author-card {
-      flex-direction: column;
-      gap: 20px;
-      padding: 24px;
+    .authors-body-inner {
+      grid-template-columns: 1fr;
+      gap: 24px;
     }
 
     .author-avatar-img {
-      width: 64px;
-      height: 64px;
+      width: 80px;
+      height: 80px;
     }
   }
 </style>

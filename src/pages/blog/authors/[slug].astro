@@ -1,0 +1,467 @@
+---
+import { getEmDashCollection } from 'emdash';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+
+// Local author data
+const AUTHORS = [
+  {
+    name: 'Tri Vo',
+    role: 'Course Creator & Lead Writer',
+    bio: 'Marketer turned AI workflow builder. Created CC4.Marketing to help non-technical marketers work 10x faster with Claude Code. Writes about practical AI marketing, campaign automation, and the future of human-AI collaboration in marketing teams.',
+    avatar: '/authors/tri.png',
+    links: {
+      substack: 'https://cc4marketing.substack.com',
+      github: 'https://github.com/cc4-marketing',
+      site: 'https://cc4.marketing',
+    },
+  },
+  {
+    name: 'Alice Marketer',
+    role: 'AI Marketing Strategist',
+    bio: 'CC4.Marketing co-admin and resident AI strategist. Specializes in content strategy, SEO optimization, and building AI agent workflows for marketing teams. Focuses on bridging the gap between marketing strategy and AI execution.',
+    avatar: '/authors/alice.png',
+    links: {
+      substack: 'https://cc4marketing.substack.com',
+    },
+  },
+];
+
+function slugify(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+function formatDate(date: Date | null | undefined): string {
+  if (!date) return '';
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+const { slug } = Astro.params;
+
+// Find local author by slug
+const author = AUTHORS.find((a) => slugify(a.name) === slug);
+
+if (!author) {
+  return Astro.redirect('/404');
+}
+
+// Get all posts for this author from Emdash
+const { entries: allPosts } = await getEmDashCollection('posts');
+const published = allPosts.filter((p) => p.data.status === 'published');
+
+// Filter posts by author (match against byline displayName)
+const authorPosts = published
+  .filter((post) => {
+    const bylines = post.data.bylines ?? [];
+    return bylines.some((b: { byline: { displayName: string } }) =>
+      slugify(b.byline.displayName) === slug
+    );
+  })
+  .sort((a, b) => {
+    const da = a.data.publishedAt?.getTime() ?? 0;
+    const db = b.data.publishedAt?.getTime() ?? 0;
+    return db - da;
+  });
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  'itemListElement': [
+    {
+      '@type': 'ListItem',
+      'position': 1,
+      'name': 'Home',
+      'item': 'https://cc4.marketing/',
+    },
+    {
+      '@type': 'ListItem',
+      'position': 2,
+      'name': 'Blog',
+      'item': 'https://cc4.marketing/blog/',
+    },
+    {
+      '@type': 'ListItem',
+      'position': 3,
+      'name': 'Authors',
+      'item': 'https://cc4.marketing/blog/authors/',
+    },
+    {
+      '@type': 'ListItem',
+      'position': 4,
+      'name': author.name,
+      'item': `https://cc4.marketing/blog/authors/${slug}/`,
+    },
+  ],
+};
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  'name': author.name,
+  'jobTitle': author.role,
+  'description': author.bio,
+  'image': `https://cc4.marketing${author.avatar}`,
+  'url': `https://cc4.marketing/blog/authors/${slug}/`,
+  'sameAs': Object.values(author.links).filter(Boolean),
+};
+---
+
+<BaseLayout
+  title={`${author.name} — CC4.Marketing Blog`}
+  description={`${author.name} is ${author.role} at CC4.Marketing. ${author.bio.substring(0, 120)}...`}
+  keywords={[author.name, author.role, 'AI marketing', 'Claude Code']}
+  ogPageKey="author"
+  showCourseSchema={false}
+  showBreadcrumb={false}
+>
+  <Header />
+
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+
+  <section class="author-hero">
+    <div class="author-hero-inner">
+      <nav class="author-breadcrumb" aria-label="Breadcrumb">
+        <a href="/" class="breadcrumb-link">Home</a>
+        <span class="breadcrumb-sep">/</span>
+        <a href="/blog/" class="breadcrumb-link">Blog</a>
+        <span class="breadcrumb-sep">/</span>
+        <a href="/blog/authors/" class="breadcrumb-link">Authors</a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current">{author.name}</span>
+      </nav>
+
+      <div class="author-profile">
+        <div class="author-profile-avatar">
+          <img
+            src={author.avatar}
+            alt={author.name}
+            class="author-profile-avatar-img"
+            width="120"
+            height="120"
+            loading="eager"
+          />
+        </div>
+        <div class="author-profile-info">
+          <h1 class="author-profile-name">{author.name}</h1>
+          <p class="author-profile-role">{author.role}</p>
+          <p class="author-profile-bio">{author.bio}</p>
+        </div>
+      </div>
+
+      {Object.values(author.links).filter(Boolean).length > 0 && (
+        <div class="author-social">
+          {author.links.substack && (
+            <a href={author.links.substack} target="_blank" rel="noopener noreferrer" class="social-link">
+              Substack
+            </a>
+          )}
+          {author.links.github && (
+            <a href={author.links.github} target="_blank" rel="noopener noreferrer" class="social-link">
+              GitHub
+            </a>
+          )}
+          {author.links.site && (
+            <a href={author.links.site} target="_blank" rel="noopener noreferrer" class="social-link">
+              Website
+            </a>
+          )}
+        </div>
+      )}
+
+      <div class="author-ai-prompt">
+        <div class="prompt-label">Learn more about {author.name}</div>
+        <div class="prompt-box">
+          <p>Ask Claude about {author.name}'s approach to AI marketing, their workflow strategies, and practical implementations they've shared in the CC4.Marketing blog.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="author-posts">
+    <div class="posts-inner">
+      {authorPosts.length > 0 ? (
+        <>
+          <h2 class="posts-title">Articles by {author.name}</h2>
+          <div class="posts-grid">
+            {authorPosts.map((post) => (
+              <article class="post-card">
+                <a href={`/blog/${post.data.slug}/`} class="post-link">
+                  <h3 class="post-title">{post.data.title}</h3>
+                </a>
+                <p class="post-date">{formatDate(post.data.publishedAt)}</p>
+                <p class="post-excerpt">{post.data.excerpt}</p>
+                <a href={`/blog/${post.data.slug}/`} class="post-read-more">
+                  Read more →
+                </a>
+              </article>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div class="posts-empty">
+          <p>No articles published yet.</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  /* Hero section */
+  .author-hero {
+    padding: 100px 24px 60px;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(92, 58, 107, 0.06) 100%);
+  }
+
+  .author-hero-inner {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* Breadcrumb */
+  .author-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    margin-bottom: 40px;
+  }
+
+  .breadcrumb-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .breadcrumb-link:hover {
+    color: var(--rust);
+  }
+
+  .breadcrumb-sep {
+    color: var(--border-color);
+  }
+
+  .breadcrumb-current {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* Profile section */
+  .author-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .author-profile-avatar {
+    margin-bottom: 24px;
+  }
+
+  .author-profile-avatar-img {
+    width: 120px;
+    height: 120px;
+    border: 3px solid var(--rust);
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .author-profile-name {
+    font-family: var(--font-display);
+    font-size: clamp(1.8em, 5vw, 2.5em);
+    color: var(--text-primary);
+    margin: 0 0 8px;
+    line-height: 1.2;
+  }
+
+  .author-profile-role {
+    font-size: 1em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--rust);
+    margin: 0 0 16px;
+  }
+
+  .author-profile-bio {
+    font-size: 1em;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+    max-width: 500px;
+  }
+
+  /* Social links */
+  .author-social {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+
+  .social-link {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: var(--rust);
+    text-decoration: none;
+    border-bottom: 2px solid var(--rust);
+    padding-bottom: 2px;
+    transition: all 0.2s ease;
+  }
+
+  .social-link:hover {
+    color: var(--plum);
+    border-color: var(--plum);
+  }
+
+  /* AI Prompt Box */
+  .author-ai-prompt {
+    padding: 32px 24px;
+    border: 2px solid var(--border-color);
+    background: rgba(92, 58, 107, 0.08);
+    border-radius: 4px;
+  }
+
+  .prompt-label {
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--plum);
+    margin-bottom: 12px;
+  }
+
+  .prompt-box {
+    font-size: 0.95em;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .prompt-box p {
+    margin: 0;
+  }
+
+  /* Posts section */
+  .author-posts {
+    padding: 60px 24px 80px;
+  }
+
+  .posts-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .posts-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8em, 5vw, 2em);
+    color: var(--text-primary);
+    margin: 0 0 32px;
+    text-align: center;
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px;
+  }
+
+  .post-card {
+    padding: 24px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.25s ease;
+  }
+
+  .post-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 8px 8px 0 var(--mustard);
+  }
+
+  .post-link {
+    text-decoration: none;
+  }
+
+  .post-title {
+    font-family: var(--font-display);
+    font-size: 1.2em;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .post-link:hover .post-title {
+    color: var(--rust);
+  }
+
+  .post-date {
+    font-size: 0.8em;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .post-excerpt {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+  }
+
+  .post-read-more {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--rust);
+    text-decoration: none;
+    margin-top: 8px;
+    transition: color 0.2s ease;
+  }
+
+  .post-read-more:hover {
+    color: var(--plum);
+  }
+
+  /* Empty state */
+  .posts-empty {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-secondary);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .author-hero {
+      padding: 80px 20px 40px;
+    }
+
+    .author-profile {
+      gap: 20px;
+    }
+
+    .author-profile-avatar-img {
+      width: 100px;
+      height: 100px;
+    }
+
+    .author-profile-name {
+      font-size: 1.5em;
+    }
+
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .post-card {
+      padding: 20px;
+    }
+  }
+</style>
