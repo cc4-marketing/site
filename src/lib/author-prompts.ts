@@ -8,6 +8,7 @@
  */
 
 import type { Author } from '../data/authors';
+import { slugifyAuthorName } from '../data/authors';
 
 export interface PromptCard {
   label: string;
@@ -41,7 +42,7 @@ function buildFindWorkPrompt(author: Author): PromptCard {
 
 Their main themes are: ${joinTopics(author.topics)}.
 
-The CC4.Marketing blog index lives at https://cc4.marketing/blog/. ${author.name}'s author page lists all their posts: https://cc4.marketing/blog/authors/${author.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}/.
+The CC4.Marketing blog index lives at https://cc4.marketing/blog/. ${author.name}'s author page lists all their posts: https://cc4.marketing/blog/authors/${slugifyAuthorName(author.name)}/.
 
 My problem: {describe what you're trying to solve}
 

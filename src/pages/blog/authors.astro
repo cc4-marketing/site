@@ -26,7 +26,7 @@ import { AUTHORS as authors, slugifyAuthorName as slugify } from '../../data/aut
       "name": a.name,
       "jobTitle": a.role,
       "description": a.bio,
-      "url": "https://cc4.marketing/blog/authors",
+      "url": `https://cc4.marketing/blog/authors/${slugify(a.name)}/`,
       ...(a.links.site ? { "sameAs": [a.links.substack, a.links.github, a.links.site].filter(Boolean) } : { "sameAs": [a.links.substack].filter(Boolean) }),
     })),
     "breadcrumb": {
