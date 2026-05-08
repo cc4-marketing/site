@@ -7,10 +7,10 @@ export const promoConfig = {
     // Hello Bar (top banner)
     helloBar: {
         enabled: true,
-        text: "New post: The Last Mile of Shipping Is the Hardest Part",
+        text: "New post: Introducing Threadmark — bring threads into your AI workflow",
         linkText: "Read now",
-        linkUrl: "https://cc4.marketing/blog/the-last-mile-of-shipping/",
-        storageKey: "hellobar-last-mile-of-shipping",
+        linkUrl: "https://cc4.marketing/blog/introducing-threadmark/",
+        storageKey: "hellobar-introducing-threadmark",
         cooldownDays: 3
     },
 
