@@ -79,7 +79,18 @@ jobs:
             }")
 
           # Extract the text content
-          ENTRY_JSON=$(echo "$RESPONSE" | jq -r '.content[0].text')
+          ENTRY_JSON=$(echo "$RESPONSE" | jq -r '.content[0].text // empty')
+
+          # Guard against Anthropic API errors (missing key, rate-limit, etc.)
+          # producing an empty or non-JSON ENTRY_JSON. Fail loudly here instead
+          # of silently writing "null" to entry.json and tripping jq later.
+          if [ -z "$ENTRY_JSON" ] || ! echo "$ENTRY_JSON" | jq -e '.modules' > /dev/null 2>&1; then
+            echo "::error::Anthropic API did not return a usable entry JSON"
+            echo "Raw response:"
+            echo "$RESPONSE"
+            exit 1
+          fi
+
           echo "$ENTRY_JSON" > /tmp/entry.json
           echo "Generated entry:"
           cat /tmp/entry.json
@@ -95,6 +106,14 @@ jobs:
           # Get current latest version
           CURRENT=$(curl -s "$API_URL/api/changelog" | jq -r '.entries[0].version // "1.0.0"')
           echo "Current version: $CURRENT"
+
+          # Guard against non-semver values from upstream (e.g. "unreleased",
+          # "draft", or junk). The bash IFS split below assumes MAJOR.MINOR.PATCH;
+          # without this guard a value like "unreleased" produces "unreleased..1".
+          if ! [[ "$CURRENT" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Latest version '$CURRENT' is not semver — falling back to 1.0.0"
+            CURRENT="1.0.0"
+          fi
 
           # Parse version components
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
