@@ -31,9 +31,11 @@ const ogPost: OgPostInput = {
 const primaryByline = post.data.bylines?.[0]?.byline;
 const authorName = primaryByline?.displayName ?? 'CC4.Marketing Team';
 const authorSlug = authorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+// Real authors link to their personal page (/blog/authors/{slug}/);
+// the house team byline falls back to the authors hub.
 const authorUrl = authorName === 'CC4.Marketing Team'
   ? 'https://cc4.marketing/blog/authors/'
-  : `https://cc4.marketing/blog/authors/#${authorSlug}`;
+  : `https://cc4.marketing/blog/authors/${authorSlug}/`;
 const resolvedOgPath = await resolveOgImage(
   { path: Astro.url.pathname, siteUrl: 'https://cc4.marketing', engineEnabled: true },
   { post: ogPost },
