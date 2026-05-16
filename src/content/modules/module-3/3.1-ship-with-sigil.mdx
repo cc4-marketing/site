@@ -1,0 +1,222 @@
+---
+title: "Ship a Real Follow-Up with sigil"
+module: 3
+lesson: 1
+description: "Capstone — apply Modules 0–2 to send personalized post-event follow-up emails using sigil, an open-source CLI that lives inside Claude Code. One handcrafted sentence per recipient, signed PDF links, real send to your inbox first."
+duration: "75 min"
+objectives:
+  - Bootstrap a real campaign workspace with `sig init`
+  - Ingest attendee data from Google Forms or Sheets
+  - Use a custom Claude Code slash command (`/email-rewrite`) to handcraft per-row sentences
+  - Send a verified test campaign, then a real one (with a built-in confirm gate)
+  - Read click-rates via `sig status` and reason about what they mean
+  - Explain why this is a CLI + slash command, not a SaaS dashboard
+order: 18
+---
+
+## Why a Capstone, and Why This One?
+
+You've spent the last three modules learning to partner with Claude on briefs, content, analytics, competitive analysis, and SEO. This capstone makes one of those skills **land in someone's inbox** — the post-event follow-up that every Planerio campaign needs but nobody quite wants to write 30 times.
+
+You'll use **[sigil](https://github.com/blacklogos/sigil)** — a small open-source CLI built as the companion artifact to this course. It speaks the same agent-loop philosophy Module 1 introduced: a custom AI agent (`/email-rewrite`) handcrafts one sentence per recipient, while a real CLI handles the boring parts (tokens, tracking, deliverability).
+
+> **Heads up — prerequisites matter for this one.** You'll need a terminal, a Cloudflare account, and ~75 minutes. If that's a stretch right now, skim the lesson and bookmark it for when you have an event to send for real. There's also a done-with-you setup offer linked at the end if you'd rather pair on it once.
+
+### What You'll Learn
+
+- How to take a real attendee list to a sent campaign in under 90 minutes
+- How a custom slash command (built in Module 1 style) integrates with a real tool
+- How to test a campaign with confidence before clicking "send" on a real list
+- Why click-rate on a per-recipient link is more honest signal than open-rate
+
+### What You'll Build
+
+A working campaign for Planerio's most recent CMO Roundtable — 30 attendees, one PDF deck, personalized follow-ups in your sender's voice — that lands in **your own inbox** first as a test, then goes for real on your timing.
+
+## Prerequisites Check
+
+Before you start, make sure you have:
+
+- ✅ Completed Modules 1 and 2 (Claude Code basics + marketing workflows)
+- ✅ Claude Code installed and working
+- ✅ Comfort in a terminal: clone a repo, run `npm install`, edit a file
+- ✅ A Cloudflare account (free tier works; Email Service requires Workers Paid `$5/mo` only when sending to unverified destinations — first 1,000/day are included)
+- ✅ A sender email on a domain you control with SPF/DKIM/DMARC set up (Cloudflare Email Routing makes this a 5-minute setup if you haven't done it yet)
+- ✅ A short PDF to attach (e.g., the Planerio CMO Roundtable deck — under 5MB)
+
+If any of those is missing, pause here. Set them up, then come back.
+
+## The Scenario
+
+Planerio just hosted a **CMO Roundtable** for 30 invited operators. The deck is exported. The Google Form RSVP turned into a Sheets export of 30 rows with name + email + role + a free-text field where attendees noted what they wanted to dig into.
+
+Your job in the next 75 minutes: send each of those 30 attendees a follow-up email with the deck and **one sentence written specifically for them** — referencing the thing they said they wanted to dig into. No mailmerge tags. No `"Dear {firstname}."` A real sentence per row.
+
+Bulk-email tools (Mailchimp, HubSpot) force you into segments and merge fields. We're going to do the opposite: one CLI, one slash command, 30 handcrafted sentences, one send.
+
+## How to Ship the Campaign: Step-by-Step
+
+### Step 1 — Install sigil (5 min)
+
+```bash
+git clone https://github.com/blacklogos/sigil ~/Documents/sigil
+cd ~/Documents/sigil && npm install && npm link
+sig --version    # should print a version like 0.1.0
+sig --help       # tour the subcommands
+```
+
+`sig` is now on your `PATH`. It can be run from any campaign workspace.
+
+### Step 2 — Onboard a campaign workspace (8 min)
+
+```bash
+mkdir ~/Documents/planerio-cmo-roundtable && cd $_
+sig init
+```
+
+`sig init` is an interactive TUI. Fill in the fields:
+
+- **`CF_API_TOKEN`** — Cloudflare API token with scopes: `Email Sending: Edit/Read`, `Workers KV: Read`, `Workers Scripts: Edit`, `R2: Edit`
+- **`CF_ACCOUNT_ID`** — from your Cloudflare dashboard
+- **`FROM_EMAIL`** — `partner@planerio.com` (or your verified sender)
+- **`FROM_NAME`** — `Planerio Team`
+- **`EVENT_NAME`** — `Planerio CMO Roundtable`
+- **`EVENT_DAY_PHRASE`** — `last Thursday` (anything that flows after "đến / came to \<event\> …")
+- **`EMAIL_SUBJECT`** — `Slides from yesterday's roundtable + a thought for you`
+- **`PDF_BASE_URL`** — the URL of your Cloudflare Worker that serves the PDF (e.g., `https://pdf.planerio.com`)
+- **`TEST_EMAILS`** — your own inbox (we'll send the test there first)
+- **agents to install** — `claude` (drops the `/email-rewrite` slash command into your workspace)
+
+> **Scriptable variant.** If you'd rather not click through the TUI, pass every field as a flag: `sig init --non-interactive --cf-api-token="…" --event-name="…" …`. This is the agent-friendly path — same audience the rest of the course has been teaching you to design for.
+
+### Step 3 — Deploy the PDF worker (10 min)
+
+```bash
+cp ~/Documents/sigil/worker/wrangler.example.toml worker/wrangler.toml
+# edit: worker name (e.g. planerio-pdf), R2 bucket binding, KV namespace
+wrangler r2 object put <bucket>/planerio-cmo-deck.pdf --file=./deck.pdf --remote
+cd worker && npx wrangler deploy && cd ..
+```
+
+The Worker's job is small: when someone clicks their personal PDF link (`https://pdf.planerio.com/p/<token>`), it logs the click to KV and streams the PDF from R2. You don't have to touch the Worker code — it's already in the repo.
+
+### Step 4 — Ingest the leads (5 min)
+
+Two paths. Pick one.
+
+```bash
+# Path A: CSV from Google Forms or Sheets
+cp ./roundtable-export.csv data/leads.csv
+sig ingest
+
+# Path B: pipe directly from Google Workspace via gog
+gog sheets get <SHEET_ID> 'A1:Z' --plain | sig ingest --stdin
+```
+
+Headers are slugified automatically: `Tên đầy đủ` → `full_name`, `What do you want to dig into?` → `what_do_you_want_to_dig_into`, etc. Anything that isn't a known typed field (email, name, tone) lands in `lead.extras` and is addressable in the template as `{{slug}}`.
+
+### Step 5 — Review the state (5 min)
+
+```bash
+sig review --table       # compact view of all 30 rows
+sig review --diff        # diff vs last send (empty on first run)
+sig preview --all        # render every email; warns on unresolved {{var}}
+```
+
+This is your dry run. The `--json` flag is also available if you want to pipe `sig review --json` into `jq` or another tool — the CLI was designed for both you and an agent to consume.
+
+### Step 6 — Handcraft sentences with `/email-rewrite` (15 min)
+
+This is the **agent-in-the-loop moment** — the lesson Module 1 has been building toward.
+
+```bash
+sig prompt
+# walk each row. For tricky ones, type ?<one-line hint>
+#   e.g. ?reference their question about onboarding latency
+# For obvious ones, type /default
+```
+
+Now switch to Claude Code chat and run:
+
+```
+/email-rewrite
+```
+
+The slash command (a tiny shim file dropped by `sig init`) reads the queue and walks you through each one. For every row Claude proposes a sentence, shows you a diff against the current one, and asks: **keep / regenerate / edit verbatim / skip**.
+
+Notice the shape of this interaction:
+
+- **You** brought the strategic input (the hint, the brand voice, the tone)
+- **Claude** structured and articulated it
+- **Sigil** is the tool that holds state and ensures nothing accidentally gets sent
+
+This is the same collaborative pattern Module 2's campaign-brief lesson taught — applied to a fundamentally different artifact.
+
+### Step 7 — Mint tokens + deploy (5 min)
+
+```bash
+sig prep
+cd worker && npx wrangler deploy && cd ..
+```
+
+`sig prep` writes a unique signed token for every recipient and updates `wrangler.toml` so the Worker recognizes them. Re-deploying the Worker pushes the new token set live.
+
+### Step 8 — Test send (10 min)
+
+```bash
+sig send --test
+```
+
+Because `TEST_EMAILS` is set in your `.env`, this rewrites every `To:` to your own inbox. All 30 personalized copies land in front of you. Click 3 PDF links to confirm the Worker streams the right file. Read 5 of the sentences end-to-end — would each recipient actually feel addressed?
+
+> **Stop here if anything looks off.** Fix sentences with `/email-rewrite` again. The test-send loop is the safety net before the real send.
+
+### Step 9 — Real send (5 min)
+
+```bash
+sig send
+```
+
+Sigil prints a summary — *"About to send 30 live email(s) (alice@example.com … omar@example.com). Continue? [y/N]"* — and waits for you. Press `y` to ship.
+
+For the **scripted variant** (CI, agent, batch), use `sig send --yes`. Same conventions Module 1 introduced for "custom AI agents for marketing tasks": every destructive operation has an explicit opt-in flag that distinguishes a human "I meant it" from an agent's `--yes`.
+
+### Step 10 — Read the results (5 min)
+
+```bash
+sig status               # human-friendly table
+sig status --json | jq   # for scripting / dashboards
+```
+
+You'll see, per recipient: did they click the PDF link, when was the first click, how many clicks total. There's intentionally no email open-pixel (we don't want to be that company); click-rate on a per-recipient signed link is the honest metric.
+
+## Reflection — 5 Minutes Before You Close This Tab
+
+- Where did `/email-rewrite` save you time vs. writing each sentence by hand? Where did it cost time?
+- If you ran this same workflow on 200 recipients instead of 30, what would break first? *(Hint: technically nothing until Cloudflare's 1,000/day quota; but practically, you can't handcraft 200 sentences in a single sitting. That's why sigil is positioned for VIP-size sends, ≤50. The constraint is intentional.)*
+- Which CLI conventions (`--json`, `--yes`, exit codes, `--no-input`) from this lesson would you want in your **own** custom marketing tools? Module 1's "build custom agents" thread runs straight through here.
+- When does this approach lose to Lemlist / HubSpot? When does it win? *(Loses on bulk + reporting; wins on per-recipient handcrafted voice + ownership of the data + agent-loop integration.)*
+
+## Stretch Goals (Optional)
+
+Pick one if you have time:
+
+1. **English-language template** — set `BODY_TEMPLATE=templates/body.en.md` in `.env` and re-run preview. Sigil ships an English example body alongside the default Vietnamese one.
+2. **Run `/email-rewrite` from a different agent** — install the Antigravity shim (`sig init --agents=claude,antigravity`) and try the same flow in Antigravity. Notice what changes and what doesn't.
+3. **Your own voice** — fork `templates/body.md` and rewrite the body shell in your own tone. Pin it via `BODY_TEMPLATE` in `.env`. Re-run preview and see how much character you can get into a follow-up.
+
+## When You're Stuck
+
+Two paths:
+
+- **Read** sigil's [AGENTS.md](https://github.com/blacklogos/sigil/blob/main/AGENTS.md) and [docs/howto.md](https://github.com/blacklogos/sigil/blob/main/docs/howto.md) — written for agents, useful for humans.
+- **Reach out** — the sigil author offers a [done-with-you setup](https://mtri.me) if you'd rather pair on the first campaign. Same audience this course is for, same person who wrote the tool.
+
+## Key Takeaways
+
+- **Custom AI agents make sense when they sit on top of a real tool with real state.** `/email-rewrite` works because sigil owns the `leads.json` state and the deliverability mechanics. The agent's job is the one part only a human-LLM partnership can do well: the per-row sentence.
+- **CLIs that are predictable for humans are automatically callable by agents.** The same `--json`, `--yes`, exit-code-discipline that made sigil pleasant to use at your terminal also lets a future automation drive it without modification.
+- **Bulk-email tools optimize for the wrong thing for VIP-size sends.** When N ≤ 50 and craft matters more than throughput, a CLI + slash command beats a SaaS dashboard.
+- **Click-rate is honest signal. Open-rate isn't.** Choose the metric that reflects intent, not the one that's easy to inflate with a tracking pixel.
+
+> **Course Bonus Complete.** You've shipped a real marketing artifact end-to-end using the agent-loop pattern this course has been building toward. Everything else from here is taste — your tone, your audience, your moments worth sending.
