@@ -3,48 +3,43 @@ import { getEmDashCollection } from 'emdash';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Header from '../../../components/Header.astro';
 import Footer from '../../../components/Footer.astro';
-
-// Local author data
-const AUTHORS = [
-  {
-    name: 'Tri Vo',
-    role: 'Course Creator & Lead Writer',
-    bio: 'Marketer turned AI workflow builder. Created CC4.Marketing to help non-technical marketers work 10x faster with Claude Code. Writes about practical AI marketing, campaign automation, and the future of human-AI collaboration in marketing teams.',
-    avatar: '/authors/tri.png',
-    links: {
-      substack: 'https://cc4marketing.substack.com',
-      github: 'https://github.com/cc4-marketing',
-      site: 'https://cc4.marketing',
-    },
-  },
-  {
-    name: 'Alice Marketer',
-    role: 'AI Marketing Strategist',
-    bio: 'CC4.Marketing co-admin and resident AI strategist. Specializes in content strategy, SEO optimization, and building AI agent workflows for marketing teams. Focuses on bridging the gap between marketing strategy and AI execution.',
-    avatar: '/authors/alice.png',
-    links: {
-      substack: 'https://cc4marketing.substack.com',
-    },
-  },
-];
-
-function slugify(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-}
+import { AUTHORS, slugifyAuthorName as slugify } from '../../../data/authors';
+import { buildAuthorPrompts } from '../../../lib/author-prompts';
 
 function formatDate(date: Date | null | undefined): string {
   if (!date) return '';
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
+function formatIsoDate(iso: string): string {
+  const d = new Date(`${iso}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
 const { slug } = Astro.params;
 
-// Find local author by slug
 const author = AUTHORS.find((a) => slugify(a.name) === slug);
 
 if (!author) {
   return Astro.redirect('/404');
 }
+
+// Split intro into paragraphs (or fall back to bio).
+const introSource = author.intro?.trim() || author.bio;
+const introParagraphs = introSource.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+const firstParagraph = introParagraphs[0] || author.bio;
+
+// Meta description: first intro paragraph, capped at 158 chars to stay under SERP limit.
+const metaDescription = firstParagraph.length <= 158
+  ? firstParagraph
+  : `${firstParagraph.slice(0, 155).trimEnd()}…`;
+
+const hasNow = !!author.now?.text;
+const hasTools = (author.tools?.length ?? 0) > 0;
+const hasTopics = (author.topics?.length ?? 0) > 0;
+
+const promptCards = buildAuthorPrompts(author);
 
 // Get all posts for this author from Emdash
 const { entries: allPosts } = await getEmDashCollection('posts');
@@ -95,22 +90,26 @@ const breadcrumbSchema = {
   ],
 };
 
-const personSchema = {
+const personSchema: Record<string, unknown> = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   'name': author.name,
   'jobTitle': author.role,
-  'description': author.bio,
+  'description': firstParagraph,
   'image': `https://cc4.marketing${author.avatar}`,
   'url': `https://cc4.marketing/blog/authors/${slug}/`,
   'sameAs': Object.values(author.links).filter(Boolean),
 };
+
+if (hasTopics) {
+  personSchema.knowsAbout = author.topics;
+}
 ---
 
 <BaseLayout
   title={`${author.name} — CC4.Marketing Blog`}
-  description={`${author.name} is ${author.role} at CC4.Marketing. ${author.bio.substring(0, 120)}...`}
-  keywords={[author.name, author.role, 'AI marketing', 'Claude Code']}
+  description={metaDescription}
+  keywords={[author.name, author.role, ...(author.topics ?? []), 'AI marketing', 'Claude Code']}
   ogPageKey="author"
   showCourseSchema={false}
   showBreadcrumb={false}
@@ -149,32 +148,90 @@ const personSchema = {
           <p class="author-profile-bio">{author.bio}</p>
         </div>
       </div>
+    </div>
+  </section>
 
-      {Object.values(author.links).filter(Boolean).length > 0 && (
-        <div class="author-social">
-          {author.links.substack && (
-            <a href={author.links.substack} target="_blank" rel="noopener noreferrer" class="social-link">
-              Substack
-            </a>
-          )}
-          {author.links.github && (
-            <a href={author.links.github} target="_blank" rel="noopener noreferrer" class="social-link">
-              GitHub
-            </a>
-          )}
-          {author.links.site && (
-            <a href={author.links.site} target="_blank" rel="noopener noreferrer" class="social-link">
-              Website
-            </a>
-          )}
+  <section class="author-personal">
+    <div class="personal-inner">
+      {introParagraphs.length > 0 && (
+        <div class="author-intro">
+          <h2 class="section-heading">About {author.name}</h2>
+          {introParagraphs.map((p) => (<p class="intro-paragraph">{p}</p>))}
         </div>
       )}
 
-      <div class="author-ai-prompt">
-        <div class="prompt-label">Learn more about {author.name}</div>
-        <div class="prompt-box">
-          <p>Ask Claude about {author.name}'s approach to AI marketing, their workflow strategies, and practical implementations they've shared in the CC4.Marketing blog.</p>
+      {hasNow && author.now && (
+        <div class="author-now">
+          <h2 class="section-heading">
+            <span class="now-dot" aria-hidden="true"></span>
+            What I'm working on now
+          </h2>
+          <p class="now-text">{author.now.text}</p>
+          <p class="now-updated">Last updated {formatIsoDate(author.now.updatedAt)}</p>
         </div>
+      )}
+
+      {hasTools && author.tools && (
+        <div class="author-tools">
+          <h2 class="section-heading">Tools I use daily</h2>
+          <ul class="tools-list">
+            {author.tools.map((tool) => (
+              <li class="tool-item">
+                {tool.url ? (
+                  <a href={tool.url} target="_blank" rel="noopener noreferrer" class="tool-name">{tool.name}</a>
+                ) : (
+                  <span class="tool-name">{tool.name}</span>
+                )}
+                <span class="tool-sep"> — </span>
+                <span class="tool-why">{tool.why}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {hasTopics && author.topics && (
+        <div class="author-topics">
+          <h2 class="section-heading">Topics I write about</h2>
+          <ul class="topics-list">
+            {author.topics.map((topic) => (
+              <li class="topic-chip">{topic}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {Object.values(author.links).filter(Boolean).length > 0 && (
+        <div class="author-social">
+          <h2 class="section-heading">Find me elsewhere</h2>
+          <div class="social-row">
+            {author.links.substack && (
+              <a href={author.links.substack} target="_blank" rel="noopener noreferrer" class="social-link">Substack</a>
+            )}
+            {author.links.github && (
+              <a href={author.links.github} target="_blank" rel="noopener noreferrer" class="social-link">GitHub</a>
+            )}
+            {author.links.site && (
+              <a href={author.links.site} target="_blank" rel="noopener noreferrer" class="social-link">Website</a>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div class="author-prompts">
+        <h2 class="section-heading">Prompts to use with AI</h2>
+        <p class="prompts-intro">
+          Copy any of these into Claude, ChatGPT, or your AI of choice. They're written
+          to draw on {author.name}'s voice and the work they've shipped on CC4.Marketing.
+        </p>
+        <ul class="prompt-list">
+          {promptCards.map((card) => (
+            <li class="prompt-card">
+              <h3 class="prompt-card-label">{card.label}</h3>
+              <pre class="prompt-card-text">{card.prompt}</pre>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   </section>
@@ -213,7 +270,7 @@ const personSchema = {
 <style>
   /* Hero section */
   .author-hero {
-    padding: 100px 24px 60px;
+    padding: 100px 24px 40px;
     background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(92, 58, 107, 0.06) 100%);
   }
 
@@ -256,7 +313,6 @@ const personSchema = {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    margin-bottom: 40px;
   }
 
   .author-profile-avatar {
@@ -297,12 +353,139 @@ const personSchema = {
     max-width: 500px;
   }
 
-  /* Social links */
-  .author-social {
+  /* Personal sections wrapper */
+  .author-personal {
+    padding: 40px 24px 0;
+  }
+
+  .personal-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .section-heading {
+    font-family: var(--font-display);
+    font-size: 1.25em;
+    color: var(--text-primary);
+    margin: 0 0 16px;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Intro */
+  .author-intro .intro-paragraph {
+    font-size: 1em;
+    color: var(--text-primary);
+    line-height: 1.7;
+    margin: 0 0 16px;
+  }
+
+  .author-intro .intro-paragraph:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Now block */
+  .author-now {
+    padding: 24px;
+    border-left: 3px solid var(--rust);
+    background: rgba(184, 92, 60, 0.06);
+  }
+
+  .author-now .section-heading {
+    margin-bottom: 12px;
+  }
+
+  .now-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: var(--rust);
+    border-radius: 50%;
+    animation: now-pulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes now-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.85); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .now-dot { animation: none; }
+  }
+
+  .now-text {
+    font-size: 1em;
+    color: var(--text-primary);
+    line-height: 1.6;
+    margin: 0 0 12px;
+  }
+
+  .now-updated {
+    font-size: 0.8em;
+    color: var(--text-secondary);
+    margin: 0;
+    font-style: italic;
+  }
+
+  /* Tools list */
+  .tools-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tool-item {
+    font-size: 0.95em;
+    line-height: 1.5;
+    color: var(--text-secondary);
+  }
+
+  .tool-name {
+    font-weight: 700;
+    color: var(--rust);
+    text-decoration: none;
+  }
+
+  a.tool-name:hover {
+    text-decoration: underline;
+  }
+
+  .tool-sep {
+    color: var(--border-color);
+  }
+
+  /* Topics chips */
+  .topics-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .topic-chip {
+    display: inline-block;
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--plum);
+    background: rgba(92, 58, 107, 0.1);
+    padding: 5px 12px;
+    border: 1.5px solid rgba(92, 58, 107, 0.25);
+  }
+
+  /* Social links (now in personal section) */
+  .social-row {
     display: flex;
     gap: 16px;
-    justify-content: center;
-    margin-bottom: 40px;
     flex-wrap: wrap;
   }
 
@@ -321,31 +504,65 @@ const personSchema = {
     border-color: var(--plum);
   }
 
-  /* AI Prompt Box */
-  .author-ai-prompt {
-    padding: 32px 24px;
+  /* Prompt library */
+  .author-prompts {
+    padding: 24px;
     border: 2px solid var(--border-color);
-    background: rgba(92, 58, 107, 0.08);
-    border-radius: 4px;
+    background: rgba(92, 58, 107, 0.05);
   }
 
-  .prompt-label {
-    font-size: 0.75em;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--plum);
-    margin-bottom: 12px;
+  .author-prompts .section-heading {
+    margin-bottom: 8px;
   }
 
-  .prompt-box {
+  .prompts-intro {
     font-size: 0.95em;
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: 1.5;
+    margin: 0 0 24px;
   }
 
-  .prompt-box p {
+  .prompt-list {
+    list-style: none;
+    padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .prompt-card {
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+  }
+
+  /* Cancel the global 24px margin that CodeBlockCopy adds to the wrapper */
+  .prompt-card :global(.code-block-wrapper) {
+    margin: 0;
+  }
+
+  .prompt-card-label {
+    font-family: var(--font-display);
+    font-size: 0.95em;
+    color: var(--rust);
+    margin: 0;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    line-height: 1.3;
+  }
+
+  .prompt-card-text {
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 0.85em;
+    line-height: 1.55;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    margin: 0;
+    padding: 16px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
   }
 
   /* Posts section */
@@ -440,7 +657,7 @@ const personSchema = {
   /* Responsive */
   @media (max-width: 768px) {
     .author-hero {
-      padding: 80px 20px 40px;
+      padding: 80px 20px 32px;
     }
 
     .author-profile {
@@ -456,12 +673,48 @@ const personSchema = {
       font-size: 1.5em;
     }
 
+    .author-personal {
+      padding: 32px 20px 0;
+    }
+
+    .personal-inner {
+      gap: 32px;
+    }
+
+    .author-now {
+      padding: 20px;
+    }
+
+    .author-prompts {
+      padding: 20px;
+    }
+
+    .prompt-card-text {
+      padding: 14px;
+      font-size: 0.8em;
+    }
+
     .posts-grid {
       grid-template-columns: 1fr;
     }
 
     .post-card {
       padding: 20px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .section-heading {
+      font-size: 1.1em;
+    }
+
+    .tool-item {
+      font-size: 0.9em;
+    }
+
+    .topic-chip {
+      font-size: 0.75em;
+      padding: 4px 10px;
     }
   }
 </style>
