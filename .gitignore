@@ -36,3 +36,6 @@ public/og/
 
 # Size-guard dry-run artifact
 .size-guard-bundle/
+
+# Local Claude Code scheduling lock
+.claude/scheduled_tasks.lock
