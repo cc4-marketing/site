@@ -9,10 +9,10 @@ interface Props {
 
 const {
     enabled = true,
-    storageKey = "lesson-promo-claudekit-v130",
+    storageKey = "lesson-promo-m3-sigil-capstone",
     cooldownDays = 3,
-    linkUrl = "https://claudekit.cc/?ref=BIZE9CYY",
-    releaseNotesUrl = "https://claudekit.cc/updates/claudekit-marketing/v1-3-0-the-biggest-update-yet?ref=BIZE9CYY"
+    linkUrl = "https://cc4.marketing/modules/3/ship-with-sigil/",
+    releaseNotesUrl = "https://github.com/blacklogos/sigil"
 } = Astro.props;
 ---
 
@@ -24,31 +24,31 @@ const {
             </svg>
         </button>
 
-        <div class="lesson-promo-badge">NEW RELEASE</div>
+        <div class="lesson-promo-badge">NEW CAPSTONE</div>
 
-        <h4 class="lesson-promo-title">ClaudeKit Marketing v1.3.0</h4>
+        <h4 class="lesson-promo-title">Module 3: Ship with sigil</h4>
 
         <p class="lesson-promo-desc">
-            30+ new skills. Full pipeline orchestration. AI video from your terminal. One command, entire marketing workflow.
+            Send personalized post-event follow-ups end-to-end with sigil &mdash; an open-source CLI built for marketers, inside Claude Code.
         </p>
 
         <ul class="lesson-promo-highlights">
-            <li>Play skill &mdash; research to tracking in one run</li>
-            <li>Referral, gamification, paid ads, CRO skills</li>
-            <li>Kling AI + ElevenLabs video/audio integration</li>
-            <li>8 MCP servers (GA4, Ads, SendGrid, Slack...)</li>
+            <li>75-minute hands-on capstone</li>
+            <li>Custom <code>/email-rewrite</code> slash command (Module 1 style)</li>
+            <li>Real send pipeline on Cloudflare Workers</li>
+            <li>Open-source CLI, MIT licensed</li>
         </ul>
 
         <div class="lesson-promo-actions">
-            <a href={linkUrl} target="_blank" rel="noopener noreferrer" class="lesson-promo-btn">
-                Check it out
+            <a href={linkUrl} class="lesson-promo-btn">
+                Start the lesson
             </a>
             <a href={releaseNotesUrl} target="_blank" rel="noopener noreferrer" class="lesson-promo-link">
-                Release notes &rarr;
+                See the source &rarr;
             </a>
         </div>
 
-        <p class="lesson-promo-note">From our friends at ClaudeKit. One-time purchase, lifetime updates.</p>
+        <p class="lesson-promo-note">From the same team that built this course.</p>
     </div>
 )}
 
