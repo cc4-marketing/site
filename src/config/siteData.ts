@@ -53,6 +53,14 @@ export const siteData = {
         lessons: ['Campaign Briefs', 'Content Strategy', 'Marketing Copy', '+ 3 more lessons'],
         href: '/modules/2/campaign-brief/'
       },
+      {
+        number: 3,
+        title: 'Capstone',
+        description: 'Ship a real personalized follow-up campaign end-to-end with sigil, an open-source CLI inside Claude Code.',
+        lessonCount: '1 Lesson • 75 minutes',
+        lessons: ['Ship a Real Follow-Up with sigil'],
+        href: '/modules/3/ship-with-sigil/'
+      },
     ],
     stats: [
       { number: '10x', label: 'Campaign Speed' },

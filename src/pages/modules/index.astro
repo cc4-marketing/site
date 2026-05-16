@@ -1,0 +1,231 @@
+---
+// Modules hub — lists all modules + lessons. Reads from the content collection
+// so adding a lesson is one file edit; no separate config to update.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const moduleNames: Record<number, string> = {
+  0: 'Getting Started',
+  1: 'Core Concepts',
+  2: 'Advanced Applications',
+  3: 'Capstone',
+};
+
+const moduleBlurbs: Record<number, string> = {
+  0: 'Install Claude Code and set up your workspace.',
+  1: 'Master files, agents, automation, and project memory.',
+  2: 'Apply Claude Code to real Planerio campaigns end-to-end.',
+  3: 'Ship a real personalized follow-up campaign with sigil.',
+};
+
+const all = (await getCollection('modules')).sort((a, b) => a.data.order - b.data.order);
+
+function lessonHref(e: typeof all[number]) {
+  const tail = e.id.split('/').pop()?.replace('.mdx', '').split('-').slice(1).join('-');
+  return `/modules/${e.data.module}/${tail}/`;
+}
+
+// Group lessons by module, preserve order.
+const grouped = new Map<number, typeof all>();
+for (const e of all) {
+  const arr = grouped.get(e.data.module) ?? [];
+  arr.push(e);
+  grouped.set(e.data.module, arr);
+}
+
+const totalLessons = all.length;
+const totalModules = grouped.size;
+---
+
+<BaseLayout
+  title="All Modules"
+  description={`The full CC4.Marketing curriculum — ${totalModules} modules, ${totalLessons} lessons. Master Claude Code for marketers from install to a real shipped campaign.`}
+>
+  <Header />
+
+  <main class="modules-hub">
+    <header class="hub-header">
+      <p class="hub-eyebrow">Curriculum</p>
+      <h1>All Modules</h1>
+      <p class="hub-lede">
+        {totalModules} modules · {totalLessons} lessons · install to shipped campaign.
+      </p>
+    </header>
+
+    <section class="modules-list">
+      {[...grouped.entries()].map(([modNum, entries]) => (
+        <article class="module-block">
+          <header class="module-head">
+            <div class="module-tag">Module {modNum}</div>
+            <h2>{moduleNames[modNum] ?? `Module ${modNum}`}</h2>
+            <p class="module-blurb">{moduleBlurbs[modNum] ?? ''}</p>
+            <p class="module-meta">{entries.length} {entries.length === 1 ? 'lesson' : 'lessons'}</p>
+          </header>
+
+          <ol class="lesson-list">
+            {entries.map((e) => (
+              <li>
+                <a href={lessonHref(e)} class="lesson-link">
+                  <span class="lesson-num">{e.data.module}.{e.data.lesson}</span>
+                  <span class="lesson-body">
+                    <span class="lesson-title">{e.data.title}</span>
+                    <span class="lesson-desc">{e.data.description}</span>
+                  </span>
+                  {e.data.duration && <span class="lesson-duration">{e.data.duration}</span>}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </article>
+      ))}
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .modules-hub {
+    padding: 120px 24px 80px;
+    max-width: 960px;
+    margin: 0 auto;
+    color: var(--text-primary);
+  }
+
+  .hub-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  .hub-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.75em;
+    font-weight: 700;
+    color: var(--rust);
+    margin: 0 0 12px;
+  }
+  .hub-header h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.2em, 5vw, 3.4em);
+    margin: 0 0 12px;
+    color: var(--text-primary);
+  }
+  .hub-lede {
+    color: var(--text-secondary);
+    font-size: 1.1em;
+    margin: 0;
+  }
+
+  .modules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .module-block {
+    background: var(--bg-secondary);
+    border: 3px solid var(--border-color);
+    box-shadow: 8px 8px 0 var(--mustard);
+    padding: 36px;
+  }
+
+  .module-head {
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+  }
+  .module-tag {
+    display: inline-block;
+    background: var(--plum);
+    color: white;
+    padding: 4px 12px;
+    font-size: 0.8em;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .module-head h2 {
+    font-family: var(--font-display);
+    font-size: 1.8em;
+    margin: 0 0 8px;
+    color: var(--text-primary);
+  }
+  .module-blurb {
+    color: var(--text-secondary);
+    margin: 0 0 8px;
+    font-size: 1em;
+  }
+  .module-meta {
+    color: var(--text-secondary);
+    font-size: 0.85em;
+    margin: 0;
+    opacity: 0.7;
+  }
+
+  .lesson-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .lesson-link {
+    display: grid;
+    grid-template-columns: 50px 1fr auto;
+    gap: 16px;
+    align-items: start;
+    padding: 14px 16px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .lesson-link:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 4px 4px 0 var(--rust);
+    border-color: var(--rust);
+  }
+  .lesson-num {
+    font-family: 'Fira Code', monospace;
+    font-weight: 700;
+    color: var(--rust);
+  }
+  .lesson-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .lesson-title {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .lesson-desc {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    line-height: 1.45;
+  }
+  .lesson-duration {
+    font-size: 0.8em;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    white-space: nowrap;
+    padding-top: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .modules-hub { padding: 100px 16px 60px; }
+    .module-block { padding: 24px; }
+    .lesson-link {
+      grid-template-columns: 40px 1fr;
+    }
+    .lesson-duration {
+      grid-column: 2;
+      padding-top: 4px;
+    }
+  }
+</style>
