@@ -2,7 +2,6 @@
 import HelloBar from '../components/HelloBar.astro';
 import FloatingSideBanner from '../components/FloatingSideBanner.astro';
 import CodeBlockCopy from '../components/CodeBlockCopy.astro';
-import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 import { promoConfig } from '../config/promo';
 import { resolveOgImage, type OgPageKey, type OgPostInput } from '../lib/og/url';
 
@@ -136,7 +135,15 @@ const breadcrumbSchema = {
   
   <!-- Analytics -->
   <script src="https://beamanalytics.b-cdn.net/beam.min.js" data-token="a46f220a-19be-4dec-b14f-c91818639a8d" async></script>
-  <GoogleAnalytics />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RERRE2NHVP"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RERRE2NHVP');
+  </script>
   
   <!-- Primary Meta Tags -->
   <title>{fullTitle}</title>
