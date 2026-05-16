@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import FeedbackButton from '../components/FeedbackButton.astro';
 import ModuleUpdatesBanner from '../components/ModuleUpdatesBanner.astro';
 import LessonPromoBanner from '../components/LessonPromoBanner.astro';
+import LessonSidebar from '../components/LessonSidebar.astro';
 import { promoConfig } from '../config/promo';
 
 interface Props {
@@ -15,14 +16,16 @@ interface Props {
   duration?: string;
   prevLesson?: { title: string; href: string };
   nextLesson?: { title: string; href: string };
+  currentEntryId: string;
 }
 
-const { title, module, lesson, description, duration, prevLesson, nextLesson } = Astro.props;
+const { title, module, lesson, description, duration, prevLesson, nextLesson, currentEntryId } = Astro.props;
 
 const moduleNames: Record<number, string> = {
   0: 'Getting Started',
   1: 'Core Concepts',
   2: 'Advanced Applications',
+  3: 'Capstone',
 };
 const moduleName = moduleNames[module] ?? `Module ${module}`;
 const moduleUrl = `https://cc4.marketing/modules/${module}/`;
@@ -43,6 +46,7 @@ const breadcrumbSchema = {
   <Header />
   
   <main class="lesson-container">
+    <LessonSidebar currentEntryId={currentEntryId} />
     <div class="lesson-content">
       <div class="lesson-header">
         <div class="lesson-meta">
@@ -88,16 +92,21 @@ const breadcrumbSchema = {
     padding: 120px 24px 60px;
     min-height: 100vh;
     background: var(--bg-primary);
+    /* Two-column layout on desktop: sidebar + content, centered as a pair. */
+    display: grid;
+    grid-template-columns: 260px minmax(0, 800px);
+    gap: 32px;
+    justify-content: center;
+    align-items: start;
   }
 
   .lesson-content {
-    max-width: 800px;
-    margin: 0 auto;
     background: var(--bg-secondary);
     padding: 60px;
     border: 3px solid var(--border-color);
     box-shadow: 12px 12px 0 var(--mustard);
     color: var(--text-primary);
+    min-width: 0; /* allow grid item to shrink below content size */
   }
 
   .lesson-header {
@@ -269,6 +278,13 @@ const breadcrumbSchema = {
     display: block;
     color: var(--text-primary);
     font-weight: 600;
+  }
+
+  /* Mobile / narrow: collapse to single column; sidebar becomes the drawer FAB. */
+  @media (max-width: 1024px) {
+    .lesson-container {
+      grid-template-columns: minmax(0, 800px);
+    }
   }
 
   @media (max-width: 768px) {

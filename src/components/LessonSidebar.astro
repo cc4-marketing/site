@@ -1,0 +1,333 @@
+---
+// Sticky lesson sidebar: groups all lessons by module, highlights current lesson,
+// shows overall progress count. Desktop = sticky column; mobile = off-canvas drawer.
+import { getCollection } from 'astro:content';
+
+interface Props {
+  currentEntryId: string;
+}
+
+const { currentEntryId } = Astro.props;
+
+const moduleNames: Record<number, string> = {
+  0: 'Getting Started',
+  1: 'Core Concepts',
+  2: 'Advanced Applications',
+  3: 'Capstone',
+};
+
+const all = (await getCollection('modules')).sort((a, b) => a.data.order - b.data.order);
+
+function lessonHref(e: typeof all[number]) {
+  const tail = e.id.split('/').pop()?.replace('.mdx', '').split('-').slice(1).join('-');
+  return `/modules/${e.data.module}/${tail}/`;
+}
+
+// Group entries by module number, preserving sort order.
+const grouped = new Map<number, typeof all>();
+for (const e of all) {
+  const arr = grouped.get(e.data.module) ?? [];
+  arr.push(e);
+  grouped.set(e.data.module, arr);
+}
+
+const currentIndex = all.findIndex((e) => e.id === currentEntryId);
+const totalLessons = all.length;
+const currentNumber = currentIndex + 1; // 1-based for display
+const currentEntry = all[currentIndex];
+const currentModule = currentEntry?.data.module ?? 0;
+---
+
+<button
+  id="lesson-sidebar-toggle"
+  class="lesson-sidebar-fab"
+  type="button"
+  aria-label="Open lessons navigation"
+  aria-expanded="false"
+  aria-controls="lesson-sidebar"
+>
+  <span class="fab-count">{currentNumber}/{totalLessons}</span>
+  <span class="fab-label">Lessons</span>
+</button>
+
+<div id="lesson-sidebar-scrim" class="lesson-sidebar-scrim" hidden></div>
+
+<aside
+  id="lesson-sidebar"
+  class="lesson-sidebar"
+  aria-label="All lessons"
+>
+  <div class="sidebar-header">
+    <p class="sidebar-eyebrow">Course progress</p>
+    <p class="sidebar-progress">
+      <span class="progress-current">Lesson {currentNumber}</span>
+      <span class="progress-divider">of</span>
+      <span class="progress-total">{totalLessons}</span>
+    </p>
+    <div class="progress-bar" aria-hidden="true">
+      <div class="progress-fill" style={`width: ${(currentNumber / totalLessons) * 100}%`}></div>
+    </div>
+    <button
+      type="button"
+      id="lesson-sidebar-close"
+      class="sidebar-close"
+      aria-label="Close lessons navigation"
+    >×</button>
+  </div>
+
+  <nav class="sidebar-modules" aria-label="Modules and lessons">
+    {[...grouped.entries()].map(([modNum, entries]) => (
+      <section class={`sidebar-module ${modNum === currentModule ? 'is-current' : ''}`}>
+        <h3 class="sidebar-module-title">
+          <span class="sidebar-module-num">M{modNum}</span>
+          <span class="sidebar-module-name">{moduleNames[modNum] ?? `Module ${modNum}`}</span>
+        </h3>
+        <ol class="sidebar-lessons">
+          {entries.map((e) => (
+            <li class={`sidebar-lesson ${e.id === currentEntryId ? 'is-active' : ''}`}>
+              <a href={lessonHref(e)} aria-current={e.id === currentEntryId ? 'page' : undefined}>
+                <span class="lesson-num">{e.data.module}.{e.data.lesson}</span>
+                <span class="lesson-title">{e.data.title}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))}
+  </nav>
+
+  <a href="/modules/" class="sidebar-hub-link">All modules →</a>
+</aside>
+
+<script>
+  // Mobile drawer toggle (mirrors Header.astro mobile-drawer pattern).
+  const sidebar = document.getElementById('lesson-sidebar');
+  const fab = document.getElementById('lesson-sidebar-toggle');
+  const scrim = document.getElementById('lesson-sidebar-scrim');
+  const closeBtn = document.getElementById('lesson-sidebar-close');
+
+  function open() {
+    sidebar?.classList.add('is-open');
+    scrim?.removeAttribute('hidden');
+    fab?.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    sidebar?.classList.remove('is-open');
+    scrim?.setAttribute('hidden', '');
+    fab?.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  fab?.addEventListener('click', () => {
+    sidebar?.classList.contains('is-open') ? close() : open();
+  });
+  scrim?.addEventListener('click', close);
+  closeBtn?.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sidebar?.classList.contains('is-open')) close();
+  });
+
+  // Scroll the active lesson into view inside the sidebar on load.
+  const active = sidebar?.querySelector('.sidebar-lesson.is-active');
+  active?.scrollIntoView({ block: 'center' });
+</script>
+
+<style>
+  /* === Desktop sticky sidebar === */
+  .lesson-sidebar {
+    position: sticky;
+    top: 100px; /* clears the fixed header */
+    align-self: start;
+    width: 260px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    background: var(--bg-secondary);
+    border: 3px solid var(--border-color);
+    box-shadow: 6px 6px 0 var(--mustard);
+    padding: 20px;
+    font-size: 0.92em;
+  }
+
+  .sidebar-header {
+    position: relative;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .sidebar-eyebrow {
+    text-transform: uppercase;
+    font-size: 0.7em;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin: 0 0 6px;
+  }
+
+  .sidebar-progress {
+    margin: 0 0 10px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .progress-current { color: var(--rust); }
+  .progress-divider { opacity: 0.5; margin: 0 4px; }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--cream);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--rust);
+    transition: width 0.3s ease;
+  }
+
+  .sidebar-close {
+    display: none; /* mobile only */
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    font-size: 1.4em;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-primary);
+  }
+
+  .sidebar-modules {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .sidebar-module-title {
+    font-family: var(--font-display);
+    font-size: 0.95em;
+    margin: 0 0 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    color: var(--text-primary);
+  }
+  .sidebar-module-num {
+    background: var(--plum);
+    color: white;
+    padding: 2px 6px;
+    font-size: 0.75em;
+    font-weight: 600;
+  }
+  .sidebar-module.is-current .sidebar-module-num {
+    background: var(--rust);
+  }
+
+  .sidebar-lessons {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-left: 2px solid var(--border-color);
+  }
+
+  .sidebar-lesson a {
+    display: flex;
+    gap: 8px;
+    padding: 6px 10px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    margin-left: -2px;
+    line-height: 1.35;
+  }
+  .sidebar-lesson a:hover {
+    color: var(--text-primary);
+    background: var(--bg-primary);
+  }
+  .sidebar-lesson.is-active a {
+    color: var(--text-primary);
+    border-left-color: var(--rust);
+    font-weight: 600;
+    background: rgba(184, 92, 60, 0.08);
+  }
+
+  .lesson-num {
+    flex-shrink: 0;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85em;
+    opacity: 0.7;
+    min-width: 28px;
+  }
+  .lesson-title {
+    font-size: 0.92em;
+  }
+
+  .sidebar-hub-link {
+    display: block;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 2px solid var(--border-color);
+    color: var(--rust);
+    text-decoration: none;
+    font-weight: 600;
+    text-align: center;
+  }
+  .sidebar-hub-link:hover { color: var(--mustard); }
+
+  /* === Mobile floating button === */
+  .lesson-sidebar-fab {
+    display: none; /* hidden on desktop, shown via @media below */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 90;
+    padding: 12px 18px;
+    background: var(--rust);
+    color: white;
+    border: 3px solid var(--charcoal);
+    box-shadow: 4px 4px 0 var(--mustard);
+    cursor: pointer;
+    font-weight: 600;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+  }
+  .fab-count {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9em;
+    opacity: 0.9;
+  }
+  .fab-label { font-size: 0.95em; }
+
+  .lesson-sidebar-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+  }
+
+  /* === Mobile drawer mode === */
+  @media (max-width: 1024px) {
+    .lesson-sidebar-fab { display: inline-flex; }
+
+    .lesson-sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(320px, 85vw);
+      max-height: 100vh;
+      z-index: 110;
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      box-shadow: -6px 0 12px rgba(0, 0, 0, 0.15);
+      border-right: none;
+    }
+    .lesson-sidebar.is-open {
+      transform: translateX(0);
+    }
+    .sidebar-close { display: block; }
+  }
+</style>
