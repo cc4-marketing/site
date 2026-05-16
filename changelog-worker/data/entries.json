@@ -43,7 +43,7 @@
       "site",
       "analytics"
     ],
-    "machine_summary": "Added GA4 gtag.js snippet (id G-RERRE2NHVP) inline in BaseLayout.astro <head>, next to existing Beam tag. No env gating — fires on all environments. Beam unchanged.",
+    "machine_summary": "Added GA4 gtag.js snippet inline in BaseLayout.astro <head>, next to existing Beam tag. No env gating — fires on all environments. Beam unchanged.",
     "status": "published",
     "published_at": "2026-05-16T20:13:26.525Z",
     "created_at": "2026-05-16T20:13:26.525Z"
