@@ -42,7 +42,17 @@ For changes to the interactive course content, see the [course repo](https://git
 - `/hellobar` skill for toggling the site announcement bar on/off and creating new announcements with custom text, links, and cooldown
 - Hello bar updated to promote the Anthropic growth marketing case study blog post
 
+- **Module 3 capstone — "Ship a Real Follow-Up with sigil"** — new 75-minute hands-on lesson at `/modules/3/ship-with-sigil/` that bridges Modules 0–2 into a real, shippable artifact: a personalized post-event follow-up campaign powered by [sigil](https://github.com/blacklogos/sigil), an open-source MIT CLI inside Claude Code. Real send pipeline on Cloudflare Workers, custom `/email-rewrite` slash command, per-recipient handcrafted sentences. Course now: 4 modules / 18 lessons.
+- **Lesson navigation sidebar + `/modules/` hub** — sticky desktop sidebar inside every lesson shows all modules + lessons with current highlighted and a progress bar. Mobile collapses to an off-canvas drawer triggered by a floating button. New `/modules/` hub page lists every module + lesson with descriptions and durations (previously 404'd).
+- **Google Analytics 4** — gtag.js added alongside the existing Beam analytics in `<head>`. Two analytics signals run in parallel for cross-checking.
+
+### Changed
+
+- Hello bar + lesson promo banner now point at the Module 3 capstone (was: ClaudeKit Marketing v1.3.0 and Introducing Threadmark). Storage keys bumped so previously-dismissed visitors see the fresh content.
+
 ### Fixed
+
+- Author byline on blog post pages now links directly to the personal author page (`/blog/authors/{slug}/`) instead of the hub-with-anchor (`/blog/authors/#{slug}`). JSON-LD `Person.author.url` updated to match for consistent SEO canonicalization.
 
 - Blog post table of contents anchor links now scroll to correct sections — H2 headings rendered by PortableText now have proper id attributes for anchor navigation. Fixes smooth scroll navigation and active section highlighting in TOC.
 - Course schema no longer duplicated on lesson, download, brand guide, and changelog pages — now only on homepage
