@@ -25,6 +25,10 @@ jobs:
         run: npm ci
       - name: Build Astro site
         run: npm run build
+        env:
+          # Inlined by Astro at build time (PUBLIC_* vars surface via import.meta.env).
+          # Source the value from a GitHub Actions repo secret/variable of the same name.
+          PUBLIC_GA_MEASUREMENT_ID: ${{ secrets.PUBLIC_GA_MEASUREMENT_ID }}
       - name: OG build smoke test
         run: npm run og:smoke
       - name: Worker bundle size guard
