@@ -7,6 +7,7 @@
 - `src/styles/` stores global styles and design tokens.
 - `src/content/` and `src/content.config.ts` define content collections and schemas.
 - `public/` is for static assets served as-is (images, icons, downloads).
+- `docs/solutions/` documents past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`). Relevant when implementing or debugging in documented areas.
 
 ## Build, Test, and Development Commands
 - `npm install` installs dependencies.

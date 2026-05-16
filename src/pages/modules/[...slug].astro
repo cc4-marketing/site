@@ -39,6 +39,7 @@ const { Content } = await render(entry);
   duration={entry.data.duration}
   prevLesson={prevLesson}
   nextLesson={nextLesson}
+  currentEntryId={entry.id}
 >
   <Content />
 </LessonLayout>
