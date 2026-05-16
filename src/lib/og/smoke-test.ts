@@ -33,6 +33,7 @@ const EXPECTED_MODULES = [
   '2-analytics',
   '2-competitive-analysis',
   '2-seo-optimization',
+  '3-ship-with-sigil',
 ];
 
 const MIN_BYTES = 1000;
