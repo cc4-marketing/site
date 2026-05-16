@@ -9,6 +9,8 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-05-17
+
 ### Removed
 
 - `generate_cover.py` and `generate_cover_anthropic_growth.py` Python scripts — replaced by the OG engine. For bespoke covers, set `featured_image` on the Emdash post record instead.

@@ -5,7 +5,7 @@
     "title": "Module 3 capstone — Ship a Real Follow-Up with sigil",
     "summary": "New 75-minute hands-on capstone lesson that bridges Modules 0-2 into a real, shippable artifact: a personalized post-event follow-up campaign powered by sigil, an open-source MIT CLI inside Claude Code. Course now: 4 modules, 18 lessons.",
     "type": "added",
-    "version": "unreleased",
+    "version": "0.4.0",
     "modules": [
       "site",
       "course",
@@ -22,7 +22,7 @@
     "title": "Lesson navigation sidebar + /modules/ hub",
     "summary": "Sticky desktop sidebar inside every lesson shows all modules and lessons with current highlighted and a progress bar; mobile collapses to an off-canvas drawer. New /modules/ hub lists every module and lesson (previously 404).",
     "type": "added",
-    "version": "unreleased",
+    "version": "0.4.0",
     "modules": [
       "site",
       "navigation"
@@ -38,7 +38,7 @@
     "title": "Google Analytics 4 added alongside Beam",
     "summary": "Site now runs both Google Analytics 4 (gtag.js) and Beam Analytics for cross-checked traffic data. GA4 tag is inlined in <head>; no changes to existing Beam tracking.",
     "type": "added",
-    "version": "unreleased",
+    "version": "0.4.0",
     "modules": [
       "site",
       "analytics"
@@ -54,7 +54,7 @@
     "title": "Hello bar + lesson promo now point at the M3 capstone",
     "summary": "The top hello bar and the floating lesson promo banner now drive traffic to the new Module 3 capstone. Storage keys bumped so previously-dismissed visitors see the fresh content.",
     "type": "changed",
-    "version": "unreleased",
+    "version": "0.4.0",
     "modules": [
       "site",
       "homepage",
@@ -71,7 +71,7 @@
     "title": "Author byline links to personal author page",
     "summary": "Clicking the author name on a blog post now goes directly to the personal author page (/blog/authors/{slug}/) instead of the hub-with-anchor. JSON-LD Person.author.url updated to match for SEO canonicalization.",
     "type": "fixed",
-    "version": "unreleased",
+    "version": "0.4.0",
     "modules": [
       "site",
       "blog"
@@ -231,7 +231,7 @@
     "title": "Typographic OG image engine for all pages",
     "summary": "Auto-generated social share cards for every page using a typographic engine (Satori + resvg-wasm on Cloudflare Workers). Blog posts get runtime-rendered cards with author avatar and excerpt; all other pages get build-time cards. Content-hashed URLs enable automatic cache invalidation.",
     "type": "added",
-    "version": "unreleased",
+    "version": "0.4.0",
     "modules": [
       "site",
       "blog",
@@ -248,7 +248,7 @@
     "title": "Three new blog posts published",
     "summary": "Published three new posts: 'castmd: Vibe Coding a Chrome Extension for LLMs' by Tri Vo on rebuilding a Chrome extension with Claude Code; 'The Last Mile of Shipping Is the Hardest Part' by Tri Vo on turning manual release steps into slash commands; and 'AI Works Best When It Looks at What You've Already Shipped' by Alice on extracting real workflows from shipped work.",
     "type": "added",
-    "version": "unreleased",
+    "version": "0.4.0",
     "modules": [
       "site",
       "blog"
@@ -264,7 +264,7 @@
     "title": "SEO structured data and meta tag overhaul",
     "summary": "Fixed Course schema duplication (now only on homepage), corrected publisher logo dimensions to 180x180, added standalone BreadcrumbList schemas to blog index and lesson pages, fixed blog title tags to stay under 60 chars, expanded homepage and blog descriptions, and updated llms.txt with all 6 blog post URLs.",
     "type": "fixed",
-    "version": "unreleased",
+    "version": "0.4.0",
     "modules": [
       "site",
       "seo",
@@ -281,7 +281,7 @@
     "title": "AEO: rich result schemas and lesson meta descriptions",
     "summary": "Added FAQPage schema to the Claude Code marketing guide and HowTo schema (5 steps) to the campaign brief post, enabling Google rich results for both. Expanded all 17 lesson meta descriptions from 63-101 to 148-160 chars. Rephrased 8 H2 headings as questions across 4 key lessons for featured snippet targeting.",
     "type": "added",
-    "version": "unreleased",
+    "version": "0.4.0",
     "modules": [
       "site",
       "seo",
@@ -298,7 +298,7 @@
     "title": "Blog: release highlight box and sticky table of contents",
     "summary": "Added Release Highlight Box for product releases with version, download, landing page, and source links. Added auto-generated Sticky Table of Contents from H2 headings with smooth scroll navigation and active section highlighting. Desktop: right sidebar with sticky positioning. Mobile: collapsible drawer.",
     "type": "added",
-    "version": "unreleased",
+    "version": "0.4.0",
     "modules": [
       "site",
       "blog"
@@ -314,7 +314,7 @@
     "title": "Bug fix: TOC anchor links now scroll to sections",
     "summary": "Fixed table of contents anchor links not scrolling to target sections. H2 headings rendered by PortableText now have proper id attributes for anchor navigation. Moved ID generation from page template into content renderer.",
     "type": "fixed",
-    "version": "unreleased",
+    "version": "0.4.0",
     "modules": [
       "site",
       "blog"
