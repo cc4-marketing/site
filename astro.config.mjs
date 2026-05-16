@@ -25,28 +25,46 @@ function rawFonts(exts) {
   };
 }
 
-// All module lesson URLs (SSR, not auto-discovered by sitemap plugin)
-const modulePages = [
-  '/modules/0/introduction/',
-  '/modules/0/installation/',
-  '/modules/0/start-clone/',
-  '/modules/0/github-pr-guide/',
-  '/modules/1/welcome/',
-  '/modules/1/working-with-files/',
-  '/modules/1/first-tasks/',
-  '/modules/1/agents/',
-  '/modules/1/custom-agents/',
-  '/modules/1/project-memory/',
-  '/modules/1/navigation/',
-  '/modules/2/campaign-brief/',
-  '/modules/2/content-strategy/',
-  '/modules/2/marketing-copy/',
-  '/modules/2/analytics/',
-  '/modules/2/competitive-analysis/',
-  '/modules/2/seo-optimization/',
-].map((p) => `https://cc4.marketing${p}`);
+const SITE_URL = 'https://cc4.marketing';
 
-// Known blog post URLs (SSR from Emdash CMS)
+// Auto-derive lesson URLs from src/content/modules/module-N/<L>.<n>-<slug>.mdx.
+// Reading at config-load means new lessons (and new modules) appear in the
+// sitemap with zero extra config. Pattern matches the [...slug].astro
+// route's slug derivation: `${module}/${tail-after-the-first-dash-segment}`.
+function deriveModuleLessonUrls() {
+  const ROOT = './src/content/modules';
+  const urls = [];
+  for (const dir of fs.readdirSync(ROOT, { withFileTypes: true })) {
+    if (!dir.isDirectory() || !dir.name.startsWith('module-')) continue;
+    const num = dir.name.replace(/^module-/, '');
+    for (const file of fs.readdirSync(`${ROOT}/${dir.name}`)) {
+      if (!file.endsWith('.mdx')) continue;
+      const tail = file.replace(/\.mdx$/, '').split('-').slice(1).join('-');
+      urls.push(`${SITE_URL}/modules/${num}/${tail}/`);
+    }
+  }
+  return urls.sort();
+}
+
+// Auto-derive /blog/authors/<slug>/ URLs from src/data/authors.ts. The data
+// file lists each author with a top-level `name: '...'` indented at four
+// spaces; nested tools/links use deeper indentation and are filtered out.
+// Slug derivation matches slugifyAuthorName() in src/data/authors.ts.
+function deriveAuthorUrls() {
+  const text = fs.readFileSync('./src/data/authors.ts', 'utf8');
+  const matches = [...text.matchAll(/^ {4}name:\s*'([^']+)',\s*$/gm)];
+  return matches
+    .map((m) => m[1].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''))
+    .map((slug) => `${SITE_URL}/blog/authors/${slug}/`)
+    .sort();
+}
+
+const modulePages = deriveModuleLessonUrls();
+const authorPages = deriveAuthorUrls();
+const modulesHub = `${SITE_URL}/modules/`;
+
+// Blog post URLs are still hardcoded — Emdash D1 is not queryable from this
+// node-only config context. Update this list when a new post ships.
 const blogPages = [
   '/blog/claude-code-for-marketing-guide-2026/',
   '/blog/write-campaign-brief-with-ai/',
@@ -55,7 +73,7 @@ const blogPages = [
   '/blog/the-last-mile-of-shipping/',
   '/blog/castmd-vibe-coding-chrome-extension/',
   '/blog/introducing-threadmark',
-].map((p) => `https://cc4.marketing${p}`);
+].map((p) => `${SITE_URL}${p}`);
 
 // https://astro.build/config
 export default defineConfig({
@@ -66,7 +84,7 @@ export default defineConfig({
     react(),
     mdx(),
     sitemap({
-      customPages: [...modulePages, ...blogPages],
+      customPages: [...modulePages, modulesHub, ...authorPages, ...blogPages],
       // Exclude dev-only routes from the sitemap. These are gated behind
       // import.meta.env.DEV (404 in production) and Disallowed in robots.txt;
       // including them in the sitemap sends a contradictory signal to crawlers.
@@ -106,6 +124,21 @@ export default defineConfig({
         // Module 2 - Advanced lessons
         else if (url.includes('/modules/2/')) {
           item.priority = 0.8;
+          item.changefreq = 'monthly';
+        }
+        // Module 3 - Capstone
+        else if (url.includes('/modules/3/')) {
+          item.priority = 0.8;
+          item.changefreq = 'monthly';
+        }
+        // Modules hub
+        else if (url === `${SITE_URL}/modules/`) {
+          item.priority = 0.8;
+          item.changefreq = 'weekly';
+        }
+        // Author detail pages
+        else if (url.includes('/blog/authors/')) {
+          item.priority = 0.7;
           item.changefreq = 'monthly';
         }
         // Changelog

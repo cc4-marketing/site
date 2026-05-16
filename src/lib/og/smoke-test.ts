@@ -14,7 +14,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '../../..');
 const OUT_DIR = join(ROOT, 'public/og');
 
-const EXPECTED_PAGES = ['home', 'blog', 'changelog', 'authors', 'download', 'brand-guide'];
+const EXPECTED_PAGES = ['home', 'blog', 'changelog', 'authors', 'modules', 'download', 'brand-guide'];
 const EXPECTED_MODULES = [
   '0-introduction',
   '0-installation',

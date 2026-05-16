@@ -151,6 +151,12 @@ const STATIC_PAGES: Record<
     accent: 'plum',
     badge: 'TEAM',
   },
+  modules: {
+    title: 'All Modules',
+    subtitle: 'The full CC4.Marketing curriculum — four modules, 18 lessons, install to shipped campaign.',
+    accent: 'rust',
+    badge: 'CURRICULUM',
+  },
   download: {
     title: 'Subscribe & Download',
     subtitle: 'Get the course free, plus bonus AI marketing content delivered to your inbox.',

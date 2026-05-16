@@ -19,6 +19,7 @@ export type OgPageKey =
   | 'blog'
   | 'changelog'
   | 'authors'
+  | 'modules'
   | 'download'
   | 'brand-guide';
 
