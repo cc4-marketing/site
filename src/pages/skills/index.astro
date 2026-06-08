@@ -1,18 +1,12 @@
 ---
 export const prerender = false;
 
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import { getPublishedSkills, skillSlug } from '../../lib/skills';
 
-const skills = (await getCollection('skills'))
-  .filter((s) => !s.data.draft)
-  .toSorted((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
-
-function slugOf(id: string): string {
-  return id.replace(/\.md$/, '');
-}
+const skills = await getPublishedSkills();
 ---
 
 <BaseLayout
@@ -71,7 +65,7 @@ function slugOf(id: string): string {
       ) : (
         <div class="skills-grid">
           {skills.map((skill) => (
-            <a href={`/skills/${slugOf(skill.id)}/`} class="skill-card">
+            <a href={`/skills/${skillSlug(skill)}/`} class="skill-card">
               <div class="skill-card-body">
                 <h2 class="skill-card-title">{skill.data.name}</h2>
                 <p class="skill-card-desc">{skill.data.description}</p>

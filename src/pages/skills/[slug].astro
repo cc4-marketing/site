@@ -1,22 +1,22 @@
 ---
 export const prerender = false;
 
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import { getSkillBySlug } from '../../lib/skills';
 
 const { slug } = Astro.params;
 
-const skills = await getCollection('skills');
-const entry = skills.find((e) => e.id.replace(/\.md$/, '') === slug && !e.data.draft);
+const entry = await getSkillBySlug(slug ?? '');
 
 if (!entry) {
   return Astro.redirect('/404');
 }
 
 const { Content } = await render(entry);
-const { name, description, tags, repo, skillFile, publishedAt, updatedAt } = entry.data;
+const { name, description, tags, repo, skillFile, author, publishedAt, updatedAt } = entry.data;
 
 const pageUrl = `https://cc4.marketing/skills/${slug}/`;
 const downloadUrl = skillFile ? `/skills/${slug}/download.skill` : null;
@@ -30,6 +30,7 @@ const softwareSchema = {
   applicationCategory: "DeveloperApplication",
   operatingSystem: "Claude Code",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  ...(author ? { author: { "@type": "Person", name: author } } : {}),
   ...(repo ? { codeRepository: repo } : {}),
   datePublished: publishedAt.toISOString(),
   ...(updatedAt ? { dateModified: updatedAt.toISOString() } : {}),

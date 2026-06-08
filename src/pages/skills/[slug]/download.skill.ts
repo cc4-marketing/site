@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getCollection } from 'astro:content';
+import { getSkillBySlug } from '../../../lib/skills';
 
 export const prerender = false;
 
@@ -11,8 +11,7 @@ export const GET: APIRoute = async ({ params }) => {
 
   // Validate the slug against the known collection BEFORE building any R2 key —
   // this prevents arbitrary-key fetches / path traversal (e.g. ../../secret).
-  const skills = await getCollection('skills');
-  const entry = skills.find((e) => e.id.replace(/\.md$/, '') === slug && !e.data.draft);
+  const entry = await getSkillBySlug(slug);
 
   if (!entry || !entry.data.skillFile) {
     return notFound();
