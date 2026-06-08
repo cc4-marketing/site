@@ -57,6 +57,15 @@ const blogPages = [
   '/blog/introducing-threadmark',
 ].map((p) => `https://cc4.marketing${p}`);
 
+// Known skill URLs (SSR from the `skills` content collection). SSR routes are
+// invisible to the sitemap plugin, so each must be listed here. Keep in sync
+// with src/content/skills/*.md (one entry per non-draft skill + the index).
+const skillPages = [
+  '/skills/',
+  '/skills/naming/',
+  '/skills/brand-voice/',
+].map((p) => `https://cc4.marketing${p}`);
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://cc4.marketing',
@@ -66,14 +75,16 @@ export default defineConfig({
     react(),
     mdx(),
     sitemap({
-      customPages: [...modulePages, ...blogPages],
+      customPages: [...modulePages, ...blogPages, ...skillPages],
       // Exclude dev-only routes from the sitemap. These are gated behind
       // import.meta.env.DEV (404 in production) and Disallowed in robots.txt;
       // including them in the sitemap sends a contradictory signal to crawlers.
       filter: (page) =>
         !page.includes('/og-preview') &&
         !page.includes('/og/preview') &&
-        !page.includes('/og/debug'),
+        !page.includes('/og/debug') &&
+        // Binary download endpoints are not pages — keep them out of the sitemap.
+        !page.includes('/download.skill'),
       serialize(item) {
         const url = item.url;
         item.lastmod = new Date().toISOString();
@@ -110,6 +121,11 @@ export default defineConfig({
         }
         // Changelog
         else if (url.includes('/changelog')) {
+          item.priority = 0.8;
+          item.changefreq = 'weekly';
+        }
+        // Skills
+        else if (url.includes('/skills')) {
           item.priority = 0.8;
           item.changefreq = 'weekly';
         }

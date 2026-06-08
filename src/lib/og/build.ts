@@ -163,6 +163,12 @@ const STATIC_PAGES: Record<
     accent: 'plum',
     badge: 'BRAND',
   },
+  skills: {
+    title: 'Claude Agent Skills',
+    subtitle: 'Curated Claude skills from the CC4 Marketing team — naming, brand voice, and more.',
+    accent: 'mustard',
+    badge: 'SKILLS',
+  },
 };
 
 async function main(): Promise<void> {

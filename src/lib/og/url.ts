@@ -20,7 +20,8 @@ export type OgPageKey =
   | 'changelog'
   | 'authors'
   | 'download'
-  | 'brand-guide';
+  | 'brand-guide'
+  | 'skills';
 
 const STATIC_FALLBACK_BLOG = '/og-blog.png';
 const STATIC_FALLBACK_DEFAULT = '/og-image.png';

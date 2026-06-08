@@ -1,0 +1,280 @@
+---
+export const prerender = false;
+
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const skills = (await getCollection('skills'))
+  .filter((s) => !s.data.draft)
+  .toSorted((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+
+function slugOf(id: string): string {
+  return id.replace(/\.md$/, '');
+}
+---
+
+<BaseLayout
+  title="Skills — Claude Agent Skills for Marketers"
+  description="Curated Claude agent skills from the CC4 Marketing team — naming, brand voice, and content workflows. Read the SKILL.md, grab the source, or download the packaged skill."
+  keywords={['Claude agent skills', 'Claude Code skills', 'marketing skills', 'SKILL.md', 'AI marketing tools']}
+  ogPageKey="skills"
+  noindex={skills.length === 0}
+  showCourseSchema={false}
+  showBreadcrumb={false}
+>
+  <Header />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://cc4.marketing/" },
+      { "@type": "ListItem", "position": 2, "name": "Skills", "item": "https://cc4.marketing/skills/" }
+    ]
+  })} />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "CC4.Marketing Skills",
+    "description": "Curated Claude agent skills from the CC4 Marketing team.",
+    "url": "https://cc4.marketing/skills/",
+    "isPartOf": { "@type": "WebSite", "name": "CC4.Marketing", "url": "https://cc4.marketing/" },
+    "publisher": { "@type": "Organization", "name": "CC4.Marketing", "url": "https://cc4.marketing/" },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://cc4.marketing/" },
+        { "@type": "ListItem", "position": 2, "name": "Skills", "item": "https://cc4.marketing/skills/" }
+      ]
+    }
+  })} />
+
+  <section class="skills-hero">
+    <div class="skills-hero-pattern"></div>
+    <div class="skills-hero-inner">
+      <span class="skills-hero-label">Claude Agent Skills</span>
+      <h1 class="skills-hero-title">Skills</h1>
+      <p class="skills-hero-desc">Curated Claude agent skills from the CC4 Marketing team. Read the SKILL.md, grab the source, or download the packaged skill.</p>
+    </div>
+  </section>
+
+  <section class="skills-body">
+    <div class="skills-body-inner">
+      {skills.length === 0 ? (
+        <div class="skills-empty">
+          <h3>Coming soon</h3>
+          <p>We're packaging our first skills. Check back shortly.</p>
+        </div>
+      ) : (
+        <div class="skills-grid">
+          {skills.map((skill) => (
+            <a href={`/skills/${slugOf(skill.id)}/`} class="skill-card">
+              <div class="skill-card-body">
+                <h2 class="skill-card-title">{skill.data.name}</h2>
+                <p class="skill-card-desc">{skill.data.description}</p>
+                {skill.data.tags && skill.data.tags.length > 0 && (
+                  <ul class="skill-card-tags" aria-label="Tags">
+                    {skill.data.tags.map((tag) => (
+                      <li class="skill-tag">{tag}</li>
+                    ))}
+                  </ul>
+                )}
+                <span class="skill-card-link">View skill</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  /* Hero */
+  .skills-hero {
+    position: relative;
+    padding: 140px 24px 60px;
+    text-align: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(184, 92, 60, 0.06) 100%);
+  }
+
+  .skills-hero-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    background-image: radial-gradient(circle at 1px 1px, var(--charcoal) 1px, transparent 0);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .skills-hero-inner {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .skills-hero-label {
+    display: inline-block;
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--rust);
+    background: rgba(184, 92, 60, 0.1);
+    padding: 6px 14px;
+    margin-bottom: 20px;
+  }
+
+  .skills-hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5em, 6vw, 4em);
+    color: var(--text-primary);
+    margin: 0 0 16px;
+    line-height: 1.1;
+  }
+
+  .skills-hero-desc {
+    font-size: 1.15em;
+    color: var(--text-secondary);
+    max-width: 540px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* Body */
+  .skills-body {
+    padding: 60px 24px 100px;
+  }
+
+  .skills-body-inner {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  /* Empty state */
+  .skills-empty {
+    text-align: center;
+    padding: 80px 24px;
+    border: 2px dashed var(--border-color);
+  }
+
+  .skills-empty h3 {
+    font-family: var(--font-display);
+    font-size: 1.5em;
+    color: var(--rust);
+    margin: 0 0 12px;
+  }
+
+  .skills-empty p {
+    color: var(--text-secondary);
+    font-size: 1em;
+  }
+
+  /* Grid — auto-fill with a max column count so 1–2 cards left-align
+     instead of stretching across the full row. */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 320px));
+    gap: 32px;
+    justify-content: start;
+  }
+
+  /* Card */
+  .skill-card {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.25s ease;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .skill-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 8px 8px 0 var(--mustard);
+    border-color: var(--rust);
+  }
+
+  .skill-card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .skill-card-title {
+    font-family: var(--font-display);
+    font-size: 1.3em;
+    margin: 0 0 10px;
+    line-height: 1.25;
+    color: var(--text-primary);
+  }
+
+  .skill-card-desc {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    flex: 1;
+    margin: 0 0 16px;
+  }
+
+  .skill-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px;
+  }
+
+  .skill-tag {
+    font-size: 0.7em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    background: rgba(184, 92, 60, 0.08);
+    border: 1px solid var(--border-color);
+    padding: 3px 8px;
+  }
+
+  .skill-card-link {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--rust);
+    margin-top: auto;
+  }
+
+  .skill-card:hover .skill-card-link {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .skills-hero {
+      padding: 120px 20px 40px;
+    }
+
+    .skills-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skill-card {
+      transition: none;
+    }
+
+    .skill-card:hover {
+      transform: none;
+    }
+  }
+</style>

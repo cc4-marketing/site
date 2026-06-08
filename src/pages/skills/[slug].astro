@@ -1,0 +1,338 @@
+---
+export const prerender = false;
+
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const { slug } = Astro.params;
+
+const skills = await getCollection('skills');
+const entry = skills.find((e) => e.id.replace(/\.md$/, '') === slug && !e.data.draft);
+
+if (!entry) {
+  return Astro.redirect('/404');
+}
+
+const { Content } = await render(entry);
+const { name, description, tags, repo, skillFile, publishedAt, updatedAt } = entry.data;
+
+const pageUrl = `https://cc4.marketing/skills/${slug}/`;
+const downloadUrl = skillFile ? `/skills/${slug}/download.skill` : null;
+
+const softwareSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name,
+  description,
+  url: pageUrl,
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "Claude Code",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  ...(repo ? { codeRepository: repo } : {}),
+  datePublished: publishedAt.toISOString(),
+  ...(updatedAt ? { dateModified: updatedAt.toISOString() } : {}),
+  publisher: { "@type": "Organization", name: "CC4.Marketing", url: "https://cc4.marketing/" },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://cc4.marketing/" },
+    { "@type": "ListItem", position: 2, name: "Skills", item: "https://cc4.marketing/skills/" },
+    { "@type": "ListItem", position: 3, name, item: pageUrl },
+  ],
+};
+---
+
+<BaseLayout
+  title={`${name} | Claude Code for Marketers`}
+  description={description}
+  keywords={tags}
+  ogPageKey="skills"
+  showCourseSchema={false}
+  showBreadcrumb={false}
+>
+  <Header />
+
+  <script type="application/ld+json" set:html={JSON.stringify(softwareSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+
+  <article class="skill-detail">
+    <nav class="skill-breadcrumb" aria-label="Breadcrumb">
+      <a href="/skills/">Skills</a> <span aria-hidden="true">/</span> <span>{name}</span>
+    </nav>
+
+    <header class="skill-header">
+      <h1 class="skill-title">{name}</h1>
+      <p class="skill-desc">{description}</p>
+      {tags && tags.length > 0 && (
+        <ul class="skill-tags" aria-label="Tags">
+          {tags.map((tag) => <li class="skill-tag">{tag}</li>)}
+        </ul>
+      )}
+
+      <div class="skill-actions">
+        {repo && (
+          <a href={repo} target="_blank" rel="noopener" class="skill-action skill-action-primary">
+            View on GitHub
+          </a>
+        )}
+        {downloadUrl && (
+          <a href={downloadUrl} class="skill-action" download={`${slug}.skill`}>
+            Download .skill
+          </a>
+        )}
+      </div>
+    </header>
+
+    <section class="skill-install">
+      <h2>How to install</h2>
+      <ol>
+        <li>Download the <code>.skill</code> file above (or clone the GitHub repo).</li>
+        <li>Place it in your Claude Code skills directory: <code>~/.claude/skills/</code>.</li>
+        <li>Restart Claude Code. The skill is now available — invoke it by name.</li>
+      </ol>
+      {!downloadUrl && repo && (
+        <p class="skill-install-note">
+          A packaged download isn't available yet — grab the skill from
+          <a href={repo} target="_blank" rel="noopener"> the GitHub repo</a> instead.
+        </p>
+      )}
+    </section>
+
+    <section class="skill-readme">
+      <h2 class="skill-readme-heading">SKILL.md</h2>
+      <div class="skill-prose">
+        <Content />
+      </div>
+    </section>
+  </article>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .skill-detail {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 120px 24px 80px;
+  }
+
+  .skill-breadcrumb {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+  }
+
+  .skill-breadcrumb a {
+    color: var(--rust);
+    text-decoration: none;
+  }
+
+  .skill-breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .skill-header {
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 32px;
+    margin-bottom: 32px;
+  }
+
+  .skill-title {
+    font-family: var(--font-display);
+    font-size: clamp(2em, 5vw, 3em);
+    color: var(--text-primary);
+    margin: 0 0 12px;
+    line-height: 1.1;
+  }
+
+  .skill-desc {
+    font-size: 1.15em;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0 0 16px;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px;
+  }
+
+  .skill-tag {
+    font-size: 0.7em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    background: rgba(184, 92, 60, 0.08);
+    border: 1px solid var(--border-color);
+    padding: 3px 8px;
+  }
+
+  .skill-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .skill-action {
+    display: inline-block;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--rust);
+    border: 2px solid var(--rust);
+    padding: 10px 22px;
+    transition: all 0.2s ease;
+  }
+
+  .skill-action:hover {
+    background: var(--rust);
+    color: var(--cream);
+  }
+
+  .skill-action-primary {
+    background: var(--rust);
+    color: var(--cream);
+  }
+
+  .skill-action-primary:hover {
+    background: var(--charcoal);
+    border-color: var(--charcoal);
+  }
+
+  .skill-install {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    padding: 24px 28px;
+    margin-bottom: 48px;
+  }
+
+  .skill-install h2 {
+    font-family: var(--font-display);
+    font-size: 1.3em;
+    margin: 0 0 16px;
+    color: var(--text-primary);
+  }
+
+  .skill-install ol {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--text-primary);
+    line-height: 1.7;
+  }
+
+  .skill-install code {
+    font-size: 0.85em;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    padding: 1px 6px;
+  }
+
+  .skill-install-note {
+    margin: 16px 0 0;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+  }
+
+  .skill-install-note a {
+    color: var(--rust);
+  }
+
+  .skill-readme-heading {
+    font-family: var(--font-display);
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin: 0 0 16px;
+  }
+
+  /* Rendered SKILL.md prose */
+  .skill-prose {
+    font-size: 1.05em;
+    line-height: 1.75;
+    color: var(--text-primary);
+  }
+
+  .skill-prose :global(h1) {
+    font-family: var(--font-display);
+    font-size: 1.8em;
+    margin: 0 0 20px;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .skill-prose :global(h2) {
+    font-family: var(--font-display);
+    font-size: 1.5em;
+    margin: 40px 0 14px;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .skill-prose :global(h3) {
+    font-family: var(--font-display);
+    font-size: 1.25em;
+    margin: 32px 0 12px;
+    color: var(--text-primary);
+  }
+
+  .skill-prose :global(p),
+  .skill-prose :global(ul),
+  .skill-prose :global(ol) {
+    margin: 0 0 20px;
+  }
+
+  .skill-prose :global(ul),
+  .skill-prose :global(ol) {
+    padding-left: 24px;
+  }
+
+  .skill-prose :global(li) {
+    margin-bottom: 8px;
+  }
+
+  .skill-prose :global(a) {
+    color: var(--rust);
+  }
+
+  .skill-prose :global(blockquote) {
+    border-left: 3px solid var(--rust);
+    padding-left: 16px;
+    margin: 0 0 20px;
+    color: var(--text-secondary);
+  }
+
+  .skill-prose :global(pre) {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    padding: 16px;
+    overflow-x: auto;
+    margin: 0 0 20px;
+  }
+
+  .skill-prose :global(code) {
+    font-size: 0.9em;
+  }
+
+  .skill-prose :global(:not(pre) > code) {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 1px 6px;
+  }
+
+  @media (max-width: 768px) {
+    .skill-detail {
+      padding: 100px 20px 60px;
+    }
+  }
+</style>

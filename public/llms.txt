@@ -9,6 +9,7 @@ CC4.Marketing is an open-source course that teaches AI-powered marketing workflo
 - Homepage: https://cc4.marketing/
 - Blog: https://cc4.marketing/blog/
 - Blog Authors: https://cc4.marketing/blog/authors/
+- Skills: https://cc4.marketing/skills/
 - Course Modules: https://cc4.marketing/modules/{module}/{lesson-slug}/
 - Changelog: https://cc4.marketing/changelog/
 - Download/Subscribe: https://cc4.marketing/download/
@@ -24,6 +25,13 @@ The blog publishes practical guides, tutorials, and insights on AI-powered marke
 - [AI Works Best When It Looks at What You've Already Shipped](https://cc4.marketing/blog/ai-workflows-not-automation/)
 - [The Last Mile of Shipping Is the Hardest Part](https://cc4.marketing/blog/the-last-mile-of-shipping/)
 - [castmd: Vibe Coding a Chrome Extension for LLMs](https://cc4.marketing/blog/castmd-vibe-coding-chrome-extension/)
+
+## Skills
+Curated Claude agent skills (SKILL.md bundles) from the CC4 Marketing team. Each skill has a shareable page with the rendered SKILL.md, a link to its GitHub source, a downloadable `.skill` file, and install instructions.
+
+### Available Skills
+- [Naming Skill](https://cc4.marketing/skills/naming/) — Turn an abstract naming brief into scored, narrative-backed name candidates.
+- [Brand Voice Skill](https://cc4.marketing/skills/brand-voice/) — Review and rewrite copy against a defined brand voice, tone, and language standard.
 
 ## Course Modules
 - Module 0: Getting Started (4 lessons, 30 min) — Installation, setup, first task

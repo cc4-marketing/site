@@ -6,6 +6,7 @@ export const siteData = {
     { label: 'Home', href: '/' },
     { label: 'Modules', href: '/#modules' },
     { label: 'Blog', href: '/blog/' },
+    { label: 'Skills', href: '/skills/' },
     { label: 'Changelog', href: '/changelog/' },
     { label: 'GitHub', href: 'https://github.com/cc4-marketing/cc4.marketing', external: true },
   ],
