@@ -4,6 +4,7 @@ export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import SkillCart from '../../components/SkillCart.astro';
 import { getPublishedSkills, skillSlug } from '../../lib/skills';
 
 const skills = await getPublishedSkills();
@@ -64,26 +65,47 @@ const skills = await getPublishedSkills();
         </div>
       ) : (
         <div class="skills-grid">
-          {skills.map((skill) => (
-            <a href={`/skills/${skillSlug(skill)}/`} class="skill-card">
-              <div class="skill-card-body">
-                <h2 class="skill-card-title">{skill.data.name}</h2>
-                <p class="skill-card-desc">{skill.data.description}</p>
-                {skill.data.tags && skill.data.tags.length > 0 && (
-                  <ul class="skill-card-tags" aria-label="Tags">
-                    {skill.data.tags.map((tag) => (
-                      <li class="skill-tag">{tag}</li>
-                    ))}
-                  </ul>
-                )}
-                <span class="skill-card-link">View skill</span>
-              </div>
-            </a>
-          ))}
+          {skills.map((skill) => {
+            const slug = skillSlug(skill);
+            return (
+              <article class="skill-card">
+                <div class="skill-card-body">
+                  <h2 class="skill-card-title">
+                    <a href={`/skills/${slug}/`}>{skill.data.name}</a>
+                  </h2>
+                  <p class="skill-card-desc">{skill.data.description}</p>
+                  {skill.data.tags && skill.data.tags.length > 0 && (
+                    <ul class="skill-card-tags" aria-label="Tags">
+                      {skill.data.tags.map((tag) => (
+                        <li class="skill-tag">{tag}</li>
+                      ))}
+                    </ul>
+                  )}
+                  <div class="skill-card-actions">
+                    <a href={`/skills/${slug}/`} class="skill-card-link">View skill</a>
+                    <button
+                      type="button"
+                      class="skill-card-add"
+                      data-skill-add
+                      data-slug={slug}
+                      data-name={skill.data.name}
+                      data-repo={skill.data.repo}
+                      data-skill-file={skill.data.skillFile}
+                      aria-pressed="false"
+                    >
+                      <span data-add-label>Add to stack</span>
+                    </button>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
     </div>
   </section>
+
+  <SkillCart />
 
   <Footer />
 </BaseLayout>
@@ -212,6 +234,16 @@ const skills = await getPublishedSkills();
     color: var(--text-primary);
   }
 
+  .skill-card-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Whole-card hover cue carries even though only the title is the link. */
+  .skill-card:hover .skill-card-title a {
+    color: var(--rust);
+  }
+
   .skill-card-desc {
     font-size: 0.9em;
     color: var(--text-secondary);
@@ -240,15 +272,47 @@ const skills = await getPublishedSkills();
     padding: 3px 8px;
   }
 
+  .skill-card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 4px;
+  }
+
   .skill-card-link {
     font-size: 0.85em;
     font-weight: 600;
     color: var(--rust);
-    margin-top: auto;
+    text-decoration: none;
   }
 
-  .skill-card:hover .skill-card-link {
+  .skill-card-link:hover {
     text-decoration: underline;
+  }
+
+  .skill-card-add {
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .skill-card-add:hover {
+    border-color: var(--rust);
+    color: var(--rust);
+  }
+
+  .skill-card-add.in-stack {
+    background: var(--rust);
+    border-color: var(--rust);
+    color: var(--cream);
   }
 
   @media (max-width: 768px) {

@@ -5,6 +5,7 @@ import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import SkillCart from '../../components/SkillCart.astro';
 import { getSkillBySlug } from '../../lib/skills';
 
 const { slug } = Astro.params;
@@ -20,6 +21,9 @@ const { name, description, tags, repo, skillFile, author, publishedAt, updatedAt
 
 const pageUrl = `https://cc4.marketing/skills/${slug}/`;
 const downloadUrl = skillFile ? `/skills/${slug}/download.skill` : null;
+const cloneCommand = repo
+  ? `git clone ${repo} ~/.claude/skills/${slug}`
+  : null;
 
 const softwareSchema = {
   "@context": "https://schema.org",
@@ -81,26 +85,49 @@ const breadcrumbSchema = {
             View on GitHub
           </a>
         )}
-        {downloadUrl && (
-          <a href={downloadUrl} class="skill-action" download={`${slug}.skill`}>
-            Download .skill
-          </a>
-        )}
+        <button
+          type="button"
+          class="skill-action skill-add-btn"
+          data-skill-add
+          data-slug={slug}
+          data-name={name}
+          data-repo={repo}
+          data-skill-file={skillFile}
+          aria-pressed="false"
+        >
+          <span data-add-label>Add to stack</span>
+        </button>
       </div>
     </header>
 
-    <section class="skill-install">
-      <h2>How to install</h2>
-      <ol>
-        <li>Download the <code>.skill</code> file above (or clone the GitHub repo).</li>
-        <li>Place it in your Claude Code skills directory: <code>~/.claude/skills/</code>.</li>
-        <li>Restart Claude Code. The skill is now available — invoke it by name.</li>
-      </ol>
-      {!downloadUrl && repo && (
-        <p class="skill-install-note">
-          A packaged download isn't available yet — grab the skill from
-          <a href={repo} target="_blank" rel="noopener"> the GitHub repo</a> instead.
-        </p>
+    <section class="skill-install" data-install-panel>
+      <h2 class="skill-install-title">Install</h2>
+
+      <div class="skill-tabs" role="tablist" aria-label="Install methods">
+        {cloneCommand && (
+          <button type="button" class="skill-tab" role="tab" id="tab-clone" aria-controls="panel-clone" aria-selected="true" data-tab="clone">git clone</button>
+        )}
+        {downloadUrl && (
+          <button type="button" class="skill-tab" role="tab" id="tab-download" aria-controls="panel-download" aria-selected={cloneCommand ? 'false' : 'true'} data-tab="download">Download</button>
+        )}
+      </div>
+
+      {cloneCommand && (
+        <div class="skill-tabpanel" id="panel-clone" role="tabpanel" aria-labelledby="tab-clone" data-panel="clone">
+          <p class="skill-tabpanel-lead">Clone the skill straight into your Claude Code skills directory, then restart Claude Code.</p>
+          <pre><code>{cloneCommand}</code></pre>
+        </div>
+      )}
+
+      {downloadUrl && (
+        <div class="skill-tabpanel" id="panel-download" role="tabpanel" aria-labelledby="tab-download" data-panel="download" hidden={!!cloneCommand}>
+          <p class="skill-tabpanel-lead">Download the packaged skill, move it into <code>~/.claude/skills/</code>, then restart Claude Code.</p>
+          <a href={downloadUrl} class="skill-action skill-action-primary" download={`${slug}.skill`}>Download {slug}.skill</a>
+        </div>
+      )}
+
+      {!cloneCommand && !downloadUrl && (
+        <p class="skill-install-note">Install steps for this skill are coming soon.</p>
       )}
     </section>
 
@@ -112,8 +139,38 @@ const breadcrumbSchema = {
     </section>
   </article>
 
+  <SkillCart />
+
   <Footer />
 </BaseLayout>
+
+<script>
+  // Tabbed install panel: switch active tab/panel. Scoped to [data-install-panel].
+  function setupInstallTabs(): void {
+    document.querySelectorAll<HTMLElement>('[data-install-panel]').forEach((panel) => {
+      const tabs = panel.querySelectorAll<HTMLElement>('.skill-tab');
+      const panes = panel.querySelectorAll<HTMLElement>('.skill-tabpanel');
+      tabs.forEach((tab) => {
+        if (tab.dataset.tabBound) return;
+        tab.dataset.tabBound = '1';
+        tab.addEventListener('click', () => {
+          const target = tab.dataset.tab;
+          tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+          panes.forEach((p) => {
+            p.hidden = p.dataset.panel !== target;
+          });
+        });
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupInstallTabs);
+  } else {
+    setupInstallTabs();
+  }
+  window.addEventListener('pageshow', setupInstallTabs);
+</script>
 
 <style>
   .skill-detail {
@@ -217,29 +274,92 @@ const breadcrumbSchema = {
     margin-bottom: 48px;
   }
 
-  .skill-install h2 {
+  .skill-add-btn {
+    cursor: pointer;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  .skill-add-btn:hover {
+    background: var(--bg-primary);
+    border-color: var(--rust);
+    color: var(--rust);
+  }
+
+  .skill-add-btn.in-stack {
+    background: var(--rust);
+    border-color: var(--rust);
+    color: var(--cream);
+  }
+
+  .skill-install-title {
     font-family: var(--font-display);
     font-size: 1.3em;
     margin: 0 0 16px;
     color: var(--text-primary);
   }
 
-  .skill-install ol {
+  .skill-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 16px;
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .skill-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    padding: 8px 16px;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .skill-tab[aria-selected='true'] {
+    color: var(--rust);
+    border-bottom-color: var(--rust);
+  }
+
+  .skill-tabpanel-lead {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    margin: 0 0 12px;
+    line-height: 1.5;
+  }
+
+  .skill-install pre {
+    background: #1c1c1c;
+    color: #eaeaea;
+    border: 2px solid #2a2a2a;
+    padding: 16px;
+    overflow-x: auto;
     margin: 0;
-    padding-left: 20px;
-    color: var(--text-primary);
-    line-height: 1.7;
+    font-size: 0.85em;
+  }
+
+  .skill-install pre code {
+    color: inherit;
+    background: transparent;
+    border: none;
+    padding: 0;
   }
 
   .skill-install code {
     font-size: 0.85em;
+  }
+
+  .skill-tabpanel-lead code {
     background: var(--bg-primary);
     border: 1px solid var(--border-color);
     padding: 1px 6px;
   }
 
   .skill-install-note {
-    margin: 16px 0 0;
+    margin: 0;
     font-size: 0.9em;
     color: var(--text-secondary);
   }

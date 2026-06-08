@@ -282,6 +282,23 @@ success criteria.)
 - **Dependency: marketplace** does not exist → copy-install affordance + the
   `/publish-skill` skill are explicitly out of scope (brainstorm: Resolved Q1/Q4).
 
+## Post-MVP enhancement — skill "stack" cart + tabbed install (✅ DONE)
+
+Inspired by kits.vibery.app's buffet/cart UX:
+- **Cart**: `src/components/SkillCart.astro` — select multiple skills across the
+  gallery ("Add to stack" on each card + detail page), persistent bottom tray
+  with a count, and a checkout panel. State in localStorage (vanilla JS, matches
+  `CodeBlockCopy.astro` idiom); persists across navigation; syncs across tabs.
+- **Checkout output**: a single copy-all block of `git clone <repo>
+  ~/.claude/skills/<slug>` commands (+ `mkdir -p`) for every selected skill,
+  plus a download list of the `.skill` files. Marketplace command still deferred.
+- **Detail install**: replaced the plain list with a tabbed panel (git clone /
+  Download), each command in a dark terminal block with the site's copy button.
+- **Gotcha fixed**: the HTML `hidden` attribute is overridden by an explicit
+  `display:flex`, so the tray/modal need `[hidden]{display:none!important}`.
+  Also exempted the cart's command `<pre>` from the global `CodeBlockCopy`
+  auto-inject via `[data-no-copy-btn]` (it has its own copy-all button).
+
 ## Open Questions (carried from brainstorm + research)
 
 1. **Per-skill OG image** — reuse the single `skills.png` page key for all skills

@@ -13,6 +13,11 @@
         return;
       }
 
+      // Skip blocks that manage their own copy affordance (e.g. the skill cart).
+      if (pre.closest('[data-no-copy-btn]')) {
+        return;
+      }
+
       // Create wrapper
       const wrapper = document.createElement('div');
       wrapper.className = 'code-block-wrapper';

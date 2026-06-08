@@ -1,0 +1,470 @@
+---
+// Persistent "skill stack" cart: select skills across the gallery, then check
+// out with one combined install block. State lives in localStorage so it
+// survives navigation. Vanilla JS to match the site's zero-framework idiom
+// (see CodeBlockCopy.astro).
+//
+// Pages opt in by:
+//   1. rendering <SkillCart /> once (it injects the tray + checkout panel), and
+//   2. giving each "add" control a [data-skill-add] with data-slug / data-name /
+//      data-repo / data-skill-file attributes.
+---
+
+<div id="skill-cart" class="skill-cart" hidden aria-live="polite">
+  <div class="skill-cart-bar">
+    <button type="button" id="skill-cart-toggle" class="skill-cart-toggle" aria-expanded="false" aria-controls="skill-cart-panel">
+      <span class="skill-cart-icon" aria-hidden="true">🎒</span>
+      <span class="skill-cart-label">Your stack</span>
+      <span id="skill-cart-count" class="skill-cart-count">0</span>
+    </button>
+    <button type="button" id="skill-cart-checkout" class="skill-cart-checkout">Check out →</button>
+  </div>
+</div>
+
+<div id="skill-cart-panel" class="skill-cart-panel" hidden role="dialog" aria-modal="true" aria-labelledby="skill-cart-panel-title">
+  <div class="skill-cart-panel-inner">
+    <header class="skill-cart-panel-head">
+      <h2 id="skill-cart-panel-title">Install your stack</h2>
+      <button type="button" id="skill-cart-close" class="skill-cart-close" aria-label="Close">✕</button>
+    </header>
+
+    <p class="skill-cart-panel-sub">
+      Run these from your terminal to add every selected skill to Claude Code, then restart it.
+    </p>
+
+    <div class="skill-cart-commands" data-no-copy-btn>
+      <button type="button" id="skill-cart-copyall" class="skill-cart-copyall">Copy all commands</button>
+      <pre id="skill-cart-script"><code></code></pre>
+    </div>
+
+    <div id="skill-cart-downloads" class="skill-cart-downloads">
+      <h3>Or download the packaged skills</h3>
+      <ul id="skill-cart-download-list"></ul>
+    </div>
+
+    <footer class="skill-cart-panel-foot">
+      <button type="button" id="skill-cart-clear" class="skill-cart-clear">Clear stack</button>
+    </footer>
+  </div>
+</div>
+
+<script>
+  type CartItem = { slug: string; name: string; repo?: string; skillFile?: string };
+
+  const KEY = 'cc4m-skill-stack';
+
+  function read(): CartItem[] {
+    try {
+      const raw = localStorage.getItem(KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function write(items: CartItem[]): void {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(items));
+    } catch {
+      /* storage unavailable (private mode) — cart is in-memory for this view */
+    }
+  }
+
+  function cloneCommand(item: CartItem): string {
+    if (item.repo) {
+      return `git clone ${item.repo} ~/.claude/skills/${item.slug}`;
+    }
+    return `# ${item.name}: see https://cc4.marketing/skills/${item.slug}/ for install steps`;
+  }
+
+  function buildScript(items: CartItem[]): string {
+    if (items.length === 0) return '';
+    return [
+      '# CC4.Marketing skill stack — run these, then restart Claude Code',
+      'mkdir -p ~/.claude/skills',
+      ...items.map(cloneCommand),
+    ].join('\n');
+  }
+
+  function setupSkillCart(): void {
+    const cart = document.getElementById('skill-cart');
+    const panel = document.getElementById('skill-cart-panel');
+    if (!cart || !panel) return;
+
+    const countEl = document.getElementById('skill-cart-count')!;
+    const scriptEl = panel.querySelector<HTMLElement>('#skill-cart-script code')!;
+    const downloadsEl = document.getElementById('skill-cart-downloads')!;
+    const downloadList = document.getElementById('skill-cart-download-list')!;
+
+    // The checkout panel always starts closed (so back/forward navigation via
+    // pageshow never restores it mid-open).
+    panel.hidden = true;
+
+    function refreshAddButtons(items: CartItem[]): void {
+      const slugs = new Set(items.map((i) => i.slug));
+      document.querySelectorAll<HTMLElement>('[data-skill-add]').forEach((btn) => {
+        const inStack = slugs.has(btn.dataset.slug || '');
+        btn.classList.toggle('in-stack', inStack);
+        btn.setAttribute('aria-pressed', String(inStack));
+        const label = btn.querySelector('[data-add-label]');
+        if (label) label.textContent = inStack ? 'In stack ✓' : 'Add to stack';
+      });
+    }
+
+    function render(): void {
+      const items = read();
+      countEl.textContent = String(items.length);
+      cart.hidden = items.length === 0;
+
+      scriptEl.textContent = buildScript(items);
+
+      const withFiles = items.filter((i) => i.skillFile);
+      downloadsEl.hidden = withFiles.length === 0;
+      downloadList.innerHTML = '';
+      for (const item of withFiles) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `/skills/${item.slug}/download.skill`;
+        a.setAttribute('download', `${item.slug}.skill`);
+        a.textContent = `${item.name} (.skill)`;
+        li.appendChild(a);
+        downloadList.appendChild(li);
+      }
+
+      refreshAddButtons(items);
+    }
+
+    function toggleItem(data: CartItem): void {
+      const items = read();
+      const idx = items.findIndex((i) => i.slug === data.slug);
+      if (idx >= 0) items.splice(idx, 1);
+      else items.push(data);
+      write(items);
+      render();
+    }
+
+    function openPanel(): void {
+      if (read().length === 0) return; // nothing to check out
+      panel.hidden = false;
+      document.getElementById('skill-cart-toggle')?.setAttribute('aria-expanded', 'true');
+      (document.getElementById('skill-cart-close') as HTMLElement | null)?.focus();
+    }
+
+    function closePanel(): void {
+      panel.hidden = true;
+      document.getElementById('skill-cart-toggle')?.setAttribute('aria-expanded', 'false');
+    }
+
+    // Wire add buttons (delegated so it works for any [data-skill-add] on the page).
+    document.querySelectorAll<HTMLElement>('[data-skill-add]').forEach((btn) => {
+      if (btn.dataset.cartBound) return;
+      btn.dataset.cartBound = '1';
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleItem({
+          slug: btn.dataset.slug || '',
+          name: btn.dataset.name || btn.dataset.slug || '',
+          repo: btn.dataset.repo || undefined,
+          skillFile: btn.dataset.skillFile || undefined,
+        });
+      });
+    });
+
+    document.getElementById('skill-cart-checkout')?.addEventListener('click', openPanel);
+    document.getElementById('skill-cart-toggle')?.addEventListener('click', openPanel);
+    document.getElementById('skill-cart-close')?.addEventListener('click', closePanel);
+    panel.addEventListener('click', (e) => {
+      if (e.target === panel) closePanel();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !panel.hidden) closePanel();
+    });
+
+    document.getElementById('skill-cart-clear')?.addEventListener('click', () => {
+      write([]);
+      render();
+      closePanel();
+    });
+
+    const copyAll = document.getElementById('skill-cart-copyall');
+    copyAll?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(buildScript(read()));
+        const prev = copyAll.textContent;
+        copyAll.textContent = 'Copied!';
+        copyAll.classList.add('copied');
+        setTimeout(() => {
+          copyAll.textContent = prev;
+          copyAll.classList.remove('copied');
+        }, 2000);
+      } catch (err) {
+        console.error('Copy failed', err);
+      }
+    });
+
+    // Reflect changes made in other tabs/pages.
+    window.addEventListener('storage', (e) => {
+      if (e.key === KEY) render();
+    });
+
+    render();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupSkillCart);
+  } else {
+    setupSkillCart();
+  }
+  window.addEventListener('pageshow', setupSkillCart);
+</script>
+
+<style>
+  /* The `hidden` attribute must win over the display rules below, or the tray
+     and modal stay visible when emptied/closed. */
+  .skill-cart[hidden],
+  .skill-cart-panel[hidden] {
+    display: none !important;
+  }
+
+  /* Persistent bottom tray */
+  .skill-cart {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    padding: 0 16px 16px;
+    pointer-events: none;
+  }
+
+  .skill-cart-bar {
+    pointer-events: auto;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    background: var(--bg-secondary);
+    border: 2px solid var(--charcoal);
+    box-shadow: 6px 6px 0 var(--mustard);
+    max-width: 480px;
+    width: 100%;
+  }
+
+  .skill-cart-toggle {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: none;
+    border-right: 2px solid var(--border-color);
+    padding: 14px 18px;
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+
+  .skill-cart-icon {
+    font-size: 1.2em;
+  }
+
+  .skill-cart-count {
+    margin-left: auto;
+    min-width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--rust);
+    color: var(--cream);
+    font-size: 0.8em;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 0 7px;
+  }
+
+  .skill-cart-checkout {
+    background: var(--rust);
+    color: var(--cream);
+    border: none;
+    padding: 14px 22px;
+    font-size: 0.95em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .skill-cart-checkout:hover {
+    background: var(--charcoal);
+  }
+
+  /* Checkout panel (modal) */
+  .skill-cart-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .skill-cart-panel-inner {
+    background: var(--bg-primary);
+    border: 2px solid var(--charcoal);
+    box-shadow: 8px 8px 0 var(--mustard);
+    max-width: 640px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 28px;
+  }
+
+  .skill-cart-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .skill-cart-panel-head h2 {
+    font-family: var(--font-display);
+    font-size: 1.5em;
+    margin: 0;
+    color: var(--text-primary);
+  }
+
+  .skill-cart-close {
+    background: transparent;
+    border: 2px solid var(--border-color);
+    width: 36px;
+    height: 36px;
+    font-size: 1em;
+    cursor: pointer;
+    color: var(--text-primary);
+  }
+
+  .skill-cart-close:hover {
+    border-color: var(--rust);
+    color: var(--rust);
+  }
+
+  .skill-cart-panel-sub {
+    color: var(--text-secondary);
+    font-size: 0.95em;
+    margin: 0 0 20px;
+  }
+
+  .skill-cart-commands {
+    position: relative;
+    margin-bottom: 24px;
+    border: 2px solid #2a2a2a;
+    background: #1c1c1c;
+  }
+
+  .skill-cart-copyall {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #2d2d2d;
+    border: 1px solid #4a4a4a;
+    color: #eaeaea;
+    font-size: 0.8em;
+    font-weight: 600;
+    padding: 5px 12px;
+    cursor: pointer;
+    z-index: 1;
+  }
+
+  .skill-cart-copyall:hover {
+    border-color: var(--rust);
+    color: var(--rust);
+  }
+
+  .skill-cart-copyall.copied {
+    border-color: #7fb069;
+    color: #7fb069;
+  }
+
+  .skill-cart-commands pre {
+    background: transparent;
+    color: #eaeaea;
+    border: none;
+    padding: 16px;
+    padding-top: 40px;
+    margin: 0;
+    font-size: 0.85em;
+    line-height: 1.6;
+    /* Wrap long clone commands rather than horizontal-scroll, so the full
+       command is visible and copy-pasteable at a glance. */
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .skill-cart-commands pre code {
+    color: inherit;
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+
+  .skill-cart-downloads h3 {
+    font-family: var(--font-display);
+    font-size: 1em;
+    color: var(--text-primary);
+    margin: 0 0 12px;
+  }
+
+  .skill-cart-download-list,
+  #skill-cart-download-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  #skill-cart-download-list a {
+    display: inline-block;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--rust);
+    border: 2px solid var(--rust);
+    padding: 6px 14px;
+    text-decoration: none;
+  }
+
+  #skill-cart-download-list a:hover {
+    background: var(--rust);
+    color: var(--cream);
+  }
+
+  .skill-cart-panel-foot {
+    border-top: 2px solid var(--border-color);
+    padding-top: 16px;
+  }
+
+  .skill-cart-clear {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.85em;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .skill-cart-clear:hover {
+    color: var(--rust);
+  }
+
+  @media (max-width: 640px) {
+    .skill-cart-panel-inner {
+      padding: 20px;
+    }
+  }
+</style>
