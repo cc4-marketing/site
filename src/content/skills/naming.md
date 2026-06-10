@@ -5,7 +5,7 @@ tags:
   - naming
   - branding
   - strategy
-repo: https://github.com/cc4marketing/naming-skill
+repo: https://github.com/cc4-marketing/naming-skill
 skillFile: naming.skill
 author: tri-vo
 draft: false

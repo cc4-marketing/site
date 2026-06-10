@@ -5,7 +5,7 @@ tags:
   - brand
   - writing
   - editing
-repo: https://github.com/cc4marketing/brand-voice-skill
+repo: https://github.com/cc4-marketing/brand-voice-skill
 skillFile: brand-voice.skill
 author: tri-vo
 draft: false
