@@ -9,6 +9,13 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ## [Unreleased]
 
+### Fixed
+
+- robots.txt no longer contains the invalid `LLMs-txt` directive or the non-standard `Crawl-delay`/`Host` lines that Search Console flagged as errors and warnings.
+- Sitemap URL for the Threadmark announcement post now uses the canonical trailing-slash form, resolving duplicate-canonical indexing errors.
+- Sitemap no longer stamps every URL with the build time as `lastmod`; entries omit `lastmod` instead of reporting a fake change on each deploy.
+- Page URLs without a trailing slash now 301-redirect to the canonical trailing-slash form instead of serving duplicate content.
+
 ## [0.5.0] - 2026-07-14
 
 ### Added
