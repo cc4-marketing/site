@@ -1,43 +1,56 @@
-"""Insert the 'Service Package from a Real Engagement' lesson-launch post (byline: Alice Marketer)
-into the Emdash D1 database.
+"""Sync the 'Service Package from a Real Engagement' lesson-launch post (byline: Alice Marketer)
+in the Emdash D1 database.
 
-Builds PortableText JSON content and outputs a SQL INSERT statement that can be
-executed against the remote D1 database via:
+First run inserted the post. The script now emits an UPDATE for the existing record
+(SEO/AEO revision: question-form H2s, bullet lists, inline internal links, tighter
+title and excerpt). Execute via:
 
-    npx wrangler d1 execute cc4-emdash --remote --file=/tmp/insert_service_package_post.sql
+    npx wrangler d1 execute cc4-emdash --remote --file=/tmp/update_service_package_post.sql
 """
 import json
 import secrets
-import string
 
-
-def gen_id(length: int = 26) -> str:
-    alphabet = string.ascii_uppercase + string.digits
-    return "".join(secrets.choice(alphabet) for _ in range(length))
+POST_ID = "TD07D46FJZ763SW452M7I70NXE"  # existing ec_posts row
+SLUG = "service-package-from-real-engagement"
+LESSON_URL = "/modules/2/service-package-from-engagement/"
+MODULES_URL = "/modules/"
+CAMPAIGN_BRIEF_URL = "/modules/2/campaign-brief/"
 
 
 def key() -> str:
     return secrets.token_hex(5)
 
 
-def block(style: str, text: str) -> dict:
-    return {
-        "_type": "block",
-        "_key": key(),
-        "style": style,
-        "children": [
-            {"_type": "span", "_key": key(), "text": text},
-        ],
-    }
+def block(style: str, *parts) -> dict:
+    """PortableText block. Each part: str, or (text, href), or (text, href, bold)."""
+    mark_defs, children = [], []
+    for p in parts:
+        if isinstance(p, str):
+            p = (p, None, False)
+        text, href, bold = (p + (None, False))[:3] if isinstance(p, tuple) else (p, None, False)
+        marks = []
+        if href:
+            k = key()
+            mark_defs.append({"_type": "link", "_key": k, "href": href})
+            marks.append(k)
+        if bold:
+            marks.append("strong")
+        children.append({"_type": "span", "_key": key(), "text": text, "marks": marks})
+    b = {"_type": "block", "_key": key(), "style": style, "children": children}
+    if mark_defs:
+        b["markDefs"] = mark_defs
+    return b
+
+
+def bullet(*parts) -> dict:
+    b = block("normal", *parts)
+    b["listItem"] = "bullet"
+    b["level"] = 1
+    return b
 
 
 def code(code_text: str, language: str = "text") -> dict:
-    return {
-        "_type": "code",
-        "_key": key(),
-        "language": language,
-        "code": code_text,
-    }
+    return {"_type": "code", "_key": key(), "language": language, "code": code_text}
 
 
 # --- The full copyable prompt ------------------------------------------------
@@ -89,39 +102,57 @@ every extrapolated or assumed figure under "unresolved questions"."""
 
 content = [
     # Lede
-    block("normal", "Your best sales asset is sitting in a project folder you've already closed."),
+    block("normal", "Your best sales asset is sitting in a project folder you already closed."),
     block(
         "normal",
+        "We just shipped ",
+        ("Module 2.7: Service Package from a Real Engagement", LESSON_URL),
         (
-            "We just shipped a new lesson - Module 2.7: Service Package from a Real Engagement - "
-            "and it exists because of a pattern we keep seeing. Companies run a genuinely good "
-            "client engagement: SLAs hit, metrics improving month over month, a happy customer "
-            "saying quotable things in review meetings. Then the engagement ends, the folder gets "
-            "archived, and the sales team goes back to pitching with adjectives."
+            ", and it exists because of a pattern we keep seeing. A company runs a genuinely "
+            "good client engagement: SLAs hit, metrics improve month over month, a happy "
+            "customer says quotable things in review meetings. Then the engagement ends, the "
+            "folder gets archived, and the sales team goes back to pitching with adjectives."
         ),
     ),
     block(
         "normal",
         (
-            "The proof, the process, and the pricing already exist. They're just buried in sprint "
-            "reports and meeting notes. Reading and synthesizing a messy corpus is exactly what an "
-            "agent is good at - which makes packaging a service a workflow-extraction problem, "
-            "not a writing problem."
+            "The proof, the process, and the pricing already exist. They are just buried in "
+            "sprint reports and meeting notes. Reading and synthesizing a messy corpus is "
+            "exactly what an agent is good at, which makes packaging a service a "
+            "workflow-extraction problem, not a writing problem."
         ),
     ),
 
     # Section 1
-    block("h2", "What the new lesson teaches"),
-    block(
-        "normal",
+    block("h2", "What does Module 2.7 teach?"),
+    block("normal", "The practice is four steps. Each step feeds the next:"),
+    bullet(
+        ("Mine. ", None, True),
         (
-            "The practice is four steps: mine, decide, blueprint, derive. The agent mines the "
-            "project corpus into a research file with every claim cited to a source document. You "
-            "make five decisions before anything gets written - target buyer, anonymization, "
-            "deliverables, language, service name. The agent then writes an internal service "
-            "blueprint (the operating manual a new project manager could run a second engagement "
-            "from), and only then derives the marketing: offer sheet, case study, landing page, "
-            "deck, one-pager - all quoting one source of truth so the numbers never drift."
+            "The agent reads the whole project corpus and writes a research file where "
+            "every claim cites a source document. No invented numbers."
+        ),
+    ),
+    bullet(
+        ("Decide. ", None, True),
+        (
+            "You answer five questions before anything gets written: target buyer, "
+            "anonymization, deliverables, language, and service name."
+        ),
+    ),
+    bullet(
+        ("Blueprint. ", None, True),
+        (
+            "The agent writes the internal service blueprint: the operating manual a new "
+            "project manager could run a second engagement from."
+        ),
+    ),
+    bullet(
+        ("Derive. ", None, True),
+        (
+            "Offer sheet, case study, landing page, deck. All marketing copy quotes one "
+            "source of truth, so the numbers never drift."
         ),
     ),
     block(
@@ -135,7 +166,7 @@ content = [
     ),
 
     # Section 2
-    block("h2", "Why blueprint-first beats brochure-first"),
+    block("h2", "Why write the blueprint before the brochure?"),
     block(
         "normal",
         (
@@ -150,33 +181,43 @@ content = [
         "normal",
         (
             "We ran this practice on a real production-support engagement while building the "
-            "lesson. The proof band it produced: zero SLA breaches across 151 tickets in five "
-            "months, product coverage grown from 2 to 9 apps, resolution rate up from 64% to 87%, "
-            "zero negative CSAT. Every one of those numbers traces to a monthly report in the "
-            "project folder."
+            "lesson. The proof band it produced:"
         ),
+    ),
+    bullet("Zero SLA breaches across 151 tickets in five months"),
+    bullet("Product coverage grown from 2 to 9 apps"),
+    bullet("Resolution rate up from 64% to 87%"),
+    bullet("Zero negative CSAT"),
+    block(
+        "normal",
+        "Every one of those numbers traces to a monthly report in the project folder.",
     ),
 
     # Section 3 - the prompt
-    block("h2", "The full prompt"),
+    block("h2", "The full service package prompt"),
     block(
         "normal",
         (
-            "Here's the whole practice as one prompt. Paste it into Claude Code at the root of "
-            "any completed project's folder, point the first line at your export, and answer the "
-            "questions when it stops to ask. It works in Claude web too if your corpus fits in "
-            "the context window."
+            "Here is the whole practice as one prompt. Paste it into Claude Code at the root "
+            "of any completed project's folder, point the first line at your export, and "
+            "answer the questions when it stops to ask. It works in Claude web too if your "
+            "corpus fits in the context window."
         ),
     ),
     code(FULL_PROMPT),
-    block(
-        "normal",
+    block("normal", "Two habits make it work:"),
+    bullet(
+        ("Answer Step 2 in writing and make the agent wait. ", None, True),
         (
-            "Two habits make it work. First: answer Step 2 in writing and make the agent wait - "
-            "regenerating everything because you changed the anonymization decision halfway is "
-            "the most common failure. Second: don't delete the unresolved-questions list from "
-            "the output. An honest assumptions list is what separates a package you can sell "
-            "from one you have to walk back."
+            "Regenerating everything because you changed the anonymization decision halfway "
+            "is the most common failure."
+        ),
+    ),
+    bullet(
+        ("Keep the unresolved-questions list. ", None, True),
+        (
+            "An honest assumptions list is what separates a package you can sell from one "
+            "you have to walk back."
         ),
     ),
 
@@ -184,76 +225,59 @@ content = [
     block("h2", "Try it in the course"),
     block(
         "normal",
+        "The interactive version is live in the course: run /start-2-7 inside Claude Code "
+        "and you'll package a service from the Planerio campaign work you built in ",
+        ("Module 2's campaign brief lesson", CAMPAIGN_BRIEF_URL),
         (
-            "The interactive version is live in the course repo: run /start-2-7 inside Claude "
-            "Code and you'll package a service from the Planerio campaign work you built in "
-            "Module 2 - then run the same practice on a real engagement at your own company. "
-            "That second run is where it compounds."
+            ". Then run the same practice on a real engagement at your own company. That "
+            "second run is where it compounds."
         ),
     ),
-    block("normal", "Start at cc4.marketing, or jump straight to the lesson page: Module 2.7 - Service Package from a Real Engagement."),
+    block(
+        "normal",
+        "Browse ",
+        ("all course modules", MODULES_URL),
+        ", or jump straight to the lesson: ",
+        ("Module 2.7: Service Package from a Real Engagement", LESSON_URL),
+        ".",
+    ),
 ]
 
 # --- Post record ----------------------------------------------------------------
 
-post_id = gen_id(26)
-slug = "service-package-from-real-engagement"
-title = "New Lesson: Turn a Finished Client Engagement into a Sellable Service Package"
+title = "Turn a Client Engagement into a Sellable Service Package"
 excerpt = (
-    "Module 2.7 is live - a four-step practice (mine, decide, blueprint, derive) for turning "
-    "a completed engagement's project folder into a service blueprint, case study, and "
-    "marketing kit. Includes the full prompt to copy."
+    "Module 2.7 is live: a four-step prompt practice that turns a finished client "
+    "engagement into a service blueprint, case study, and marketing kit."
 )
-published_at = "2026-07-14T09:00:00.000Z"
-alice_byline_id = "01BYLINEALICE00001"
-
-featured_image = {
-    "id": "cover-service-package",
-    "src": "/blog/cover-service-package-lesson.png",
-    "alt": (
-        "Editorial illustration of a project folder transforming into a service blueprint, "
-        "case study, and landing page, with a proof band reading zero SLA breaches across "
-        "151 tickets"
-    ),
-    "width": 1200,
-    "height": 630,
-}
+updated_at = "2026-07-14T07:30:00.000Z"
 
 content_json = json.dumps(content, ensure_ascii=False)
-featured_json = json.dumps(featured_image, ensure_ascii=False)
 
 
 def sql_escape(s: str) -> str:
     return s.replace("'", "''")
 
 
-sql = f"""INSERT INTO ec_posts (
-    id, slug, status, title, featured_image, content, excerpt,
-    primary_byline_id, published_at, created_at, updated_at, version, locale
-) VALUES (
-    '{post_id}',
-    '{slug}',
-    'published',
-    '{sql_escape(title)}',
-    '{sql_escape(featured_json)}',
-    '{sql_escape(content_json)}',
-    '{sql_escape(excerpt)}',
-    '{alice_byline_id}',
-    '{published_at}',
-    '{published_at}',
-    '{published_at}',
-    1,
-    'en'
-);
+sql = f"""UPDATE ec_posts SET
+    title = '{sql_escape(title)}',
+    excerpt = '{sql_escape(excerpt)}',
+    content = '{sql_escape(content_json)}',
+    updated_at = '{updated_at}',
+    version = version + 1
+WHERE id = '{POST_ID}' AND slug = '{SLUG}';
 """
 
-output_path = "/tmp/insert_service_package_post.sql"
+output_path = "/tmp/update_service_package_post.sql"
 with open(output_path, "w") as f:
     f.write(sql)
 
+assert len(title) <= 60, f"title too long: {len(title)}"
+assert len(excerpt) <= 160, f"excerpt too long: {len(excerpt)}"
+
 print(f"SQL written to {output_path}")
-print(f"Post id: {post_id}")
-print(f"Slug: {slug}")
-print(f"Byline: {alice_byline_id} (Alice Marketer)")
+print(f"Post id: {POST_ID}")
+print(f"Title ({len(title)} chars): {title}")
+print(f"Excerpt ({len(excerpt)} chars): {excerpt}")
 print(f"Content blocks: {len(content)}")
-print(f"Content JSON length: {len(content_json)}")
+print(f"Internal links: {content_json.count('\"_type\": \"link\"') or content_json.count('_type": "link')}")

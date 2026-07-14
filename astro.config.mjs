@@ -73,6 +73,7 @@ const blogPages = [
   '/blog/the-last-mile-of-shipping/',
   '/blog/castmd-vibe-coding-chrome-extension/',
   '/blog/introducing-threadmark',
+  '/blog/service-package-from-real-engagement/',
 ].map((p) => `${SITE_URL}${p}`);
 
 // https://astro.build/config

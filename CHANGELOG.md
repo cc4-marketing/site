@@ -9,12 +9,25 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-07-14
+
 ### Added
 
 - New lesson — Module 2.7: Service Package from a Real Engagement. Teaches the mine → decide → blueprint → derive practice for turning a completed client engagement into a service blueprint, case study, and marketing kit, with copy-paste prompts and quality gates. Capstone reordered after it; module 2 is now 7 lessons.
 - Blog post by Alice Marketer introducing the lesson, including the full packaging prompt as a copyable code block (`/blog/service-package-from-real-engagement`).
 - New blog cover `cover-service-package-lesson` (SVG + PNG) in house editorial style.
 - HelloBar updated to promote Module 2.7.
+- Newsletter broadcast template for the Module 2.7 announcement in `emails/`, with an editorial-illustration cover (`cover-service-package-newsletter`) served from `/blog/`.
+
+### Changed
+
+- Service-package blog post revised for SEO/AEO: 56-char title, 144-char excerpt, question-form H2s, bullet lists, and 4 internal links (lesson page, campaign-brief lesson, modules hub).
+- Course repo release v1.3.0 cut so the downloadable zip includes `/start-2-7`.
+
+### Fixed
+
+- Service-package blog post was missing from the sitemap (`astro.config.mjs` blogPages), `llms.txt`, and `llms-full.txt` — added to all three.
+- `package.json` version reconciled to the shipped v0.4.0 tag; changelog footer compare links repaired (missing `[0.4.0]` entry).
 
 ## [0.4.0] - 2026-05-17
 
@@ -161,7 +174,9 @@ Initial public release of the CC4.Marketing website.
 - GitHub Pages deployment via GitHub Actions
 - Cloudflare DNS/CDN configuration
 
-[unreleased]: https://github.com/cc4-marketing/site/compare/v0.3.0...HEAD
+[unreleased]: https://github.com/cc4-marketing/site/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/cc4-marketing/site/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/cc4-marketing/site/compare/v0.2.0...v0.4.0
 [0.3.0]: https://github.com/cc4-marketing/site/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/cc4-marketing/site/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/cc4-marketing/site/releases/tag/v0.1.0

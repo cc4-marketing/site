@@ -17,6 +17,7 @@ The CC4.Marketing blog publishes practical guides on AI-powered marketing with C
 - [The Last Mile of Shipping Is the Hardest Part](https://cc4.marketing/blog/the-last-mile-of-shipping/) — On turning the manual, undocumented steps between build and ship into a system of slash commands that compound over time.
 - [castmd: Vibe Coding a Chrome Extension for LLMs](https://cc4.marketing/blog/castmd-vibe-coding-chrome-extension/) — How Tri Vo rebuilt md·convert into castmd — a Chrome extension that converts web pages to Markdown, JSON, or Claude XML — using vibe coding with Claude Code.
 - [Introducing Threadmark — bring threads into your AI workflow](https://cc4.marketing/blog/introducing-threadmark/) — A new tool for capturing and replaying conversation threads inside your AI workflow.
+- [Turn a Client Engagement into a Sellable Service Package](https://cc4.marketing/blog/service-package-from-real-engagement/) — Lesson-launch post for Module 2.7: a four-step practice (mine, decide, blueprint, derive) that turns a completed client engagement into a service blueprint, case study, and marketing kit, with the full prompt to copy.
 
 ## Module 0: Getting Started (4 lessons, ~30 minutes)
 

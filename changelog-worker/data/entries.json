@@ -1,5 +1,21 @@
 [
   {
+    "id": "bc_site_019",
+    "slug": "site-service-package-post-seo-revision",
+    "title": "Service package post: SEO/AEO revision + discovery fixes",
+    "summary": "The Module 2.7 launch post got a full SEO/AEO pass: tighter title and excerpt, question-form headings, skimmable lists, and internal links. Also fixed: the post was missing from the sitemap, llms.txt, and llms-full.txt.",
+    "type": "changed",
+    "version": "0.5.0",
+    "modules": [
+      "site",
+      "blog"
+    ],
+    "machine_summary": "Rewrote /blog/service-package-from-real-engagement content in D1 (title 56 chars, excerpt 144, question-form H2s, 10 list items, 4 internal links). Added slug to astro.config.mjs blogPages, llms.txt, llms-full.txt.",
+    "status": "published",
+    "published_at": "2026-07-14T09:45:00.000Z",
+    "created_at": "2026-07-14T09:45:00.000Z"
+  },
+  {
     "id": "bc_site_018",
     "slug": "site-module-2-7-service-package",
     "title": "Module 2.7 — Service Package from a Real Engagement",

@@ -27,6 +27,7 @@ The blog publishes practical guides, tutorials, and insights on AI-powered marke
 - [The Last Mile of Shipping Is the Hardest Part](https://cc4.marketing/blog/the-last-mile-of-shipping/)
 - [castmd: Vibe Coding a Chrome Extension for LLMs](https://cc4.marketing/blog/castmd-vibe-coding-chrome-extension/)
 - [Introducing Threadmark — bring threads into your AI workflow](https://cc4.marketing/blog/introducing-threadmark/)
+- [Turn a Client Engagement into a Sellable Service Package](https://cc4.marketing/blog/service-package-from-real-engagement/)
 
 ## Course Modules
 - Module 0: Getting Started (4 lessons, 30 min) — Installation, setup, first task
