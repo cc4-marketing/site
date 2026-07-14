@@ -9,6 +9,10 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ## [Unreleased]
 
+### Changed
+
+- Mobile performance overhaul: homepage and other static pages (download, brand guide, changelog, modules hub, 404) are now prerendered and served as static assets instead of server-rendering on every request, cutting time-to-first-byte from ~900ms. Fonts are self-hosted with preload instead of chained through fonts.googleapis.com, removing ~850ms of render-blocking. The quickstart video iframe lazy-loads.
+
 ### Fixed
 
 - robots.txt no longer contains the invalid `LLMs-txt` directive or the non-standard `Crawl-delay`/`Host` lines that Search Console flagged as errors and warnings.

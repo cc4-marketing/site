@@ -1,4 +1,6 @@
 ---
+// Fully static page: prerender at build so Cloudflare serves it as an asset (fast TTFB)
+export const prerender = true;
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';

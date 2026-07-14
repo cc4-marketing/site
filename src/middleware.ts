@@ -5,6 +5,12 @@ import { defineMiddleware } from 'astro:middleware';
 // live duplicate variant held together only by its canonical tag (this caused
 // real "Duplicate without user-selected canonical" errors in Search Console).
 export const onRequest = defineMiddleware((context, next) => {
+  // Build-time prerender requests must never be redirected, or static pages
+  // would build as redirect stubs. At runtime prerendered pages are served
+  // directly from Cloudflare assets (with its own trailing-slash handling)
+  // and never reach this middleware anyway.
+  if (context.isPrerendered) return next();
+
   const { request } = context;
   const url = new URL(request.url);
   const { pathname } = url;
