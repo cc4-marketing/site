@@ -93,13 +93,5 @@ Allow: /
 # Sitemap location
 Sitemap: https://cc4.marketing/sitemap-index.xml
 
-# LLMs.txt for AI agent discovery
-LLMs-txt: https://cc4.marketing/llms.txt
-
-# Crawl-delay (be nice to servers, but we want fast indexing)
-# Most bots ignore this, but it's good practice
-User-agent: *
-Crawl-delay: 1
-
-# Host directive (helps with canonical domain)
-Host: https://cc4.marketing
+# LLMs.txt for AI agents: https://cc4.marketing/llms.txt
+# (comment only; "LLMs-txt:" is not a valid robots.txt directive)

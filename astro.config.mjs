@@ -72,7 +72,7 @@ const blogPages = [
   '/blog/ai-workflows-not-automation/',
   '/blog/the-last-mile-of-shipping/',
   '/blog/castmd-vibe-coding-chrome-extension/',
-  '/blog/introducing-threadmark',
+  '/blog/introducing-threadmark/',
   '/blog/service-package-from-real-engagement/',
 ].map((p) => `${SITE_URL}${p}`);
 
@@ -95,7 +95,9 @@ export default defineConfig({
         !page.includes('/og/debug'),
       serialize(item) {
         const url = item.url;
-        item.lastmod = new Date().toISOString();
+        // No lastmod: stamping build time on every URL told Google all pages
+        // changed on every deploy, which erodes lastmod trust. Omitting it is
+        // better than a fake value.
 
         // Homepage - highest priority
         if (url === 'https://cc4.marketing/') {
