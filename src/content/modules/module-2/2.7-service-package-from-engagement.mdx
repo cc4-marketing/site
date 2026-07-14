@@ -1,0 +1,158 @@
+---
+title: "Service Package from a Real Engagement"
+module: 2
+lesson: 7
+description: "Turn a successful client engagement into a sellable service package: mine the project docs with an agent, write a service blueprint, and derive a case study, landing page, deck, and one-pager that all tell the same story."
+duration: "60 min"
+objectives:
+  - Mine a real project corpus for operations, metrics, feedback, and proof points
+  - Make the five decisions that shape a service package before writing anything
+  - Write a service blueprint an operations team can actually run
+  - Derive marketing assets from one source of truth so numbers never drift
+  - Apply anonymization and verification gates before anything ships
+order: 18
+---
+
+## How Do You Turn One Good Client Engagement into a Sellable Service?
+
+Your company just finished (or is running) a successful client engagement. Somewhere in the project folder are the SLAs you hit, the process that worked, the metrics that improved month over month, and the nice things the client said. That is a product waiting to be packaged — and most of the work is reading, synthesizing, and keeping numbers consistent. Exactly what an agent is good at.
+
+This lesson teaches a four-step practice: **mine → decide → blueprint → derive**. You'll run it with Claude Code against a real project export.
+
+### What You'll Learn
+
+- Mining a messy project corpus (meeting notes, sprint reports, disputes) for reusable gold
+- The decision checklist to run with a human before any writing starts
+- The blueprint-first rule: one internal source of truth, marketing derived from it
+- Quality gates: anonymization greps, number-consistency checks, "flag every assumption"
+
+## Step 1 — Mine the Corpus
+
+Export the project documentation (Confluence space, shared drive folder, zip — anything) and point the agent at it. Don't cherry-pick the flattering documents: **the messy ones are the most valuable**. A client complaint that led to a process fix becomes a governance playbook. A dispute over out-of-hours work becomes a working-hours policy with measurement rules. Post-incident process beats marketing adjectives every time.
+
+```
+I'm productizing a service using this client engagement as the reference case.
+Corpus: ./project-export/ (some files may be in Vietnamese — read everything).
+
+Before writing anything, mine the corpus and save a research file covering:
+
+1. SERVICE OPERATIONS MODEL — team roles and FTEs, onboarding/training
+   process, working cadence (sprints, reviews), tooling, escalation flow,
+   working-hours policy.
+2. SLA & METRICS EVOLUTION — contractual SLAs vs. what the customer later
+   demanded; every metric with its target and how it's measured.
+3. CUSTOMER FEEDBACK & LESSONS — praise (verbatim, quotable), criticisms,
+   what was fixed and how. Disputes and their resolutions are gold.
+4. RESULTS — volumes, SLA attainment, satisfaction scores, month-over-month
+   trends. Concrete numbers with dates.
+5. COMMERCIAL MODEL — pricing, capacity unit, billing terms, contract
+   lifecycle (trial period, term, renewal).
+6. REUSABLE ASSETS — every template, checklist, quiz, dashboard recipe,
+   canned response, and report format worth turning into a product asset.
+
+Telegraphic style, cite source filenames, no invented claims.
+```
+
+**Tip:** for a large corpus, ask the agent to run this as a background subagent so your main conversation stays free for decisions. The research file it saves becomes the citation base for everything downstream.
+
+## Step 2 — Decide Before You Write
+
+Five decisions shape every downstream asset. Answer them **before** the agent writes a word — otherwise you'll regenerate everything twice. A good agent will ask you these; a good marketer has answers ready:
+
+```
+Before drafting, confirm with me:
+
+1. TARGET BUYER — niche-first (the reference client's segment) or broad?
+2. ANONYMIZATION — can we name the reference client, or do we say
+   "a [industry] company"? (Default: anonymize. Naming requires their
+   written consent.)
+3. DELIVERABLES — blueprint / case study / landing page / sales deck /
+   one-pager? Which first?
+4. LANGUAGE — internal blueprint and external marketing may differ.
+5. BRAND NAME — propose 3–5 names for the service with rationale, let me pick.
+
+For pricing: extrapolate tiers from the proven engagement price, but mark
+every extrapolated figure "proposal — confirm with finance before publishing".
+```
+
+That last line matters. The engagement gives you **one** proven price point. Cheaper and bigger tiers are guesses until finance checks the margins — make the agent flag them, not bury them.
+
+## Step 3 — Write the Service Blueprint First
+
+The blueprint is the internal source of truth: written so that a new project manager could stand up a second client engagement from it alone. Marketing copy comes *from* it, never the other way around.
+
+```
+Write the service blueprint from the research file. Sections:
+
+1. Service definition — name, one-line value prop, target customer,
+   explicit OUT-of-scope list.
+2. Service blueprint table — journey stages (Discover → Contract → Onboard
+   → Operate → Review → Renew) × rows (customer actions / what the customer
+   sees / what we do backstage / supporting systems).
+3. Engagement lifecycle — trial → term → renewal. Spell out the de-risking
+   as a selling point ("evaluate the real operation for 3 months before
+   committing to a year").
+4. Operating model — roles table (billed vs. included free), capacity unit,
+   cadence — and every LESSON from the engagement stated as a rule.
+5. Onboarding playbook — day-by-day first week, prerequisites, ramp to
+   autonomy.
+6. SLA catalog and metrics catalog — each commitment with target AND how
+   it's measured/automated in the tooling.
+7. Pricing & tiers, asset library, anonymized proof points.
+
+End with unresolved questions for the business owner.
+```
+
+The detail that separates a real blueprint from a brochure: **lessons stated as rules**. Not "we ensure quality" but "the lead agent handles 30–40% of tickets directly — a junior-only frontline was flagged by the client in month two and rebalanced."
+
+## Step 4 — Derive the Marketing Assets
+
+Copy flows one way: **blueprint → offer sheet → everything else**. The offer sheet is a one-page external version of the blueprint; the case study, landing page, deck, and one-pager all quote it. When someone updates a number, it changes in one place.
+
+```
+From the blueprint, derive:
+
+1. An external OFFER SHEET — the single source of truth for all marketing
+   copy: positioning, pain points, what-you-get, SLA table, engagement
+   lifecycle, pricing, proof points.
+2. An anonymized CASE STUDY — context → challenge → solution → results
+   table → client quotes → CTA. Real numbers, no client names.
+3. LANDING PAGE, SALES DECK, ONE-PAGER — all copy sourced from the offer
+   sheet verbatim, numbers matching the case study exactly, one consistent
+   palette.
+
+QUALITY GATES before you show me anything:
+- Anonymization grep on every external file for client / people / product
+  names.
+- Numbers identical across case study, landing page, deck, one-pager.
+- Deck and PDF verified programmatically (slide count, shape bounds, page
+  count) — then I eyeball them.
+- Every extrapolated or assumed figure listed under "unresolved questions".
+```
+
+A worked example of what Step 4 produces from a real (anonymized) engagement: a proof band reading **"0 SLA breaches across 151 tickets · 2→9 products onboarded in 3 months · resolution rate 64%→87% · zero negative CSAT"** — with a client quote to match. Specific numbers beat adjectives; one strong quote beats three weak ones.
+
+## Why Blueprint-First Beats Brochure-First
+
+It's tempting to ask the agent for "a landing page for our support service" directly. You'll get something plausible — and unverifiable. The blueprint-first practice forces a citation chain: every marketing claim traces to the offer sheet, which traces to the blueprint, which traces to the research file, which cites project documents. When a prospect asks "is that number real?", your salesperson can answer.
+
+It also compounds. The second service you package reuses the same prompts, the same gates, and — if your brand has a design system — the same restyle step at the end. The engagement changes; the practice doesn't.
+
+## Practice Exercise
+
+Take any completed project you have access to (or the Planerio campaign work from earlier lessons as a stand-in "engagement") and run the four steps:
+
+1. Run the Step 1 mining prompt over the project folder; read the research file it produces.
+2. Answer the five decisions — in writing, in the conversation.
+3. Generate the blueprint; challenge at least one "lesson stated as a rule" for accuracy.
+4. Derive the offer sheet + case study, and make the agent run the quality gates before you look.
+
+**Success check:** hand the case study to a colleague who wasn't involved. If they can't tell which claims are measured and which are assumed — the unresolved-questions list isn't honest enough yet.
+
+## Key Takeaways
+
+- Real engagements are products in disguise — the proof, process, and pricing already exist in the project folder
+- Mine the messy documents: disputes and fixes become your most credible processes
+- Five decisions (buyer, anonymization, deliverables, language, name) come before any writing
+- Blueprint → offer sheet → assets: one-way copy flow keeps every number consistent
+- Gates, not vibes: anonymization greps, number checks, programmatic verification, flagged assumptions

@@ -49,7 +49,7 @@ export const siteData = {
         number: 2,
         title: 'Advanced Apps',
         description: 'Execute real campaigns for Planerio. Strategy to analytics.',
-        lessonCount: '6 Lessons • 4-5 hours',
+        lessonCount: '7 Lessons • 5-6 hours',
         lessons: ['Campaign Briefs', 'Content Strategy', 'Marketing Copy', '+ 3 more lessons'],
         href: '/modules/2/campaign-brief/'
       },

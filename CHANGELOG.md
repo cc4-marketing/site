@@ -9,6 +9,13 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ## [Unreleased]
 
+### Added
+
+- New lesson — Module 2.7: Service Package from a Real Engagement. Teaches the mine → decide → blueprint → derive practice for turning a completed client engagement into a service blueprint, case study, and marketing kit, with copy-paste prompts and quality gates. Capstone reordered after it; module 2 is now 7 lessons.
+- Blog post by Alice Marketer introducing the lesson, including the full packaging prompt as a copyable code block (`/blog/service-package-from-real-engagement`).
+- New blog cover `cover-service-package-lesson` (SVG + PNG) in house editorial style.
+- HelloBar updated to promote Module 2.7.
+
 ## [0.4.0] - 2026-05-17
 
 ### Removed

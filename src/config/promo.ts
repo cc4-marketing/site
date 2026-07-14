@@ -7,10 +7,10 @@ export const promoConfig = {
     // Hello Bar (top banner)
     helloBar: {
         enabled: true,
-        text: "New capstone — Module 3: Ship a Real Follow-Up with sigil",
+        text: "New lesson — Module 2.7: Turn a finished engagement into a sellable service",
         linkText: "Start lesson",
-        linkUrl: "https://cc4.marketing/modules/3/ship-with-sigil/",
-        storageKey: "hellobar-m3-sigil-capstone",
+        linkUrl: "https://cc4.marketing/modules/2/service-package-from-engagement/",
+        storageKey: "hellobar-m27-service-package",
         cooldownDays: 3
     },
 

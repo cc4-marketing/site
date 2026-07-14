@@ -1,5 +1,22 @@
 [
   {
+    "id": "bc_site_018",
+    "slug": "site-module-2-7-service-package",
+    "title": "Module 2.7 — Service Package from a Real Engagement",
+    "summary": "New 60-minute lesson: turn a completed client engagement into a sellable service package with the mine → decide → blueprint → derive practice. Includes copy-paste prompts, quality gates, and an Alice Marketer blog post with the full packaging prompt. Course now: 4 modules, 19 lessons.",
+    "type": "added",
+    "version": "0.5.0",
+    "modules": [
+      "site",
+      "course",
+      "module-2"
+    ],
+    "machine_summary": "Added /modules/2/service-package-from-engagement/ (order 18, capstone bumped to 19) and /start-2-7 course command; module 2 now 7 lessons. Blog post service-package-from-real-engagement (byline Alice Marketer) with full copyable prompt; new cover asset; HelloBar repointed to the lesson.",
+    "status": "published",
+    "published_at": "2026-07-14T06:00:00.000Z",
+    "created_at": "2026-07-14T06:00:00.000Z"
+  },
+  {
     "id": "bc_site_013",
     "slug": "site-module-3-sigil-capstone",
     "title": "Module 3 capstone — Ship a Real Follow-Up with sigil",
