@@ -1,6 +1,4 @@
 ---
-// Fully static page: prerender at build so Cloudflare serves it as an asset (fast TTFB)
-export const prerender = true;
 // Modules hub — lists all modules + lessons. Reads from the content collection
 // so adding a lesson is one file edit; no separate config to update.
 import { getCollection } from 'astro:content';

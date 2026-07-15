@@ -11,10 +11,11 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ### Changed
 
-- Mobile performance overhaul: homepage and other static pages (download, brand guide, changelog, modules hub, 404) are now prerendered and served as static assets instead of server-rendering on every request, cutting time-to-first-byte from ~900ms. Fonts are self-hosted with preload instead of chained through fonts.googleapis.com, removing ~850ms of render-blocking. The quickstart video iframe lazy-loads.
+- Mobile performance: fonts are self-hosted with preload instead of chained through fonts.googleapis.com, removing ~850ms of render-blocking. The quickstart video iframe lazy-loads.
 
 ### Fixed
 
+- Reverted page prerendering from the performance overhaul: with Emdash middleware on Cloudflare Workers, prerendered routes fail the setup DB check at runtime and every page redirected to `/_emdash/admin/setup`. All pages are SSR again (see docs/solutions/integration-issues/emdash-astro6-cloudflare-workers-setup.md).
 - robots.txt no longer contains the invalid `LLMs-txt` directive or the non-standard `Crawl-delay`/`Host` lines that Search Console flagged as errors and warnings.
 - Sitemap URL for the Threadmark announcement post now uses the canonical trailing-slash form, resolving duplicate-canonical indexing errors.
 - Sitemap no longer stamps every URL with the build time as `lastmod`; entries omit `lastmod` instead of reporting a fake change on each deploy.
