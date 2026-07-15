@@ -18,6 +18,7 @@ The CC4.Marketing blog publishes practical guides on AI-powered marketing with C
 - [castmd: Vibe Coding a Chrome Extension for LLMs](https://cc4.marketing/blog/castmd-vibe-coding-chrome-extension/) — How Tri Vo rebuilt md·convert into castmd — a Chrome extension that converts web pages to Markdown, JSON, or Claude XML — using vibe coding with Claude Code.
 - [Introducing Threadmark — bring threads into your AI workflow](https://cc4.marketing/blog/introducing-threadmark/) — A new tool for capturing and replaying conversation threads inside your AI workflow.
 - [Turn a Client Engagement into a Sellable Service Package](https://cc4.marketing/blog/service-package-from-real-engagement/) — Lesson-launch post for Module 2.7: a four-step practice (mine, decide, blueprint, derive) that turns a completed client engagement into a service blueprint, case study, and marketing kit, with the full prompt to copy.
+- [Set Up Resend Right: A Marketer's Checklist with an AI Agent](https://cc4.marketing/blog/resend-setup-checklist-for-marketers/) — Eight-item Resend setup checklist for marketers (custom click-tracking subdomain, DMARC monitor mode, audience wiring, broadcast hygiene) plus a copyable audit prompt an AI agent can run end to end.
 
 ## Module 0: Getting Started (4 lessons, ~30 minutes)
 

@@ -28,6 +28,7 @@ The blog publishes practical guides, tutorials, and insights on AI-powered marke
 - [castmd: Vibe Coding a Chrome Extension for LLMs](https://cc4.marketing/blog/castmd-vibe-coding-chrome-extension/)
 - [Introducing Threadmark — bring threads into your AI workflow](https://cc4.marketing/blog/introducing-threadmark/)
 - [Turn a Client Engagement into a Sellable Service Package](https://cc4.marketing/blog/service-package-from-real-engagement/)
+- [Set Up Resend Right: A Marketer's Checklist with an AI Agent](https://cc4.marketing/blog/resend-setup-checklist-for-marketers/)
 
 ## Course Modules
 - Module 0: Getting Started (4 lessons, 30 min) — Installation, setup, first task

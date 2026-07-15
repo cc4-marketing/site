@@ -74,6 +74,7 @@ const blogPages = [
   '/blog/castmd-vibe-coding-chrome-extension/',
   '/blog/introducing-threadmark/',
   '/blog/service-package-from-real-engagement/',
+  '/blog/resend-setup-checklist-for-marketers/',
 ].map((p) => `${SITE_URL}${p}`);
 
 // https://astro.build/config

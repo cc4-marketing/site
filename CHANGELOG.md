@@ -9,6 +9,10 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ## [Unreleased]
 
+### Added
+
+- New blog post by Alice Marketer: ["Set Up Resend Right: A Marketer's Checklist with an AI Agent"](https://cc4.marketing/blog/resend-setup-checklist-for-marketers/) — eight-item Resend setup checklist (custom tracking subdomain, DMARC monitor mode, audience wiring, broadcast hygiene) with a copyable agent audit prompt.
+
 ### Changed
 
 - Mobile performance: fonts are self-hosted with preload instead of chained through fonts.googleapis.com, removing ~850ms of render-blocking. The quickstart video iframe lazy-loads.
