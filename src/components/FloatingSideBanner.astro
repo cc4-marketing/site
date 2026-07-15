@@ -1,6 +1,7 @@
 ---
 interface Props {
     enabled?: boolean;
+    badge?: string;
     title?: string;
     subtitle?: string;
     linkText?: string;
@@ -10,6 +11,7 @@ interface Props {
 
 const {
     enabled = true,
+    badge = "🔥 LIMITED",
     title = "Black Friday",
     subtitle = "50% off ClaudeKit.cc",
     linkText = "Grab Deal",
@@ -21,7 +23,7 @@ const {
 {enabled && (
     <div class="floating-banner" id="floating-banner" data-trigger={triggerPercent}>
         <div class="floating-banner-content">
-            <div class="floating-banner-badge">🔥 LIMITED</div>
+            <div class="floating-banner-badge">{badge}</div>
             <div class="floating-banner-title">{title}</div>
             <div class="floating-banner-subtitle">{subtitle}</div>
             <a href={linkUrl} target="_blank" rel="noopener noreferrer" class="floating-banner-btn">

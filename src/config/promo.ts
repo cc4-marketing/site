@@ -14,13 +14,14 @@ export const promoConfig = {
         cooldownDays: 3
     },
 
-    // Floating Side Banner (appears on scroll) — global
+    // Floating Side Banner (appears on scroll), global
     floatingBanner: {
-        enabled: false,
-        title: "Black Friday",
-        subtitle: "50% off ClaudeKit.cc",
-        linkText: "Grab Deal",
-        linkUrl: "https://claudekit.cc/?ref=BIZE9CYY",
+        enabled: true,
+        badge: "NEW LESSON",
+        title: "Sell it as a service",
+        subtitle: "Module 2.7: turn a finished engagement into a sellable service package",
+        linkText: "Start the lesson",
+        linkUrl: "https://cc4.marketing/modules/2/service-package-from-engagement/",
         triggerPercent: 70
     },
 
