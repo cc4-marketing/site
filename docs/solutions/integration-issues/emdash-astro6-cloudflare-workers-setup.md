@@ -16,6 +16,7 @@ tags:
   - trailing-slash
 severity: critical
 component: astro.config.mjs, wrangler.jsonc, src/pages, src/live.config.ts
+last_updated: 2026-07-15
 ---
 
 ## Problem
@@ -220,6 +221,27 @@ react-dom@^19.0.0
 - **Always include `disable_nodejs_process_v2`** when using `nodejs_compat` with Astro 6
 - **Create `src/live.config.ts`** immediately when adding Emdash — it's not documented prominently but is required for content queries
 - **Add trailing slashes to all internal links** when deploying to Cloudflare Workers with static assets
+
+## Regression: 2026-07-15 (prerender re-added by perf work)
+
+Commit `c593427` ("perf: prerender static pages...") re-added `export const prerender = true` to six pages (index, download, brand-guide, changelog, modules hub, 404) to fix a PageSpeed mobile score of 56 (TTFB ~900ms). It assumed prerendered pages "never reach the middleware at runtime". Wrong for this stack (Issue 2/5 above): the Worker still intercepts prerendered routes, Emdash's setup check fails, and every page 302'd to `/_emdash/admin/setup` in production.
+
+Reverted in `8a20648`. Fonts self-hosting and lazy video embed were kept.
+
+Why the regression shipped undetected:
+
+1. The perf commit was written without checking this doc ("Never mix prerender and Emdash middleware" was already in Prevention above).
+2. `astro dev` and local build both succeed; the failure only appears against the deployed Worker.
+3. The `/ship` smoke test used `curl -sL ... %{http_code}`: `-L` follows the redirect and `/_emdash/admin/setup` returns 200, so a fully broken site still passed the smoke test.
+
+Additional prevention:
+
+- Smoke tests must fail on redirect-to-setup: check the final URL, not just status. Example:
+  ```bash
+  FINAL=$(curl -sL -o /dev/null -w "%{url_effective}" https://cc4.marketing/)
+  case "$FINAL" in *"/_emdash/"*) echo "FAIL: redirected to Emdash setup"; exit 1;; esac
+  ```
+- Sanctioned perf path for TTFB on static pages: Cloudflare cache rules on the SSR responses (edge cache `/`, `/download/`, etc. with short TTL), never `prerender = true`.
 
 ## Related
 
