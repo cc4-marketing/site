@@ -67,6 +67,11 @@
      ("hard shadows, no blur"); translucent plum optically blended = soft physics. */
   --shadow-ink: #C7BAC3;
   --shadow-ink-soft: #D6CCCF;
+
+  /* Code surface: deliberately dark in BOTH themes. Do not use --charcoal here:
+     it inverts to near-white in dark mode (documented trap). */
+  --code-surface: #2C2C2C;
+  --code-ink: #F5F1E8;
   
   /* Typography */
   --font-display: 'Righteous', serif;
@@ -121,6 +126,9 @@ html[data-theme="dark"] {
 
   --shadow-ink: #0E0A11;
   --shadow-ink-soft: #131016;
+
+  --code-surface: #111111;
+  --code-ink: #F5F1E8;
 }
 
 * {

@@ -8,6 +8,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { resolveOgImage, type OgPostInput } from '../../lib/og/url';
 import BlogContent from '../../components/BlogContent.astro';
+import '../../styles/blog-prose.css';
 
 const { slug } = Astro.params;
 const { entry: post } = await getEmDashEntry('posts', slug!);
@@ -290,7 +291,7 @@ const breadcrumbListSchema = {
           )}
 
           {/* Content with anchor IDs on H2s */}
-          <div class="blog-post-content prose">
+          <div class="blog-post-content blog-prose">
             {post.data.content && (
               <BlogContent blocks={post.data.content} />
             )}

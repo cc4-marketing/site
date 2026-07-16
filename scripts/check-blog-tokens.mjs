@@ -61,7 +61,7 @@ const PAIRS = [
   ['--ink-70', '--tint-rust-1', 4.5, 'secondary ink on rust tint 1'],
   ['--ink-100', '--tint-rust-2', 4.5, 'primary ink on rust tint 2'],
   ['--ink-100', '--tint-plum-1', 4.5, 'primary ink on plum tint 1'],
-  ['--cream', '--charcoal', 4.5, 'code text on code surface (light only)'],
+  ['--code-ink', '--code-surface', 4.5, 'code text on code surface'],
   ['--rust', '--sheet', 3.0, 'rust accent (large/underlined) on sheet'],
   ['--text-primary', '--sheet', 4.5, 'body text on sheet'],
 ];

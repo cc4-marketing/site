@@ -1,0 +1,140 @@
+/* blog-prose.css — the article reading layer (plan U2).
+   Scoped under .blog-prose (NOT .prose: LessonLayout owns that class).
+   Token-only: no raw color literals anywhere in this file (enforced by
+   scripts/check-blog-tokens.mjs). In-article surfaces sit on --sheet. */
+
+.blog-prose {
+  /* 50-75 CPL measure for long reads; 65ch target per plan */
+  max-width: 65ch;
+  margin-inline: auto;
+  font-size: 1.1em;
+  line-height: 1.8;
+  color: var(--ink-100);
+}
+
+/* Rhythm */
+.blog-prose p {
+  margin: 0 0 1.1em;
+}
+
+.blog-prose h2 {
+  font-family: var(--font-display);
+  font-size: 1.6em;
+  line-height: 1.2;
+  margin: 1.8em 0 0.6em;
+  color: var(--ink-100);
+}
+
+.blog-prose h3 {
+  font-family: var(--font-display);
+  font-size: 1.3em;
+  line-height: 1.25;
+  margin: 1.5em 0 0.5em;
+  color: var(--ink-100);
+}
+
+.blog-prose ul,
+.blog-prose ol {
+  margin: 0 0 1.1em;
+  padding-left: 1.4em;
+}
+
+.blog-prose li {
+  margin-bottom: 0.4em;
+}
+
+.blog-prose hr {
+  border: none;
+  border-top: 3px solid var(--ink-30);
+  margin: 2.5em 0;
+}
+
+/* Links: persistent underline (WCAG-safe affordance; color-only rust failed
+   the 3:1 check against body ink). Hover shifts the underline to mustard. */
+.blog-prose a {
+  color: var(--rust);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s ease, color 0.2s ease;
+}
+
+.blog-prose a:hover {
+  text-decoration-color: var(--mustard);
+  text-decoration-thickness: 3px;
+}
+
+/* Keyboard focus: token-based, visible on sheet in both themes */
+.blog-prose a:focus-visible,
+.blog-prose summary:focus-visible,
+.blog-prose .code-copy-btn:focus-visible {
+  outline: 3px solid var(--rust);
+  outline-offset: 2px;
+}
+
+/* Quotes and inline code sit on sheet-relative tints */
+.blog-prose blockquote {
+  margin: 1.5em 0;
+  padding: 12px 20px;
+  border-left: 4px solid var(--rust);
+  background: var(--tint-rust-1);
+  color: var(--ink-70);
+}
+
+.blog-prose code {
+  font-family: monospace;
+  font-size: 0.9em;
+  background: var(--tint-plum-1);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* Code frame: rendered server-side on the pre element itself (the copy-button
+   wrapper is injected at runtime by CodeBlockCopy.astro and does not exist at
+   SSR — never hang the frame on it). Deliberately dark in both themes. */
+.blog-prose pre {
+  background: var(--code-surface);
+  color: var(--code-ink);
+  border: 3px solid var(--ink-100);
+  box-shadow: 8px 8px 0 var(--shadow-ink);
+  padding: 20px;
+  margin: 24px 2px 24px 0; /* right margin keeps the hard shadow inside the sheet */
+  overflow-x: auto; /* wide commands scroll inside the frame, never the page */
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
+.blog-prose pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-size: 1em;
+}
+
+/* CodeBlockCopy's runtime wrapper carries margin: 24px 0 globally; zero it in
+   blog scope so pre's own margin rules in both JS and no-JS states (margins
+   collapse through the wrapper, so spacing is identical either way). */
+.blog-prose .code-block-wrapper {
+  margin: 0;
+}
+
+/* Copy button: solid token colors in blog scope (global version uses opacity
+   translucency, which the solid-token system retires). Kept sitewide styles
+   intact for lesson/changelog code blocks. */
+.blog-prose .code-copy-btn {
+  opacity: 1;
+  background: var(--rust);
+  color: var(--bg-primary);
+  border-radius: 0;
+}
+
+.blog-prose .code-copy-btn:hover {
+  background: var(--rust);
+  transform: none;
+  text-decoration: underline;
+}
+
+.blog-prose img {
+  max-width: 100%;
+  height: auto;
+}
