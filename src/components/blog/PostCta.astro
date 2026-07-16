@@ -1,0 +1,63 @@
+---
+// Newsletter CTA, on the desk below the sheet (plan U3).
+---
+
+<div class="post-cta">
+  <h3>Get more like this</h3>
+  <p>Subscribe to the CC4.Marketing newsletter for updates, guides, and practical AI marketing tips.</p>
+  <a href="https://cc4marketing.substack.com" target="_blank" rel="noopener" class="cta-btn">Subscribe on Substack</a>
+</div>
+
+<style>
+  .post-cta {
+    margin-top: 40px;
+    padding: 32px;
+    border: 3px solid var(--ink-100);
+    background: var(--tint-rust-1);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: 1.4em;
+    color: var(--ink-100);
+    margin: 0 0 10px;
+  }
+
+  p {
+    color: var(--ink-70);
+    max-width: 46ch;
+    margin: 0 auto 20px;
+    line-height: 1.6;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    padding: 12px 28px;
+    background: var(--rust);
+    color: var(--bg-primary);
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: var(--shadow-mustard);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .cta-btn:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--mustard);
+  }
+
+  .cta-btn:focus-visible {
+    outline: 3px solid var(--ink-100);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta-btn,
+    .cta-btn:hover {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>

@@ -1,0 +1,112 @@
+---
+// JS-free table of contents (plan U3, origin R11).
+// Desktop: always-visible sidebar card on the desk. Mobile: native
+// details/summary disclosure, default closed, rendered after the masthead.
+// Two markups, one data source: CSS cannot force a closed <details> open,
+// so responsive default-state needs both variants; media queries show one.
+// The old drawer JS (broken NodeList.filter) is deleted, not replaced.
+interface Props {
+  headings: { text: string; id: string }[];
+}
+
+const { headings } = Astro.props;
+---
+
+<nav class="post-toc post-toc-desktop" aria-label="Table of contents">
+  <h2 class="toc-heading">Contents</h2>
+  <ul>
+    {headings.map((h) => (
+      <li><a href={`#${h.id}`}>{h.text}</a></li>
+    ))}
+  </ul>
+</nav>
+
+<details class="post-toc post-toc-mobile">
+  <summary>Contents</summary>
+  <ul>
+    {headings.map((h) => (
+      <li><a href={`#${h.id}`}>{h.text}</a></li>
+    ))}
+  </ul>
+</details>
+
+<style>
+  .post-toc {
+    border: 3px solid var(--ink-100);
+    background: var(--bg-primary); /* sits on the desk, not the sheet */
+    box-shadow: var(--shadow-sm);
+    padding: 16px 20px;
+  }
+
+  .toc-heading,
+  summary {
+    font-family: var(--font-display);
+    font-size: 0.95em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-100);
+    margin: 0 0 10px;
+  }
+
+  summary {
+    cursor: pointer;
+    margin: 0;
+  }
+
+  summary:focus-visible {
+    outline: 3px solid var(--rust);
+    outline-offset: 2px;
+  }
+
+  details[open] summary {
+    margin-bottom: 10px;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    margin: 0 0 8px;
+  }
+
+  a {
+    color: var(--ink-70);
+    text-decoration: none;
+    font-size: 0.9em;
+    border-left: 3px solid var(--ink-12);
+    padding-left: 10px;
+    display: block;
+  }
+
+  a:hover {
+    color: var(--rust);
+    border-left-color: var(--rust);
+  }
+
+  a:focus-visible {
+    outline: 3px solid var(--rust);
+    outline-offset: 2px;
+  }
+
+  /* Responsive: one variant visible at a time */
+  .post-toc-mobile {
+    display: block;
+  }
+  .post-toc-desktop {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .post-toc-mobile {
+      display: none;
+    }
+    .post-toc-desktop {
+      display: block;
+      position: sticky;
+      top: 90px;
+    }
+  }
+</style>

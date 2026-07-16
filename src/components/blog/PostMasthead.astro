@@ -1,0 +1,143 @@
+---
+// Spec-plate masthead for the document-on-desk sheet (plan U3, origin R6).
+// Breadcrumb row carries site identity so a cold search visitor can place the
+// site and reach home/blog without scrolling (origin success criterion).
+interface Props {
+  title: string;
+  excerpt?: string | null;
+  publishedAt?: Date | null;
+  authorName: string;
+  authorPath: string; // relative, e.g. /blog/authors/alice/
+  readMinutes: number;
+}
+
+const { title, excerpt, publishedAt, authorName, authorPath, readMinutes } = Astro.props;
+
+function formatDate(date: Date | null | undefined): string {
+  if (!date) return '';
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+---
+
+<header class="post-masthead">
+  <nav class="masthead-breadcrumb" aria-label="Breadcrumb">
+    <a href="/" class="crumb crumb-site">CC4.MARKETING</a>
+    <span class="crumb-sep" aria-hidden="true">/</span>
+    <a href="/blog/" class="crumb">BLOG</a>
+    {publishedAt && (
+      <>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <time datetime={publishedAt.toISOString()}>{formatDate(publishedAt)}</time>
+      </>
+    )}
+  </nav>
+
+  <h1 class="masthead-title">{title}</h1>
+
+  {excerpt && <p class="masthead-excerpt">{excerpt}</p>}
+
+  <div class="masthead-chips">
+    <a href={authorPath} class="chip chip-author">By {authorName}</a>
+    <span class="chip">{readMinutes} MIN READ</span>
+  </div>
+</header>
+
+<style>
+  .post-masthead {
+    border-bottom: 3px solid var(--ink-100);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+
+  .masthead-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75em;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-70);
+    margin-bottom: 20px;
+  }
+
+  .masthead-breadcrumb a {
+    color: var(--rust);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+
+  .masthead-breadcrumb a:hover {
+    text-decoration-color: var(--mustard);
+  }
+
+  .masthead-breadcrumb a:focus-visible {
+    outline: 3px solid var(--rust);
+    outline-offset: 2px;
+  }
+
+  .crumb-site {
+    font-family: var(--font-display);
+  }
+
+  .crumb-sep {
+    color: var(--ink-30);
+  }
+
+  .masthead-title {
+    font-family: var(--font-display);
+    /* Long titles wrap, never truncate (origin R6 as reviewed) */
+    overflow-wrap: break-word;
+    font-size: clamp(2em, 5vw, 3em);
+    line-height: 1.15;
+    color: var(--ink-100);
+    margin: 0 0 12px;
+  }
+
+  .masthead-excerpt {
+    font-size: 1.15em;
+    line-height: 1.5;
+    color: var(--ink-70);
+    margin: 0 0 20px;
+  }
+
+  /* Excerpt absent (older posts): chips follow the title directly */
+  .masthead-title:last-of-type {
+    margin-bottom: 20px;
+  }
+
+  .masthead-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .chip {
+    display: inline-block;
+    padding: 4px 12px;
+    border: 2px solid var(--ink-100);
+    background: var(--tint-plum-1);
+    color: var(--ink-100);
+  }
+
+  .chip-author {
+    background: var(--tint-rust-2);
+    text-decoration: none;
+  }
+
+  a.chip-author:hover {
+    background: var(--mustard);
+    color: var(--ink-on-mustard);
+  }
+
+  a.chip-author:focus-visible {
+    outline: 3px solid var(--rust);
+    outline-offset: 2px;
+  }
+</style>
