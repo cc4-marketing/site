@@ -18,8 +18,8 @@
   {
     "id": "bc_site_018",
     "slug": "site-module-2-7-service-package",
-    "title": "Module 2.7 — Service Package from a Real Engagement",
-    "summary": "New 60-minute lesson: turn a completed client engagement into a sellable service package with the mine → decide → blueprint → derive practice. Includes copy-paste prompts, quality gates, and an Alice Marketer blog post with the full packaging prompt. Course now: 4 modules, 19 lessons.",
+    "title": "Module 2.7 \u2014 Service Package from a Real Engagement",
+    "summary": "New 60-minute lesson: turn a completed client engagement into a sellable service package with the mine \u2192 decide \u2192 blueprint \u2192 derive practice. Includes copy-paste prompts, quality gates, and an Alice Marketer blog post with the full packaging prompt. Course now: 4 modules, 19 lessons.",
     "type": "added",
     "version": "0.5.0",
     "modules": [
@@ -35,7 +35,7 @@
   {
     "id": "bc_site_013",
     "slug": "site-module-3-sigil-capstone",
-    "title": "Module 3 capstone — Ship a Real Follow-Up with sigil",
+    "title": "Module 3 capstone \u2014 Ship a Real Follow-Up with sigil",
     "summary": "New 75-minute hands-on capstone lesson that bridges Modules 0-2 into a real, shippable artifact: a personalized post-event follow-up campaign powered by sigil, an open-source MIT CLI inside Claude Code. Course now: 4 modules, 18 lessons.",
     "type": "added",
     "version": "0.4.0",
@@ -44,7 +44,7 @@
       "course",
       "module-3"
     ],
-    "machine_summary": "Added /modules/3/ship-with-sigil/ — capstone lesson using blacklogos/sigil CLI for a real email send pipeline on Cloudflare Workers, custom /email-rewrite slash command, per-recipient handcrafted sentences. Home and llms.txt updated to 4 modules / 18 lessons.",
+    "machine_summary": "Added /modules/3/ship-with-sigil/ \u2014 capstone lesson using blacklogos/sigil CLI for a real email send pipeline on Cloudflare Workers, custom /email-rewrite slash command, per-recipient handcrafted sentences. Home and llms.txt updated to 4 modules / 18 lessons.",
     "status": "published",
     "published_at": "2026-05-16T20:13:26.525Z",
     "created_at": "2026-05-16T20:13:26.525Z"
@@ -76,7 +76,7 @@
       "site",
       "analytics"
     ],
-    "machine_summary": "Added GA4 gtag.js snippet inline in BaseLayout.astro <head>, next to existing Beam tag. No env gating — fires on all environments. Beam unchanged.",
+    "machine_summary": "Added GA4 gtag.js snippet inline in BaseLayout.astro <head>, next to existing Beam tag. No env gating \u2014 fires on all environments. Beam unchanged.",
     "status": "published",
     "published_at": "2026-05-16T20:13:26.525Z",
     "created_at": "2026-05-16T20:13:26.525Z"
@@ -204,7 +204,7 @@
       "seo",
       "homepage"
     ],
-    "machine_summary": "cc4-marketing/site. Corrected lesson count 16/18→17 in JSON-LD and homepage. Module 0 card 3→4 lessons. Normalized Ko-fi URLs. Fixed BaseLayout title template duplication. Updated install steps for Substack subscribe flow.",
+    "machine_summary": "cc4-marketing/site. Corrected lesson count 16/18\u219217 in JSON-LD and homepage. Module 0 card 3\u21924 lessons. Normalized Ko-fi URLs. Fixed BaseLayout title template duplication. Updated install steps for Substack subscribe flow.",
     "status": "published",
     "published_at": "2026-03-16T15:57:00.000Z",
     "created_at": "2026-03-16T15:57:00.000Z"
@@ -253,7 +253,7 @@
       "site",
       "blog"
     ],
-    "machine_summary": "cc4-marketing/site v0.3.0. Astro 5→6 upgrade with @astrojs/cloudflare adapter (server mode). Emdash CMS integration with D1 database and R2 storage. New /blog section with SSR post index and detail pages (PortableText rendering). /blog/authors static page with Person schema. BlogPosting + CollectionPage + AboutPage structured data. Custom og-blog.png OG image. Blog cover illustrations per post. Migrated /api/subscribe from custom worker.js to Astro API route using cloudflare:workers env. Added live.config.ts for Astro Live Collections. Nav updated with Blog link. Sitemap priority 0.9 for blog routes. llms.txt updated with blog section.",
+    "machine_summary": "cc4-marketing/site v0.3.0. Astro 5\u21926 upgrade with @astrojs/cloudflare adapter (server mode). Emdash CMS integration with D1 database and R2 storage. New /blog section with SSR post index and detail pages (PortableText rendering). /blog/authors static page with Person schema. BlogPosting + CollectionPage + AboutPage structured data. Custom og-blog.png OG image. Blog cover illustrations per post. Migrated /api/subscribe from custom worker.js to Astro API route using cloudflare:workers env. Added live.config.ts for Astro Live Collections. Nav updated with Blog link. Sitemap priority 0.9 for blog routes. llms.txt updated with blog section.",
     "status": "published",
     "published_at": "2026-04-08T08:00:00.000Z",
     "created_at": "2026-04-08T08:00:00.000Z"
@@ -303,7 +303,7 @@
       "seo",
       "blog"
     ],
-    "machine_summary": "cc4-marketing/site. BaseLayout: showCourseSchema default false, titleSuffix split (articles get '| CC4M'), publisher logo og-image.png→apple-touch-icon.png (180x180). LessonLayout: 3-level BreadcrumbList (Home→Module N→Lesson), module-enriched title prefix. blog/index.astro: standalone top-level BreadcrumbList script tag. blog/[slug].astro: per-post keywords from title stopword filter, author URL with #anchor for named authors, publisher logo fix. robots.txt: added Google-Extended, Meta-ExternalAgent, Bytespider, cohere-ai. llms.txt + llms-full.txt: all 6 posts listed. sitemap: lastmod added. Homepage description trimmed to 159 chars.",
+    "machine_summary": "cc4-marketing/site. BaseLayout: showCourseSchema default false, titleSuffix split (articles get '| CC4M'), publisher logo og-image.png\u2192apple-touch-icon.png (180x180). LessonLayout: 3-level BreadcrumbList (Home\u2192Module N\u2192Lesson), module-enriched title prefix. blog/index.astro: standalone top-level BreadcrumbList script tag. blog/[slug].astro: per-post keywords from title stopword filter, author URL with #anchor for named authors, publisher logo fix. robots.txt: added Google-Extended, Meta-ExternalAgent, Bytespider, cohere-ai. llms.txt + llms-full.txt: all 6 posts listed. sitemap: lastmod added. Homepage description trimmed to 159 chars.",
     "status": "published",
     "published_at": "2026-04-28T10:00:00.000Z",
     "created_at": "2026-04-28T10:00:00.000Z"
@@ -356,5 +356,155 @@
     "status": "published",
     "published_at": "2026-04-29T02:15:00.000Z",
     "created_at": "2026-04-29T02:15:00.000Z"
+  },
+  {
+    "id": "bc_site_imm",
+    "slug": "blog-design-token-system",
+    "title": "Blog design system: solid ink/tint token palette",
+    "summary": "Blog design system: solid ink/tint token palette derived from the brand colors, with a contrast check script (npm run check:blog-tokens) verifying WCAG pairs in both themes.",
+    "type": "added",
+    "version": "0.6.0",
+    "modules": [
+      "site"
+    ],
+    "machine_summary": "Solid pre-computed ink/tint/shadow/sheet CSS tokens in global.css replace ad-hoc rgba mixes; WCAG contrast pairs verified by scripts/check-blog-tokens.mjs in light and dark.",
+    "status": "published",
+    "published_at": "2026-07-16T17:40:42.602975+00:00",
+    "created_at": "2026-07-16T17:40:42.602975+00:00"
+  },
+  {
+    "id": "bc_site_fiq",
+    "slug": "blog-reading-view-document-on-desk",
+    "title": "Blog reading view redesigned as document-on-desk sheet",
+    "summary": "Blog post reading view redesigned as a document-on-desk sheet: spec-plate masthead with breadcrumb, author and read-time chips; framed code blocks; floating table of contents on desktop, native disclosure on mobile.",
+    "type": "added",
+    "version": "0.6.0",
+    "modules": [
+      "site"
+    ],
+    "machine_summary": "[slug].astro decomposed into PostMasthead/PostToc/PostNav/PostCta components on a bordered --sheet surface; sticky desktop TOC, details-based mobile TOC.",
+    "status": "published",
+    "published_at": "2026-07-16T17:40:42.602975+00:00",
+    "created_at": "2026-07-16T17:40:42.602975+00:00"
+  },
+  {
+    "id": "bc_site_mjg",
+    "slug": "blog-resend-setup-checklist-post",
+    "title": "New post: Set Up Resend Right (Alice Marketer)",
+    "summary": "New blog post by Alice Marketer: Set Up Resend Right: A Marketer's Checklist with an AI Agent \u2014 eight-item Resend setup checklist with a copyable agent audit prompt.",
+    "type": "added",
+    "version": "0.6.0",
+    "modules": [
+      "site"
+    ],
+    "machine_summary": "New published post resend-setup-checklist-for-marketers with bespoke cover.",
+    "status": "published",
+    "published_at": "2026-07-16T17:40:42.602975+00:00",
+    "created_at": "2026-07-16T17:40:42.602975+00:00"
+  },
+  {
+    "id": "bc_site_lsc",
+    "slug": "self-hosted-fonts-preload",
+    "title": "Fonts self-hosted with preload (~850ms faster)",
+    "summary": "Mobile performance: fonts are self-hosted with preload instead of chained through fonts.googleapis.com, removing ~850ms of render-blocking. The quickstart video iframe lazy-loads.",
+    "type": "changed",
+    "version": "0.6.0",
+    "modules": [
+      "site"
+    ],
+    "machine_summary": "Outfit variable + Righteous woff2 self-hosted; Google Fonts CSS chain removed; video iframe lazy.",
+    "status": "published",
+    "published_at": "2026-07-16T17:40:42.602975+00:00",
+    "created_at": "2026-07-16T17:40:42.602975+00:00"
+  },
+  {
+    "id": "bc_site_rxb",
+    "slug": "brand-ink-derived-secondary-shadows",
+    "title": "Secondary text and shadows derive from brand ink",
+    "summary": "Secondary text and shadows now derive from the brand ink as solid colors (no translucency); blog links carry persistent underlines; dark mode swaps once at token level.",
+    "type": "changed",
+    "version": "0.6.0",
+    "modules": [
+      "site"
+    ],
+    "machine_summary": "--text-secondary aliases --ink-70; --shadow-* opaque; persistent 2px underlines on blog prose links.",
+    "status": "published",
+    "published_at": "2026-07-16T17:40:42.602975+00:00",
+    "created_at": "2026-07-16T17:40:42.602975+00:00"
+  },
+  {
+    "id": "bc_site_qqt",
+    "slug": "blog-pages-token-swap",
+    "title": "Blog index and author pages on shared tokens",
+    "summary": "Blog index and author pages swap raw color literals for the shared tokens (no layout changes).",
+    "type": "changed",
+    "version": "0.6.0",
+    "modules": [
+      "site"
+    ],
+    "machine_summary": "Mechanical rgba-to-token substitution in index.astro, authors.astro, authors/[slug].astro, BlogContent release box.",
+    "status": "published",
+    "published_at": "2026-07-16T17:40:42.602975+00:00",
+    "created_at": "2026-07-16T17:40:42.602975+00:00"
+  },
+  {
+    "id": "bc_site_ddc",
+    "slug": "prerender-revert-emdash",
+    "title": "Prerendering reverted: pages SSR again",
+    "summary": "Reverted page prerendering: with Emdash middleware on Cloudflare Workers, prerendered routes fail the setup DB check and every page redirected to /_emdash/admin/setup. All pages are SSR again.",
+    "type": "fixed",
+    "version": "0.6.0",
+    "modules": [
+      "site"
+    ],
+    "machine_summary": "Prerender flags removed; smoke test must check url_effective.",
+    "status": "published",
+    "published_at": "2026-07-16T17:40:42.602975+00:00",
+    "created_at": "2026-07-16T17:40:42.602975+00:00"
+  },
+  {
+    "id": "bc_site_gbt",
+    "slug": "robots-txt-invalid-directives",
+    "title": "robots.txt invalid directives removed",
+    "summary": "robots.txt no longer contains the invalid LLMs-txt directive or the non-standard Crawl-delay/Host lines that Search Console flagged.",
+    "type": "fixed",
+    "version": "0.6.0",
+    "modules": [
+      "site"
+    ],
+    "machine_summary": "robots.txt cleaned to standard directives.",
+    "status": "published",
+    "published_at": "2026-07-16T17:40:42.602975+00:00",
+    "created_at": "2026-07-16T17:40:42.602975+00:00"
+  },
+  {
+    "id": "bc_site_iyt",
+    "slug": "sitemap-canonical-fixes",
+    "title": "Sitemap canonical and lastmod fixes",
+    "summary": "Sitemap URLs use canonical trailing-slash form and no longer stamp fake lastmod on every deploy; non-slash URLs 301 to canonical.",
+    "type": "fixed",
+    "version": "0.6.0",
+    "modules": [
+      "site"
+    ],
+    "machine_summary": "Sitemap lastmod omitted; trailing-slash 301s; Threadmark URL canonicalized.",
+    "status": "published",
+    "published_at": "2026-07-16T17:40:42.602975+00:00",
+    "created_at": "2026-07-16T17:40:42.602975+00:00"
+  },
+  {
+    "id": "bc_site_gni",
+    "slug": "blog-toc-js-free",
+    "title": "Blog TOC now JS-free (broken drawer removed)",
+    "summary": "Broken blog TOC drawer script removed (it threw a TypeError on load); the table of contents is now JS-free.",
+    "type": "fixed",
+    "version": "0.6.0",
+    "modules": [
+      "site"
+    ],
+    "machine_summary": "initTOC NodeList.filter TypeError eliminated; native details on mobile, sticky nav on desktop.",
+    "status": "published",
+    "published_at": "2026-07-16T17:40:42.602975+00:00",
+    "created_at": "2026-07-16T17:40:42.602975+00:00"
   }
 ]

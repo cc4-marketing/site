@@ -9,13 +9,19 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-07-17
+
 ### Added
 
+- Blog design system: solid ink/tint token palette derived from the brand colors, with a contrast check script (`npm run check:blog-tokens`) verifying WCAG pairs in both themes.
+- Blog post reading view redesigned as a document-on-desk sheet: spec-plate masthead with breadcrumb, author and read-time chips; framed code blocks; floating table of contents on desktop, native disclosure on mobile.
 - New blog post by Alice Marketer: ["Set Up Resend Right: A Marketer's Checklist with an AI Agent"](https://cc4.marketing/blog/resend-setup-checklist-for-marketers/) — eight-item Resend setup checklist (custom tracking subdomain, DMARC monitor mode, audience wiring, broadcast hygiene) with a copyable agent audit prompt.
 
 ### Changed
 
 - Mobile performance: fonts are self-hosted with preload instead of chained through fonts.googleapis.com, removing ~850ms of render-blocking. The quickstart video iframe lazy-loads.
+- Secondary text and shadows now derive from the brand ink as solid colors (no translucency); blog links carry persistent underlines; dark mode swaps once at token level.
+- Blog index and author pages swap raw color literals for the shared tokens (no layout changes).
 
 ### Fixed
 
@@ -24,6 +30,7 @@ For changes to the interactive course content, see the [course repo](https://git
 - Sitemap URL for the Threadmark announcement post now uses the canonical trailing-slash form, resolving duplicate-canonical indexing errors.
 - Sitemap no longer stamps every URL with the build time as `lastmod`; entries omit `lastmod` instead of reporting a fake change on each deploy.
 - Page URLs without a trailing slash now 301-redirect to the canonical trailing-slash form instead of serving duplicate content.
+- Broken blog TOC drawer script removed (it threw a TypeError on load); the table of contents is now JS-free.
 
 ## [0.5.0] - 2026-07-14
 
@@ -190,7 +197,8 @@ Initial public release of the CC4.Marketing website.
 - GitHub Pages deployment via GitHub Actions
 - Cloudflare DNS/CDN configuration
 
-[unreleased]: https://github.com/cc4-marketing/site/compare/v0.5.0...HEAD
+[unreleased]: https://github.com/cc4-marketing/site/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/cc4-marketing/site/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/cc4-marketing/site/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/cc4-marketing/site/compare/v0.2.0...v0.4.0
 [0.3.0]: https://github.com/cc4-marketing/site/compare/v0.2.0...v0.3.0
