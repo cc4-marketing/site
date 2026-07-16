@@ -47,7 +47,7 @@ export const POST: APIRoute = async ({ request }) => {
             Thanks for joining. Here's your course download link:
           </p>
           <p style="margin: 24px 0;">
-            <a href="https://github.com/cc4-marketing/cc4.marketing/releases"
+            <a href="https://github.com/cc4-marketing/cc4.marketing/releases/latest"
                style="display: inline-block; background: #E8B923; color: #2C2C2C; padding: 14px 28px; text-decoration: none; font-weight: 700; font-size: 16px;">
               Download the Course →
             </a>

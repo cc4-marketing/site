@@ -40,9 +40,11 @@ git fetch origin main && git rev-list --count HEAD..origin/main
 
 ```bash
 npm run build
+npm run check:download-links
 ```
 
 **Stop if build fails.** Show the error and suggest fixes.
+**Stop if check:download-links fails** — the welcome-email download resource is stale or drifted (see scripts/check-download-links.mjs output for which check).
 
 After successful build, verify key outputs:
 ```bash

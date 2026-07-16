@@ -12,7 +12,8 @@
     "og:smoke": "tsx src/lib/og/smoke-test.ts",
     "og:size-guard": "tsx src/lib/og/size-guard.ts",
     "test": "vitest run",
-    "check:blog-tokens": "node scripts/check-blog-tokens.mjs"
+    "check:blog-tokens": "node scripts/check-blog-tokens.mjs",
+    "check:download-links": "node scripts/check-download-links.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^13.1.7",

@@ -94,10 +94,12 @@ This single upload publishes every accumulated `/ship` bullet to the live change
 ### Step 7: Build and verify
 
 ```bash
-cd /Users/admin/Documents/cc4m/site && rm -rf dist && npx astro build
+rm -rf dist && npx astro build && npm run check:download-links
 ```
 
-If the build fails, stop and report the error.
+Run from the repo root (not changelog-worker — Step 6b cd's there; cd back first).
+If the build fails, stop and report the error. If check:download-links fails, the
+welcome-email download resource is stale or drifted — fix before tagging.
 
 ### Step 8: Commit, tag, and push
 
