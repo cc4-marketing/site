@@ -37,8 +37,36 @@
   --bg-primary: #F5F1E8;
   --bg-secondary: #FFFFFF;
   --text-primary: #2C2C2C;
-  --text-secondary: #666666;
+  --text-secondary: var(--ink-70); /* was #666666: off-brand neutral gray, now derived from charcoal ink */
   --border-color: #2C2C2C;
+
+  /* Ink lane: charcoal pre-blended into cream as solid hexes (no runtime alpha:
+     alpha-blended text has ambiguous WCAG contrast and breaks across the theme swap).
+     Text-legal steps: ink-100 and ink-70 only (>= 4.5:1 on desk and sheet, both themes,
+     verified by scripts/check-blog-tokens.mjs). 50/30/12 are decoration-only. */
+  --ink-100: #2C2C2C;
+  --ink-70: #686764;
+  --ink-50: #908E8A;
+  --ink-30: #B9B6B0;
+  --ink-12: #DDD9D1;
+
+  /* Surface tint lanes: rust/plum pre-blended into cream, solid. Replaces the ad-hoc
+     rgba(184,92,60,.04/.05/.06/.1) and rgba(92,58,107,.05/.06/.08/.1/.25) mixes. */
+  --tint-rust-1: #F1E9E0;
+  --tint-rust-2: #EFE2D7;
+  --tint-rust-3: #ECDBCE;
+  --tint-plum-1: #ECE6E1;
+  --tint-plum-2: #E6DFDC;
+  --tint-plum-3: #CFC3C9;
+
+  /* Article sheet surface (document-on-desk): distinct from the desk (--bg-primary).
+     In-article tints and contrast pairs are computed against this surface. */
+  --sheet: #FFFFFF;
+
+  /* Solid shadow inks: hard offset shadows must be opaque per brand rule
+     ("hard shadows, no blur"); translucent plum optically blended = soft physics. */
+  --shadow-ink: #C7BAC3;
+  --shadow-ink-soft: #D6CCCF;
   
   /* Typography */
   --font-display: 'Righteous', serif;
@@ -53,10 +81,10 @@
   --space-2xl: 60px;
   --space-3xl: 100px;
   
-  /* Shadows */
-  --shadow-sm: 4px 4px 0 rgba(92, 58, 107, 0.2);
-  --shadow-md: 8px 8px 0 rgba(92, 58, 107, 0.3);
-  --shadow-lg: 12px 12px 0 rgba(92, 58, 107, 0.3);
+  /* Shadows (solid: see --shadow-ink above) */
+  --shadow-sm: 4px 4px 0 var(--shadow-ink-soft);
+  --shadow-md: 8px 8px 0 var(--shadow-ink);
+  --shadow-lg: 12px 12px 0 var(--shadow-ink);
   --shadow-mustard: 6px 6px 0 var(--mustard);
 }
 
@@ -66,13 +94,33 @@ html[data-theme="dark"] {
   --bg-primary: #1A1A1A;
   --bg-secondary: #2D2D2D;
   --text-primary: #EAEAEA;
-  --text-secondary: #A8A8A8;
+  /* --text-secondary intentionally NOT re-declared: it aliases var(--ink-70),
+     which swaps below. One swap at token level, never per-component. */
   --border-color: #4A4A4A;
   --rust: #FF8866;
   --charcoal: #F0F0F0;
   --cream: #1A1A1A;
   --mustard: #FFD147;
   --ink-on-mustard: #2C2C2C;
+
+  /* Dark ramp authored deliberately (dark-first values, not inverted light math) */
+  --ink-100: #EAEAEA;
+  --ink-70: #BCBCBC;
+  --ink-50: #828282;
+  --ink-30: #585858;
+  --ink-12: #333333;
+
+  --tint-rust-1: #2C2320;
+  --tint-rust-2: #362723;
+  --tint-rust-3: #432E28;
+  --tint-plum-1: #211D22;
+  --tint-plum-2: #251F27;
+  --tint-plum-3: #2D2331;
+
+  --sheet: #282828;
+
+  --shadow-ink: #0E0A11;
+  --shadow-ink-soft: #131016;
 }
 
 * {
