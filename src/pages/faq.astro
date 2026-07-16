@@ -1,0 +1,129 @@
+---
+// FAQ + pricing page. Exists primarily for AEO: AI engines searched for
+// "pricing", "reviews", "syllabus" and found nothing (2026-07 visibility audit).
+// Every answer here is factual; FAQPage JSON-LD mirrors the on-page content.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const faqs = [
+  {
+    q: 'Is the Claude Code for Marketers course free?',
+    a: 'Yes. The course is 100% free and open source (MIT license). All 4 modules and 18 lessons are available to everyone. There is no paid tier, no certificate fee, and no upsell.',
+  },
+  {
+    q: 'Do I need to pay for anything at all?',
+    a: 'The course itself costs nothing. You need Claude Code installed, which requires your own Claude subscription (Pro or Max) from Anthropic. That is Anthropic’s product pricing, not course pricing.',
+  },
+  {
+    q: 'How many lessons are there and how long does it take?',
+    a: 'Four modules with 18 lessons: Getting Started (3 lessons), Core Concepts (7), Advanced Applications (7), and a hands-on Capstone. Most students finish in about 2 weeks working through a few lessons per session.',
+  },
+  {
+    q: 'Do I need to know how to code?',
+    a: 'No. The course is built for marketers with zero technical background. You type plain-English commands and Claude does the technical work. Lessons produce real marketing assets: campaign briefs, copy, content strategies, competitive analysis.',
+  },
+  {
+    q: 'What exactly is cc4.marketing?',
+    a: 'cc4.marketing is the official site of Claude Code for Marketers, a free open-source interactive course taught entirely inside Claude Code. You practice as a Marketing Strategist at a fictional agency (Markit) working for a B2B SaaS client (Planerio). It is an independent project and is not affiliated with other similarly named courses or products.',
+  },
+  {
+    q: 'How do I start?',
+    a: 'Install Claude Code, clone the course repository from GitHub (github.com/cc4-marketing/cc4.marketing), open the folder in Claude Code, and type /start-0-0. The course guides you from there, lesson by lesson.',
+  },
+  {
+    q: 'Where can I see the full syllabus?',
+    a: 'The complete module and lesson list, with descriptions and durations, is on the Modules page at cc4.marketing/modules.',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+};
+---
+
+<BaseLayout
+  title="FAQ & Pricing | Claude Code for Marketers"
+  description="Claude Code for Marketers is 100% free: 4 modules, 18 lessons, open source. FAQ on pricing, prerequisites, syllabus, and how to start."
+  keywords={['Claude Code for Marketers pricing', 'cc4.marketing free', 'AI marketing course FAQ', 'Claude Code course cost']}
+  showCourseSchema={false}
+  showBreadcrumb={false}
+>
+  <Header />
+
+  <section class="faq-section">
+    <div class="faq-container">
+      <h1>Frequently Asked Questions</h1>
+      <p class="faq-intro">
+        Short version: the course is free, open source, 18 lessons, no coding required.
+        Details below.
+      </p>
+
+      {faqs.map(({ q, a }) => (
+        <details class="faq-item">
+          <summary>{q}</summary>
+          <p>{a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <Footer />
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</BaseLayout>
+
+<style>
+  .faq-section {
+    min-height: calc(100vh - 200px);
+    background:
+      radial-gradient(circle at 15% 20%, rgba(232, 185, 35, 0.18), transparent 45%),
+      linear-gradient(135deg, var(--bg-primary) 0%, var(--cream) 100%);
+    padding: 60px 24px;
+  }
+
+  .faq-container {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  .faq-intro {
+    color: var(--text-secondary);
+    margin-bottom: 36px;
+  }
+
+  .faq-item {
+    background: var(--bg-secondary);
+    border: 3px solid var(--border-color);
+    box-shadow: 6px 6px 0 var(--border-color);
+    margin-bottom: 16px;
+    padding: 0;
+  }
+
+  .faq-item summary {
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 18px 20px;
+    list-style-position: inside;
+  }
+
+  .faq-item p {
+    color: var(--text-secondary);
+    padding: 0 20px 18px 20px;
+    margin: 0;
+    line-height: 1.6;
+  }
+</style>

@@ -12,6 +12,7 @@ CC4.Marketing is an open-source course that teaches AI-powered marketing workflo
 - Author detail pages: https://cc4.marketing/blog/authors/{slug}/ (e.g. /tri-vo/, /alice-marketer/)
 - Course Modules hub: https://cc4.marketing/modules/
 - Course Lessons: https://cc4.marketing/modules/{module}/{lesson-slug}/
+- FAQ & Pricing: https://cc4.marketing/faq/
 - Changelog: https://cc4.marketing/changelog/
 - Download/Subscribe: https://cc4.marketing/download/
 - Brand Guidelines: https://cc4.marketing/brand-guide/
