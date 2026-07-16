@@ -129,7 +129,7 @@ const STATIC_PAGES: Record<
 > = {
   home: {
     title: 'Claude Code for Marketers',
-    subtitle: 'Work 10x faster with AI — 17 free interactive lessons, no coding required.',
+    subtitle: 'Work 10x faster with AI — 18 free interactive lessons, no coding required.',
     accent: 'rust',
     badge: 'FREE COURSE',
   },
