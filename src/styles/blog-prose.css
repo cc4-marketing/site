@@ -66,7 +66,6 @@
 
 /* Keyboard focus: token-based, visible on sheet in both themes */
 .blog-prose a:focus-visible,
-.blog-prose summary:focus-visible,
 .blog-prose .code-copy-btn:focus-visible {
   outline: 3px solid var(--rust);
   outline-offset: 2px;
@@ -132,6 +131,13 @@
   background: var(--rust);
   transform: none;
   text-decoration: underline;
+}
+
+/* Keep the copied-state feedback: this file can load after global.css, and the
+   equal-specificity .blog-prose .code-copy-btn rule above would otherwise win
+   the cascade tie over global's .code-copy-btn.copied and drop the teal flash. */
+.blog-prose .code-copy-btn.copied {
+  background: var(--accent-teal);
 }
 
 .blog-prose img {

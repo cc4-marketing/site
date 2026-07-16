@@ -68,3 +68,22 @@ When building new components or writing content for CC4.Marketing:
 2. **Use Semantic Classes:** Reuse `.btn-primary`, `.btn-secondary`, `.section-header`.
 3. **Respect Dark Mode:** Ensure your new styles use the CSS variables (`--bg-primary`, `--text-primary`) so they swap correctly.
 4. **Keep Copy Tight:** If a paragraph is longer than 3 sentences, consider breaking it into a bulleted list or adding a bold subhead.
+
+---
+
+## 5. Derived Token System (added 2026-07-16, blog rebrand round 1)
+
+All tints and secondary shades are pre-computed solid hexes derived from the core palette. No runtime alpha: alpha-blended text has ambiguous WCAG contrast and breaks across the dark-mode swap. Verified pairs live in `scripts/check-blog-tokens.mjs` (`npm run check:blog-tokens`).
+
+| Token | Light | Dark | Use |
+|-------|-------|------|-----|
+| `--ink-100` | `#2C2C2C` | `#EAEAEA` | Primary text, hard borders |
+| `--ink-70` | `#686764` | `#BCBCBC` | Secondary text (aliased by `--text-secondary`) |
+| `--ink-50` / `--ink-30` / `--ink-12` | `#908E8A` / `#B9B6B0` / `#DDD9D1` | `#828282` / `#585858` / `#333333` | Decoration only, never text |
+| `--tint-rust-1..3` | `#F1E9E0` / `#EFE2D7` / `#ECDBCE` | `#2C2320` / `#362723` / `#432E28` | Rust surface washes |
+| `--tint-plum-1..3` | `#ECE6E1` / `#E6DFDC` / `#CFC3C9` | `#211D22` / `#251F27` / `#2D2331` | Plum surface washes |
+| `--sheet` | `#FFFFFF` | `#282828` | Article surface (document-on-desk) |
+| `--shadow-ink` / `--shadow-ink-soft` | `#C7BAC3` / `#D6CCCF` | `#0E0A11` / `#131016` | Solid hard-shadow colors |
+| `--code-surface` / `--code-ink` | `#2C2C2C` / `#F5F1E8` | `#111111` / `#F5F1E8` | Code blocks (dark in both themes) |
+
+Rules: text sits only on `--ink-100`/`--ink-70`; new tints must pass the check script in both themes; theme swap happens once at token level (never per-component `[data-theme]` overrides); no raw color literals in blog files outside `global.css`.

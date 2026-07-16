@@ -131,7 +131,7 @@ const extraSchema = extraSchemas[slug!] ?? null;
             in the same component renders on the desk column. */}
         {headings.length > 0 && (
           <div class="toc-slot-mobile">
-            <PostToc headings={headings} />
+            <PostToc headings={headings} variant="mobile" />
           </div>
         )}
 
@@ -156,7 +156,7 @@ const extraSchema = extraSchemas[slug!] ?? null;
       {/* Desktop TOC: on the desk beside the sheet (origin R6 as reviewed) */}
       {headings.length > 0 && (
         <aside class="toc-slot-desktop">
-          <PostToc headings={headings} />
+          <PostToc headings={headings} variant="desktop" />
         </aside>
       )}
     </div>

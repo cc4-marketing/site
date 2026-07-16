@@ -93,7 +93,13 @@ function formatDate(date: Date | null | undefined): string {
     font-size: clamp(2em, 5vw, 3em);
     line-height: 1.15;
     color: var(--ink-100);
-    margin: 0 0 12px;
+    /* No-excerpt posts (older back catalog): chips follow the title at 20px */
+    margin: 0 0 20px;
+  }
+
+  /* Excerpt present: tighten the title-to-excerpt gap */
+  .post-masthead:has(.masthead-excerpt) .masthead-title {
+    margin-bottom: 12px;
   }
 
   .masthead-excerpt {
@@ -101,11 +107,6 @@ function formatDate(date: Date | null | undefined): string {
     line-height: 1.5;
     color: var(--ink-70);
     margin: 0 0 20px;
-  }
-
-  /* Excerpt absent (older posts): chips follow the title directly */
-  .masthead-title:last-of-type {
-    margin-bottom: 20px;
   }
 
   .masthead-chips {

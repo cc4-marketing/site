@@ -99,12 +99,18 @@ if (!RATIOS_ONLY) {
     }
   };
   walk('src/pages/blog');
-  targets.push('src/components/BlogContent.astro');
+  walk('src/components/blog');
+  targets.push('src/components/BlogContent.astro', 'src/styles/blog-prose.css');
 
   const LITERAL = /rgba?\(|hsla?\(|#[0-9a-fA-F]{3,8}\b/g;
   let hits = 0;
   for (const file of targets) {
-    const lines = readFileSync(file, 'utf8').split('\n');
+    // Blank out block/HTML comments (newline-preserving so line numbers hold):
+    // explanatory comments legitimately mention retired literals.
+    const source = readFileSync(file, 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '))
+      .replace(/<!--[\s\S]*?-->/g, (m) => m.replace(/[^\n]/g, ' '));
+    const lines = source.split('\n');
     lines.forEach((line, i) => {
       // Ignore anchors/ids (#foo) by requiring hex-shaped match; strip URLs and comments.
       const cleaned = line.replace(/\/\/.*$/, '').replace(/https?:\S+/g, '');

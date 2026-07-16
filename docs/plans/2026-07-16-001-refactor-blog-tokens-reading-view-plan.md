@@ -1,7 +1,7 @@
 ---
 title: "refactor: Blog ink token system and reading-view rebrand (round 1)"
 type: refactor
-status: active
+status: completed
 date: 2026-07-16
 origin: docs/brainstorms/2026-07-16-blog-tokens-reading-view-rebrand-requirements.md
 ---
