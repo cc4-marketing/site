@@ -56,6 +56,9 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ASTRO_CONFIG = REPO_ROOT / "astro.config.mjs"
 PUBLIC_BLOG = REPO_ROOT / "public" / "blog"
+LLMS_TXT = REPO_ROOT / "public" / "llms.txt"
+LLMS_FULL_TXT = REPO_ROOT / "public" / "llms-full.txt"
+SITE_ORIGIN = "https://cc4.marketing"
 
 
 # ---------- ID / key generation -------------------------------------------
@@ -526,6 +529,63 @@ def update_sitemap(slug: str) -> None:
     print(f"sitemap: added /blog/{slug} to blogPages")
 
 
+def _append_to_published_posts(path: Path, entry_line: str, url: str) -> None:
+    """Append entry_line under the '### Published Posts' section of an llms file.
+
+    Idempotent: skips if the post url is already present. Inserts at the end of
+    the existing list (matches the oldest-first order the files already use),
+    right before the next section marker ('## ' or '---').
+    """
+    if not path.exists():
+        print(f"llms: {path.name} not found, skipping", file=sys.stderr)
+        return
+    text = path.read_text()
+    if url in text:
+        print(f"llms: {url} already in {path.name}, skipping")
+        return
+
+    lines = text.splitlines()
+    try:
+        header_idx = next(
+            i for i, ln in enumerate(lines) if ln.strip() == "### Published Posts"
+        )
+    except StopIteration:
+        print(
+            f"llms: '### Published Posts' not found in {path.name}, skipping",
+            file=sys.stderr,
+        )
+        return
+
+    # Find the next section marker after the header; the list ends before it.
+    insert_idx = len(lines)
+    for i in range(header_idx + 1, len(lines)):
+        stripped = lines[i].lstrip()
+        if stripped.startswith("## ") or stripped.startswith("---"):
+            insert_idx = i
+            break
+    # Back up over blank lines so the new entry sits flush under the last item.
+    while insert_idx > header_idx + 1 and lines[insert_idx - 1].strip() == "":
+        insert_idx -= 1
+
+    lines.insert(insert_idx, entry_line)
+    path.write_text("\n".join(lines) + ("\n" if text.endswith("\n") else ""))
+    print(f"llms: added {url} to {path.name}")
+
+
+def update_llms_files(slug: str, title: str, excerpt: str) -> None:
+    """Add the new post to public/llms.txt and public/llms-full.txt so AI
+    discoverability stays in sync without a manual edit. llms.txt gets a plain
+    link; llms-full.txt appends the excerpt in parentheses (no em dash, per
+    house style). Both idempotent.
+    """
+    url = f"{SITE_ORIGIN}/blog/{slug}/"
+    _append_to_published_posts(LLMS_TXT, f"- [{title}]({url})", url)
+    excerpt_clean = excerpt.strip().rstrip(".")
+    _append_to_published_posts(
+        LLMS_FULL_TXT, f"- [{title}]({url}) ({excerpt_clean})", url
+    )
+
+
 # ---------- SQL generation -------------------------------------------------
 
 def sql_escape(s: str) -> str:
@@ -714,6 +774,7 @@ def main() -> int:
 
     if not args.skip_sitemap:
         update_sitemap(record.slug)
+        update_llms_files(record.slug, record.title, record.excerpt)
 
     return 0
 
