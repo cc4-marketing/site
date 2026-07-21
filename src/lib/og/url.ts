@@ -66,13 +66,22 @@ export async function resolveOgImage(
     return `/og/modules/${module}-${slug}.png`;
   }
 
+  // Library hub: /library/ → fixed build-time cover.
+  if (ctx.path === '/library' || ctx.path === '/library/') {
+    return '/og/library/hub.png';
+  }
+
   // Library entry pages: /library/{category}/{slug}/ → build-time OG asset.
-  // Two path segments required, so the hub and category index pages fall
-  // through to the default cover.
   const libraryMatch = ctx.path.match(/^\/library\/([^/]+)\/([^/]+)\/?$/);
   if (libraryMatch) {
     const [, category, slug] = libraryMatch;
     return `/og/library/${category}-${slug}.png`;
+  }
+
+  // Library category index: /library/{category}/ → per-category cover.
+  const libraryCatMatch = ctx.path.match(/^\/library\/([^/]+)\/?$/);
+  if (libraryCatMatch) {
+    return `/og/library/cat-${libraryCatMatch[1]}.png`;
   }
 
   return STATIC_FALLBACK_DEFAULT;

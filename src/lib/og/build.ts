@@ -273,6 +273,37 @@ async function main(): Promise<void> {
     console.log(`✓ library/${key}.png (${(png.byteLength / 1024).toFixed(0)} KB)`);
   }
 
+  // --- Marketing Library hub + category covers ---
+  // The hub (/library/) and category (/library/{slug}/) pages are single or
+  // zero segment paths, so resolveOgImage maps them to these fixed keys rather
+  // than the two-segment entry keys above.
+  {
+    const hubHtml = renderLibraryTemplate({
+      name: 'Marketing Library',
+      categoryLabel: 'For Marketers',
+      typeLabel: 'Directory',
+      tagline: 'Free Claude Code prompts, slash commands, subagents, and MCP lists.',
+    });
+    const hubPng = await renderToPng(hubHtml);
+    writeFileSync(join(OUT_DIR, 'library', 'hub.png'), hubPng);
+    total += 1;
+    totalBytes += hubPng.byteLength;
+    console.log(`✓ library/hub.png (${(hubPng.byteLength / 1024).toFixed(0)} KB)`);
+  }
+  for (const cat of LIBRARY_CATEGORIES) {
+    const html = renderLibraryTemplate({
+      name: cat.label,
+      categoryLabel: 'Marketing Library',
+      typeLabel: 'Category',
+      tagline: cat.blurb,
+    });
+    const png = await renderToPng(html);
+    writeFileSync(join(OUT_DIR, 'library', `cat-${cat.slug}.png`), png);
+    total += 1;
+    totalBytes += png.byteLength;
+    console.log(`✓ library/cat-${cat.slug}.png (${(png.byteLength / 1024).toFixed(0)} KB)`);
+  }
+
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
   console.log(
     `\nGenerated ${total} OG images (${(totalBytes / 1024).toFixed(0)} KB total) in ${elapsed}s`,
