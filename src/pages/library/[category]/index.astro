@@ -1,6 +1,6 @@
 ---
-export const prerender = true;
-
+// SSR (not prerendered), matches the modules route so Emdash does not redirect
+// these paths to /_emdash/admin/setup in production.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Header from '../../../components/Header.astro';
@@ -10,22 +10,14 @@ import EntryCard from '../../../components/library/entry-card.astro';
 import { LIBRARY_CATEGORIES } from '../../../data/library-categories';
 import { fileSlug } from '../../../lib/library';
 
-export async function getStaticPaths() {
-  const entries = await getCollection('library');
-  return LIBRARY_CATEGORIES.map((cat) => ({
-    params: { category: cat.slug },
-    props: {
-      category: cat,
-      entries: entries
-        .filter((e) => e.data.category === cat.slug)
-        .sort((a, b) => a.data.name.localeCompare(b.data.name)),
-    },
-  }));
-}
-
-const { category, entries } = Astro.props;
+const { category: categorySlug } = Astro.params;
+const category = LIBRARY_CATEGORIES.find((c) => c.slug === categorySlug);
+if (!category) return Astro.redirect('/404');
 
 const allEntries = await getCollection('library');
+const entries = allEntries
+  .filter((e) => e.data.category === category.slug)
+  .sort((a, b) => a.data.name.localeCompare(b.data.name));
 const counts: Record<string, number> = {};
 for (const cat of LIBRARY_CATEGORIES) counts[cat.slug] = 0;
 for (const e of allEntries) counts[e.data.category] = (counts[e.data.category] ?? 0) + 1;
