@@ -6,7 +6,7 @@ The website for **Claude Code for Marketers** — a free, interactive course tha
 
 ## What is this?
 
-This repo powers the course website at [cc4.marketing](https://cc4.marketing). It serves course documentation, 17 interactive lesson pages, and a live changelog. The actual course is taught inside [Claude Code](https://claude.ai/code) itself — students clone the [course repo](https://github.com/cc4-marketing/cc4.marketing), open Claude Code, and type `/start-0-0` to begin.
+This repo powers the course website at [cc4.marketing](https://cc4.marketing). It serves course documentation, 19 interactive lesson pages, and a live changelog. The actual course is taught inside [Claude Code](https://claude.ai/code) itself — students clone the [course repo](https://github.com/cc4-marketing/cc4.marketing), open Claude Code, and type `/start-0-0` to begin.
 
 ## Tech Stack
 
@@ -24,7 +24,7 @@ src/
 ├── pages/              # Routes (index, changelog, download, modules)
 ├── layouts/            # BaseLayout, LessonLayout
 ├── components/         # Header, Footer, Hero, WhatsNew, ModuleUpdatesBanner, etc.
-├── content/modules/    # 17 MDX lesson files across 3 modules
+├── content/modules/    # 19 MDX lesson files across 4 modules
 ├── config/             # siteData.ts (centralized site config)
 └── styles/             # global.css (design system)
 changelog-worker/       # Cloudflare Worker for changelog API
@@ -37,7 +37,8 @@ public/                 # Static assets, robots.txt, llms.txt
 |--------|-------|---------|----------|
 | 0 | Getting Started | 4 | ~30 min |
 | 1 | Core Concepts | 7 | ~3-4 hrs |
-| 2 | Advanced Applications | 6 | ~4-5 hrs |
+| 2 | Advanced Applications | 7 | ~4-5 hrs |
+| 3 | Capstone | 1 | ~75 min |
 
 ## Development
 

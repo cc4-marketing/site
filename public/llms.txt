@@ -1,6 +1,6 @@
 # CC4.Marketing — Claude Code for Marketers
 
-> A free, interactive course teaching marketers how to use Claude Code to work 10x faster. 4 modules, 18 lessons, taught entirely inside Claude Code itself.
+> A free, interactive course teaching marketers how to use Claude Code to work 10x faster. 4 modules, 19 lessons, taught entirely inside Claude Code itself.
 
 ## About
 CC4.Marketing is an open-source course that teaches AI-powered marketing workflows. Students install Claude Code, clone a starter project, then type /start-0-0 to begin interactive lessons. The practice project simulates working as a Marketing Strategist at "Markit" agency, running campaigns for a B2B SaaS client called "Planerio."
@@ -34,7 +34,7 @@ The blog publishes practical guides, tutorials, and insights on AI-powered marke
 ## Course Modules
 - Module 0: Getting Started (4 lessons, 30 min) — Installation, setup, first task
 - Module 1: Core Concepts (7 lessons, 3-4 hours) — Agents, sub-agents, project memory, marketing workflows
-- Module 2: Advanced Applications (6 lessons, 4-5 hours) — Campaign briefs, content strategy, copy, analytics, SEO
+- Module 2: Advanced Applications (7 lessons, 4-5 hours) — Campaign briefs, content strategy, copy, analytics, competitive analysis, SEO, service packaging
 - Module 3: Capstone (1 lesson, 75 min) — Ship a Real Follow-Up with sigil, an open-source CLI inside Claude Code (https://github.com/blacklogos/sigil). Real send pipeline on Cloudflare Workers, custom `/email-rewrite` slash command, per-recipient handcrafted sentences.
 
 ## Changelog API
