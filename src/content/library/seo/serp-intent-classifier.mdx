@@ -1,0 +1,64 @@
+---
+name: SERP Intent Classifier
+category: seo
+type: prompt
+tagline: Label a keyword list by search intent, with a reason for each call.
+description: A prompt that classifies a list of keywords by search intent (informational, commercial, transactional, or navigational) and gives a short reason for each label, so you can sort a keyword list into the right content types.
+access: free
+related:
+  - content-brief-generator
+  - meta-title-description-writer
+  - ga4-question-answerer
+author: tri-vo
+tags:
+  - seo
+  - search intent
+  - keyword research
+  - prompt
+updatedAt: 2026-07-21
+publishedAt: 2026-07-21
+metaDescription: "SEO prompt that labels a keyword list by search intent with a reason for each call, then groups the keywords by the page type that fits."
+faq:
+  - q: "What are the four intent labels it uses?"
+    a: "Informational, commercial, transactional, and navigational. Each keyword gets one dominant label plus a one-line reason naming the signal, like best or vs for commercial, buy or pricing for transactional."
+  - q: "What is the Grouping section for?"
+    a: "After the table, it buckets keywords by intent and names the page type each bucket needs (a guide, comparison, landing page, or product page), so you know what to build before writing."
+  - q: "What happens to it next in the workflow?"
+    a: "Send the informational keywords to the Content Brief Generator to build article briefs. Transactional and commercial ones point to product or comparison pages instead."
+---
+
+Ranking starts with matching intent. A transactional keyword needs a product or comparison page, not a 2,000 word guide. This prompt takes a raw keyword list and sorts it by intent, with a one-line reason for each call, so you can decide what kind of page each keyword deserves before you write a word.
+
+## The prompt
+
+```text
+You are an SEO analyst. I will give you a list of keywords. For each keyword,
+classify the dominant search intent as one of:
+
+- informational (the searcher wants to learn or understand)
+- commercial (the searcher is comparing options before buying)
+- transactional (the searcher is ready to act, buy, sign up, download)
+- navigational (the searcher wants a specific brand, product, or page)
+
+Return a table with three columns: Keyword, Intent, Reason. The reason is one
+short sentence explaining the signal you used (modifiers like "best" or "vs"
+suggest commercial, "buy" or "pricing" suggest transactional, "how to" or
+"what is" suggest informational, a brand name suggests navigational).
+
+If a keyword could carry two intents, pick the dominant one and note the
+secondary intent in the reason. Do not skip any keyword.
+
+After the table, add a short section called "Grouping" that buckets the
+keywords by intent and, for each bucket, names the page type that fits best
+(guide, comparison, landing page, product page, and so on).
+
+Here is the list:
+[paste your keywords, one per line]
+```
+
+## How to use
+
+1. Paste the prompt into Claude Code and replace the last line with your keyword list.
+2. Read the Reason column to sanity check the calls: intent labels drive your whole content plan.
+3. Use the Grouping section to assign each bucket to a page type.
+4. Send informational keywords to the Content Brief Generator to build the article briefs.

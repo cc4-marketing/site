@@ -1,0 +1,217 @@
+---
+export const prerender = true;
+
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { LIBRARY_CATEGORIES } from '../../data/library-categories';
+
+const entries = await getCollection('library');
+
+const counts: Record<string, number> = {};
+for (const cat of LIBRARY_CATEGORIES) counts[cat.slug] = 0;
+for (const entry of entries) {
+  counts[entry.data.category] = (counts[entry.data.category] ?? 0) + 1;
+}
+const total = entries.length;
+
+const REPO_URL = 'https://github.com/cc4-marketing/marketing-library';
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cc4.marketing/' },
+    { '@type': 'ListItem', position: 2, name: 'Library', item: 'https://cc4.marketing/library/' },
+  ],
+};
+
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Claude Code Marketing Library categories',
+  itemListElement: LIBRARY_CATEGORIES.map((cat, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: cat.label,
+    url: `https://cc4.marketing/library/${cat.slug}/`,
+  })),
+};
+---
+
+<BaseLayout
+  title="Marketing Library, Claude Code Prompts and Commands"
+  description="Free Claude Code prompts, slash commands, subagents, and skills for marketers. Copy real artifacts for SEO, content, ads, analytics, email, and more."
+  keywords={['Claude Code prompts', 'marketing slash commands', 'AI marketing prompts', 'Claude Code for marketers', 'marketing prompt library']}
+  showCourseSchema={false}
+  showBreadcrumb={false}
+>
+  <Header />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />
+  <script type="application/ld+json" set:html={JSON.stringify(itemList)} />
+
+  <section class="lib-hero">
+    <div class="lib-hero-inner">
+      <span class="lib-hero-label">Marketing Library</span>
+      <h1 class="lib-hero-title">Claude Code prompts and commands for marketers</h1>
+      <p class="lib-hero-desc">
+        A curated library of prompts, slash commands, subagents, and skills you can paste
+        straight into Claude Code. Every entry here is free and copyable, real artifacts for
+        real marketing work, no sign up wall between you and the code block.
+      </p>
+      <div class="lib-hero-cta">
+        <a href="/download/" class="btn btn-primary">Get new drops by email</a>
+        <a href={REPO_URL} class="btn btn-secondary" target="_blank" rel="noopener nofollow">
+          Master repo on GitHub
+        </a>
+      </div>
+      <p class="lib-hero-note">{total} free artifacts across 9 categories. More added regularly.</p>
+    </div>
+  </section>
+
+  <section class="lib-body">
+    <div class="lib-body-inner">
+      <div class="lib-cat-grid">
+        {LIBRARY_CATEGORIES.map((cat) => (
+          <a href={`/library/${cat.slug}/`} class="lib-cat-card">
+            <div class="lib-cat-count">{counts[cat.slug] ?? 0}</div>
+            <h2 class="lib-cat-name">{cat.label}</h2>
+            <p class="lib-cat-blurb">{cat.blurb}</p>
+            <span class="lib-cat-link">Browse {cat.label} →</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .lib-hero {
+    position: relative;
+    padding: 140px 24px 60px;
+    text-align: center;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--tint-rust-1) 100%);
+  }
+
+  .lib-hero-inner {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .lib-hero-label {
+    display: inline-block;
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--rust);
+    background: var(--tint-rust-2);
+    padding: 6px 14px;
+    margin-bottom: 20px;
+  }
+
+  .lib-hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.2em, 5vw, 3.4em);
+    color: var(--text-primary);
+    margin: 0 0 18px;
+    line-height: 1.1;
+  }
+
+  .lib-hero-desc {
+    font-size: 1.1em;
+    color: var(--text-secondary);
+    max-width: 620px;
+    margin: 0 auto 28px;
+    line-height: 1.6;
+  }
+
+  .lib-hero-cta {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .lib-hero-note {
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+  }
+
+  .lib-body {
+    padding: 60px 24px 100px;
+  }
+
+  .lib-body-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .lib-cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 28px;
+  }
+
+  .lib-cat-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    padding: 28px;
+    text-decoration: none;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+  }
+
+  .lib-cat-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 8px 8px 0 var(--mustard);
+    border-color: var(--rust);
+  }
+
+  .lib-cat-count {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    font-family: var(--font-display);
+    font-size: 0.85em;
+    color: var(--rust);
+    background: var(--tint-rust-2);
+    border: 1px solid var(--rust);
+    padding: 2px 10px;
+  }
+
+  .lib-cat-name {
+    font-family: var(--font-display);
+    font-size: 1.5em;
+    margin: 0 0 12px;
+    color: var(--text-primary);
+  }
+
+  .lib-cat-blurb {
+    font-size: 0.95em;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin: 0 0 18px;
+    flex: 1;
+  }
+
+  .lib-cat-link {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--rust);
+    margin-top: auto;
+  }
+
+  @media (max-width: 768px) {
+    .lib-hero { padding: 120px 20px 40px; }
+    .lib-cat-grid { grid-template-columns: 1fr; gap: 20px; }
+  }
+</style>

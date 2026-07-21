@@ -1,0 +1,71 @@
+---
+name: Blog to Social Repurposer
+category: content
+type: command
+tagline: Turn one blog post into a LinkedIn post, an X thread, and a carousel.
+description: A /repurpose slash command that takes one blog post and produces a LinkedIn post, an X thread, and Instagram carousel copy, each shaped for its platform instead of the same text pasted three times.
+access: free
+related:
+  - blog-post-outline
+  - linkedin-post-from-notes
+  - newsletter-from-link
+author: alice-marketer
+tags:
+  - content
+  - repurposing
+  - social media
+  - slash command
+updatedAt: 2026-07-21
+publishedAt: 2026-07-21
+metaDescription: "Repurpose command that turns one blog post into a native LinkedIn post, an X thread, and Instagram carousel copy, each shaped for its platform."
+faq:
+  - q: "Do the three formats just reuse the same text?"
+    a: "No. The command pulls one strong idea from the post as the spine, then rewrites it natively for each platform: a standalone LinkedIn post, a hook-led X thread, and slide-by-slide carousel copy."
+  - q: "Can it work from a file path?"
+    a: "Yes. Run /repurpose ./content/my-post.md and it reads the file, or paste the post text after the command. It will not invent facts that are not in the post."
+  - q: "Should I publish all three at once?"
+    a: "Space them across the week instead. One post becomes several days of distribution, and the LinkedIn hook and the X first line are the parts worth editing most."
+---
+
+Most repurposing is just the same paragraph pasted into three boxes. This command reads one blog post and rewrites it three ways, each shaped for how people actually read on that platform: a standalone LinkedIn post, a hook led X thread, and slide by slide carousel copy. One post becomes a week of distribution.
+
+## The command
+
+Save this as `.claude/commands/repurpose.md` in your project.
+
+```markdown
+---
+description: Repurpose one blog post into LinkedIn, X, and Instagram copy.
+argument-hint: [path to post file, or paste the post]
+---
+
+You are a social media editor. Read the blog post referenced here: $ARGUMENTS
+
+Produce three deliverables, each written natively for its platform, not the
+same text reused. Pull the single strongest idea from the post as the spine.
+
+1. LinkedIn post
+   - Hook in the first line (before the "see more" fold).
+   - 120 to 200 words, short lines, one idea per line group.
+   - End with a question or a soft call to action.
+
+2. X thread
+   - 5 to 7 posts. First post is a scroll stopping hook.
+   - Each post stands on its own but builds the argument.
+   - Last post links back to the full article and invites a reply.
+
+3. Instagram carousel
+   - 6 to 8 slides. Slide 1 is the hook, last slide is the CTA.
+   - One line of copy per slide, plus a short caption for the post.
+
+Keep the brand voice consistent across all three. Do not invent facts that
+are not in the post. If the post is thin on specifics, say so and suggest what
+detail would make each format stronger.
+```
+
+## How to use
+
+1. Save the block above as `.claude/commands/repurpose.md`.
+2. Run `/repurpose ./content/my-latest-post.md`, or paste the post text after the command.
+3. Review each format for platform fit: the LinkedIn hook and the X first post matter most.
+4. Schedule the three across the week rather than posting them all at once.

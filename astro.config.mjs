@@ -59,8 +59,31 @@ function deriveAuthorUrls() {
     .sort();
 }
 
+// Auto-derive Marketing Library URLs from src/content/library/{category}/*.mdx.
+// Mirrors deriveModuleLessonUrls(): reading at config-load means new categories
+// and entries appear in the sitemap with zero extra config. URLs are driven off
+// the folder (category) + filename (entry slug), matching the route pattern
+// /library/{category}/{fileslug}/.
+function deriveLibraryUrls() {
+  const ROOT = './src/content/library';
+  const urls = new Set([`${SITE_URL}/library/`]);
+  if (!fs.existsSync(ROOT)) return [...urls];
+  for (const dir of fs.readdirSync(ROOT, { withFileTypes: true })) {
+    if (!dir.isDirectory()) continue;
+    const category = dir.name;
+    urls.add(`${SITE_URL}/library/${category}/`);
+    for (const file of fs.readdirSync(`${ROOT}/${category}`)) {
+      if (!file.endsWith('.mdx')) continue;
+      const fileslug = file.replace(/\.mdx$/, '');
+      urls.add(`${SITE_URL}/library/${category}/${fileslug}/`);
+    }
+  }
+  return [...urls].sort();
+}
+
 const modulePages = deriveModuleLessonUrls();
 const authorPages = deriveAuthorUrls();
+const libraryPages = deriveLibraryUrls();
 const modulesHub = `${SITE_URL}/modules/`;
 
 // Blog post URLs are still hardcoded — Emdash D1 is not queryable from this
@@ -86,7 +109,7 @@ export default defineConfig({
     react(),
     mdx(),
     sitemap({
-      customPages: [...modulePages, modulesHub, ...authorPages, ...blogPages],
+      customPages: [...modulePages, modulesHub, ...authorPages, ...blogPages, ...libraryPages],
       // Exclude dev-only routes from the sitemap. These are gated behind
       // import.meta.env.DEV (404 in production) and Disallowed in robots.txt;
       // including them in the sitemap sends a contradictory signal to crawlers.
@@ -149,6 +172,14 @@ export default defineConfig({
         else if (url.includes('/changelog')) {
           item.priority = 0.8;
           item.changefreq = 'weekly';
+        }
+        // Marketing Library: hub + category pages 0.8, entry pages 0.7.
+        // Depth is the number of path segments after /library/.
+        else if (url.includes('/library/')) {
+          const rest = url.split('/library/')[1].replace(/\/$/, '');
+          const depth = rest === '' ? 0 : rest.split('/').length;
+          item.priority = depth >= 2 ? 0.7 : 0.8;
+          item.changefreq = 'monthly';
         }
         // Default
         else {

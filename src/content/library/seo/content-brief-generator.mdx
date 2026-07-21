@@ -1,0 +1,72 @@
+---
+name: Content Brief Generator
+category: seo
+type: command
+tagline: Turn one keyword into a full SEO content brief a writer can follow.
+description: A /content-brief slash command that builds a complete SEO content brief from a single target keyword, covering intent, SERP notes, an H2 and H3 outline, entities to cover, internal links, and a target word count.
+access: free
+related:
+  - serp-intent-classifier
+  - meta-title-description-writer
+  - blog-post-outline
+author: tri-vo
+tags:
+  - seo
+  - content brief
+  - slash command
+  - keyword research
+updatedAt: 2026-07-21
+publishedAt: 2026-07-21
+metaDescription: "SEO content brief command that turns one keyword into intent, SERP notes, an outline, entities, internal links, and a word count a writer can follow."
+faq:
+  - q: "What sections does the brief include?"
+    a: "Target and secondary keywords, search intent, SERP notes with a gap to exploit, a recommended title and meta, an H2 and H3 outline, 8 to 12 entities to cover, 3 to 5 internal link types, a word count with rationale, and three snippet questions."
+  - q: "How is it different from the Blog Post Outline command?"
+    a: "The outline builder gives you a fast structure from a keyword. This brief adds the full SEO layer around it: intent, SERP analysis, entities, internal links, and a word count grounded in what ranks."
+  - q: "What do I do first with the output?"
+    a: "Read the intent and SERP notes. If the intent label is wrong, refine the keyword and rerun before handing the outline and entity list to a writer."
+---
+
+A content brief is the difference between a writer guessing and a writer executing. This slash command takes one target keyword and returns a brief that covers search intent, what the current top results do, the outline to beat them, the entities Google expects to see, internal links to add, and a word count grounded in the SERP. Save it once and every brief starts from the same structure.
+
+## The command
+
+Save this as `.claude/commands/content-brief.md` in your project.
+
+```markdown
+---
+description: Build a full SEO content brief from one target keyword.
+argument-hint: [target keyword]
+---
+
+You are an SEO strategist writing a content brief for a writer who has not
+researched this topic. The target keyword is: $ARGUMENTS
+
+Produce a brief with these sections, in this order:
+
+1. Target keyword and 3 to 5 secondary keywords or close variants.
+2. Search intent: label it informational, commercial, transactional, or
+   navigational, and explain in one sentence what the searcher wants.
+3. SERP notes: describe the likely content types ranking now (guides, listicles,
+   product pages, comparisons), the common angle, and one gap none of them cover.
+4. Recommended title and one-line meta description.
+5. Outline: an H2 and H3 structure that covers the topic more completely than a
+   typical top result. Mark which sections answer the primary intent.
+6. Entities and subtopics to include (people, tools, concepts, related terms
+   Google associates with this keyword). List 8 to 12.
+7. Internal links: describe 3 to 5 types of pages on the site that should link
+   to or from this article.
+8. Target word count, with a one-line rationale tied to the SERP.
+9. Three questions the article must answer to earn a featured snippet.
+
+Keep it scannable. Use lists, not paragraphs, wherever possible. If the keyword
+is ambiguous, state your assumption at the top and continue.
+```
+
+## How to use
+
+1. Save the block above as `.claude/commands/content-brief.md`.
+2. In Claude Code, run `/content-brief best crm for small teams` (swap in your keyword).
+3. Read the intent and SERP notes first: if the intent is wrong, refine the keyword and rerun.
+4. Hand the outline and entity list to your writer, or keep going and draft section by section.
+5. Pair it with the Meta Title and Description Writer to finish the on-page setup.

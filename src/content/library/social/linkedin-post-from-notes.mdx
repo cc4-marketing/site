@@ -1,0 +1,65 @@
+---
+name: LinkedIn Post from Notes
+category: social
+type: command
+tagline: Draft a LinkedIn post from rough bullet notes, with a hook and CTA.
+description: A /linkedin slash command that turns rough bullet notes into a finished LinkedIn post, complete with a scroll stopping first line and a clear call to action, while keeping the specifics that make a post credible.
+access: free
+related:
+  - repurpose-blog-to-social
+  - brand-voice-memory
+  - newsletter-from-link
+author: alice-marketer
+tags:
+  - social
+  - linkedin
+  - slash command
+  - copywriting
+updatedAt: 2026-07-21
+publishedAt: 2026-07-21
+metaDescription: "LinkedIn command that turns rough bullet notes into a finished post with a scroll-stopping hook and a clear CTA, keeping the specifics intact."
+faq:
+  - q: "Will it keep the details from my notes?"
+    a: "Yes. The command is told to keep every specific (names, numbers, moments) rather than smoothing them into vague generalities, since real detail is what makes a post credible."
+  - q: "What length and format does it produce?"
+    a: "One post of 120 to 220 words with short lines for mobile, a hook as the first line, a fitting call to action, and at most three hashtags on their own line. It also gives one alternate first line to pick from."
+  - q: "How is it different from the Blog to Social repurposer?"
+    a: "This drafts a single post from your own rough notes. The repurposer starts from an existing blog post and produces LinkedIn, X, and Instagram copy at once."
+---
+
+You have the idea in a few messy bullets. The gap is the drafting: the hook, the flow, the close. This command takes your rough notes and returns a LinkedIn post that keeps your specifics, opens with a line worth stopping for, and ends by asking for something. It drafts; you still make the final call on what to ship.
+
+## The command
+
+Save this as `.claude/commands/linkedin.md` in your project.
+
+```markdown
+---
+description: Draft a LinkedIn post from rough notes, with a hook and CTA.
+argument-hint: [paste your rough bullet notes]
+---
+
+You are a ghostwriter drafting a LinkedIn post from an operator's rough notes.
+The notes are: $ARGUMENTS
+
+Write one LinkedIn post. Rules:
+
+- First line is a hook that earns the "see more" click. No "I'm excited to
+  announce". Lead with tension, a number, or a specific claim.
+- 120 to 220 words. Short lines and line breaks, easy to scan on mobile.
+- Keep every specific detail from the notes (names, numbers, moments). Do not
+  smooth them into vague generalities.
+- One clear idea, not three. Cut anything that does not serve the hook.
+- End with a call to action that fits the post: a question, an invitation to
+  share an experience, or a link prompt.
+- No hashtag spam. Suggest at most 3 relevant hashtags on their own line.
+
+Then give me one alternate first line, so I can pick the stronger hook.
+```
+
+## How to use
+
+1. Save the block above as `.claude/commands/linkedin.md`.
+2. Run `/linkedin` and paste your bullet notes after it.
+3. Compare the two hook options and pick the one that creates the most tension.
+4. Edit the draft so it sounds like you, then post. Real detail beats polish.

@@ -1,0 +1,81 @@
+---
+name: Monthly Report Outline
+category: reporting
+type: command
+tagline: Produce an executive monthly marketing report outline leaders will read.
+description: "A /monthly-report slash command that outlines an executive monthly marketing report: wins, metrics against target, learnings, and next month's plan, so the write-up starts structured instead of as a metric dump."
+access: free
+related:
+  - weekly-metrics-summary
+  - utm-builder
+  - ga4-question-answerer
+author: tri-vo
+tags:
+  - reporting
+  - executive report
+  - slash command
+updatedAt: 2026-07-21
+publishedAt: 2026-07-21
+metaDescription: "Outline an executive monthly marketing report with Claude Code. Wins, metrics vs target, learnings, and next month's plan in a leadership-ready shape."
+faq:
+  - q: How is this different from the weekly metrics summary?
+    a: "The weekly summary is a fast internal pulse for the team. This is a monthly report written for leadership: it frames results against targets, pulls out the two or three decisions that matter, and states next month's plan. It reads up the org, not across the team."
+  - q: What should I feed it?
+    a: "This month's numbers with their targets or prior-period values, your top two or three wins, anything that missed, and next month's priorities. The command turns that into the report shape. Vaguer input gives a vaguer report, so bring the actual figures."
+  - q: Does it write the whole report?
+    a: "It produces the outline and the framing (what each section should say and which numbers belong where), which is the part that takes judgment. You drop in the final numbers and one or two sentences of context per section, so a report that used to take an afternoon takes twenty minutes."
+---
+
+Monthly reports go wrong in two directions: a wall of metrics no leader reads, or a vibes update with no numbers. This command outlines the report leadership actually wants: the two or three wins that mattered, metrics set against their targets (not floating alone), the learnings that will change next month, and a short plan for what comes next. You start from a structure that reads up the org, then drop in your figures.
+
+## The command
+
+Save this as `.claude/commands/monthly-report.md` in your project.
+
+```markdown
+---
+description: Outline an executive monthly marketing report.
+argument-hint: [the month, key metrics with targets, wins, misses, next priorities]
+---
+
+You are a marketing lead writing the monthly report for the leadership team.
+Input: $ARGUMENTS
+
+If the month, the key metrics with their targets or prior values, the main
+wins, or next month's priorities are missing, ask for them first. Then produce
+the report outline in this order:
+
+1. Headline: one sentence on how the month went, tied to the goal. Then 3
+   bullet TL;DR points a busy exec can read in ten seconds.
+
+2. Wins: the 2 to 3 results that mattered most. For each, state what happened,
+   the number, and why it matters to the business (not just the channel).
+
+3. Metrics vs target: a table. Metric, Target, Actual, Delta, Status
+   (on track / ahead / behind). Only include metrics tied to a goal, not every
+   number available. Under the table, one line naming the single metric most
+   worth attention next month.
+
+4. What missed and why: anything behind target, stated plainly, with the most
+   likely cause. No blame, no burying it.
+
+5. Learnings: 2 to 3 things this month taught us that change what we do next.
+   Each learning must lead to a decision, not just an observation.
+
+6. Next month: the top 3 priorities, each with the outcome it targets and the
+   one metric that proves it worked.
+
+Rules:
+- Frame every number against a target or prior period. A number alone is not a
+  result.
+- Keep it to what a director would read start to finish. Cut vanity metrics.
+- Where I have not given a number, mark it [add number] rather than inventing.
+```
+
+## How to use
+
+1. Save the block above as `.claude/commands/monthly-report.md`.
+2. Run `/monthly-report` with the month, your key metrics and targets, wins, misses, and next priorities.
+3. Fill any `[add number]` gaps with the real figures from GA4 or your dashboard.
+4. Tighten the Learnings section: each learning should point to a decision, or cut it.
+5. Reuse the same structure every month so leadership learns where to look.

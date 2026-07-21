@@ -1,0 +1,77 @@
+---
+name: Negative Keyword Finder
+category: paid-ads
+type: prompt
+tagline: Mine a Google Ads search terms export for negative keywords, grouped by reason.
+description: "A prompt that reads a Google Ads search terms export and proposes a negative keyword list grouped by why each term wastes spend, so you cut irrelevant clicks without hiding queries that actually convert."
+access: free
+related:
+  - ad-copy-variants
+  - serp-intent-classifier
+  - utm-builder
+author: tri-vo
+tags:
+  - paid ads
+  - google ads
+  - negative keywords
+updatedAt: 2026-07-21
+publishedAt: 2026-07-21
+metaDescription: "Find negative keywords from a Google Ads search terms report with Claude Code. Grouped by reason, with match type and a do-not-block list."
+faq:
+  - q: What data does this prompt need?
+    a: "Your Google Ads search terms report exported as CSV, with at least the search term, clicks, cost, and conversions columns. Impressions and CTR help but are optional. Paste the rows or attach the file so the prompt can weigh spend against results before flagging anything."
+  - q: Will it block terms that are actually converting?
+    a: "No. The prompt is told to protect any term with conversions and to output a separate do-not-block list of borderline queries, so you never negate a search that quietly brings in sales just because it looks off-topic."
+  - q: What match type does it recommend?
+    a: "It suggests phrase or exact negatives for specific junk terms and broad negatives only for whole irrelevant themes, and it explains the choice per group so you are not pasting exact-match negatives that leak."
+---
+
+Search terms reports are where paid budgets quietly leak: clicks on queries that were never going to buy. This prompt reads your export and proposes a negative keyword list, but grouped by reason (wrong intent, wrong product, job seekers, free-seekers, competitor names, and so on) so you can approve whole buckets at once. It also protects anything with conversions and flags borderline terms as do-not-block, so cleanup does not cut into what works.
+
+## The prompt
+
+```text
+You are a paid search analyst cleaning up wasted spend. I will paste a Google
+Ads search terms report (CSV rows with search term, clicks, cost, conversions,
+and if present impressions and CTR).
+
+The product and its ideal buyer: [one line, for example: paid B2B invoicing
+software for small agencies].
+
+Do this:
+
+1. Scan every search term and judge relevance against the product and buyer
+   above, weighed against its cost and conversions.
+
+2. Propose negative keywords, grouped by the reason they waste spend. Use
+   groups like: Wrong intent (research or how-to only), Wrong product or
+   feature, Free or DIY seekers, Job and career seekers, Competitor brand
+   terms, Location or audience mismatch, Adult or unrelated. Add groups if the
+   data needs them.
+
+3. For each group, give a table: Search term, Clicks, Cost, Conversions,
+   Suggested negative, Match type (phrase, exact, or broad), Why.
+   - Suggest exact or phrase negatives for specific junk terms.
+   - Suggest a broad negative only for a whole irrelevant theme, and name the
+     root word.
+
+4. Protect performers: never propose negating any term that has conversions.
+
+5. Output a separate "Do not block yet" list: borderline terms that look
+   off-topic but have spend and no clear verdict, so I can watch them.
+
+6. End with the total clicks and cost the proposed negatives would have saved
+   in this report, and the single biggest waste theme.
+
+Be conservative: when a term could plausibly convert, leave it and explain.
+Here is the report:
+[paste the CSV rows]
+```
+
+## How to use
+
+1. In Google Ads, open the search terms report, set a meaningful date range, and export to CSV.
+2. Paste the prompt, fill in the product and buyer line, and paste the rows (or attach the file).
+3. Review group by group. Approve whole buckets, and spot-check the do-not-block list.
+4. Add the approved negatives at the right level (ad group, campaign, or a shared negative list) with the match types given.
+5. Re-run monthly on the fresh export so new waste themes get caught early.

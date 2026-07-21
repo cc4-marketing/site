@@ -1,0 +1,72 @@
+---
+name: Meta Title and Description Writer
+category: seo
+type: command
+tagline: Write SERP length checked title and description pairs that fit Google.
+description: A /meta slash command that generates title tags of 60 characters or fewer and meta descriptions of 155 characters or fewer, in matched pairs, with the character count shown so nothing truncates in search results.
+access: free
+related:
+  - content-brief-generator
+  - serp-intent-classifier
+  - blog-post-outline
+author: tri-vo
+tags:
+  - seo
+  - meta tags
+  - title tag
+  - slash command
+updatedAt: 2026-07-21
+publishedAt: 2026-07-21
+metaDescription: "Meta tag command that writes 5 title and description pairs, each length-checked with the character count shown, so nothing truncates in Google."
+faq:
+  - q: "What are the length limits it enforces?"
+    a: "Titles are 60 characters or fewer and descriptions are 155 or fewer. The command shows the measured character count on each line and rewrites any line that runs over before outputting it."
+  - q: "Why does it write five pairs?"
+    a: "To give you variety to test. Each pair takes a different angle (benefit, question, how-to, comparison, urgency), and the command names the one it would ship and why."
+  - q: "Should I trust the character counts?"
+    a: "Spot check them. The model measures and reports counts, but if a line looks long, ask it to tighten before you paste into your CMS or head tags."
+---
+
+A great title tag that gets cut off at 61 characters is a wasted title tag. This command writes title and description pairs, checks the length of each, and shows the count so you can pick one that fits Google without truncation. It writes several options per page so you have variety to test.
+
+## The command
+
+Save this as `.claude/commands/meta.md` in your project.
+
+```markdown
+---
+description: Write SERP length checked title and meta description pairs.
+argument-hint: [page topic or target keyword]
+---
+
+You are an SEO copywriter. The page topic or target keyword is: $ARGUMENTS
+
+Write 5 title and meta description pairs for this page. Rules:
+
+- Title: 60 characters or fewer. Include the primary keyword near the front.
+  Make it click worthy, not clickbait.
+- Description: 155 characters or fewer. Expand on the title, add a specific
+  benefit or detail, and end with a light call to action.
+- Do not stuff keywords. Each pair should read like a human wrote it.
+- Vary the angle across the 5 pairs (benefit led, question led, how to led,
+  comparison led, urgency led).
+
+Format each pair like this:
+
+Pair 1
+Title (NN chars): the title text
+Description (NNN chars): the description text
+
+Replace NN and NNN with the actual character counts you measured. Count
+characters including spaces. If any line is over the limit, rewrite it before
+you output, do not output an over-limit line.
+
+After the 5 pairs, name which pair you would ship and why, in one sentence.
+```
+
+## How to use
+
+1. Save the block above as `.claude/commands/meta.md`.
+2. Run `/meta claude code for marketing teams` (swap in your page topic).
+3. Check the character counts: if a line looks long, ask Claude to tighten it.
+4. Drop the winning pair into your CMS or head tags, then move to the next page.

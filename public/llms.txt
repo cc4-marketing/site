@@ -37,6 +37,20 @@ The blog publishes practical guides, tutorials, and insights on AI-powered marke
 - Module 2: Advanced Applications (7 lessons, 4-5 hours) — Campaign briefs, content strategy, copy, analytics, competitive analysis, SEO, service packaging
 - Module 3: Capstone (1 lesson, 75 min) — Ship a Real Follow-Up with sigil, an open-source CLI inside Claude Code (https://github.com/blacklogos/sigil). Real send pipeline on Cloudflare Workers, custom `/email-rewrite` slash command, per-recipient handcrafted sentences.
 
+## Marketing Library
+The Marketing Library is a curated directory of free Claude Code prompts, slash commands, subagents, and MCP lists for marketers. Every entry is a real, copyable artifact organized into 9 categories.
+
+- Library hub: https://cc4.marketing/library/
+- SEO (https://cc4.marketing/library/seo/): keyword research, content briefs, and SERP intent prompts
+- Content & Copy (https://cc4.marketing/library/content/): outlines, brand voice, and repurposing workflows
+- Ads & Paid (https://cc4.marketing/library/paid-ads/): headline and primary text variant helpers
+- Analytics & Data (https://cc4.marketing/library/analytics/): plain English questions into GA4 steps
+- Email & Lifecycle (https://cc4.marketing/library/email/): newsletter, subject line, and lifecycle copy
+- Social & Community (https://cc4.marketing/library/social/): posts, threads, and captions from notes
+- Reporting & Dashboards (https://cc4.marketing/library/reporting/): metrics into weekly readouts
+- Competitive Research (https://cc4.marketing/library/competitive/): teardowns of rival pages and offers
+- Project & Ops (https://cc4.marketing/library/project-ops/): calendars, briefs, and repeatable systems
+
 ## Changelog API
 The changelog tracks all course and site updates. Each entry includes a `machine_summary` field optimized for agent consumption.
 

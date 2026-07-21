@@ -1,0 +1,71 @@
+---
+name: Marketing MCP Starter
+category: project-ops
+type: mcp
+tagline: A starter set of MCP servers marketers actually use with Claude Code.
+description: "A curated starter list of MCP servers for marketers using Claude Code: analytics, search data, social, and docs, each with what it does and a one-line setup note, so Claude can pull real data instead of guessing."
+access: free
+related:
+  - content-calendar-scaffold
+  - ga4-question-answerer
+  - utm-builder
+author: tri-vo
+tags:
+  - project ops
+  - mcp
+  - claude code setup
+updatedAt: 2026-07-21
+publishedAt: 2026-07-21
+metaDescription: "A starter list of MCP servers for marketers on Claude Code: analytics, search, social, and docs, each with a what-it-does line and setup note."
+faq:
+  - q: What is an MCP server, in marketing terms?
+    a: "An MCP server is a small connector that gives Claude Code live access to a tool you already use, like your analytics or a search API. Instead of pasting a CSV, Claude queries the source directly, so answers come from current data rather than what you happened to copy in."
+  - q: Do I need all of these?
+    a: "No. Start with one that removes a repeated copy-paste in your week, usually analytics or a docs connector. Add another only when a real task needs it. Every server you connect is one more thing to keep authorized and updated, so add on demand."
+  - q: Is it safe to connect these to my accounts?
+    a: "Connect read-only where the server offers it, use a scoped API key rather than an admin login, and prefer official or well-maintained servers. Review what each server can access before authorizing, the same way you would vet any third-party app touching your marketing stack."
+---
+
+Claude Code is far more useful when it can read your real data instead of whatever you pasted in. MCP servers are the connectors that make that happen: analytics, search data, social scheduling, and your docs. This is a starter set aimed at marketers, not engineers. Each entry says what it does and how to add it, so you can wire up one connector this week and stop copy-pasting exports.
+
+## The starter list
+
+Add servers with the Claude Code CLI. The general shape is:
+
+```bash
+# Add an MCP server (name it, then give the run command)
+claude mcp add <name> -- <command to start the server>
+
+# List what is connected
+claude mcp list
+
+# Remove one
+claude mcp remove <name>
+```
+
+### Analytics and data
+
+- **Google Analytics (GA4)** — Lets Claude query your GA4 property directly: sessions, conversions, traffic by channel, date ranges. What it removes: manual GA4 exports before every report. Setup note: use the official Google Analytics MCP server, authorize with a service account or OAuth scoped to read-only, and pass your property ID. Pair it with the GA4 Question Answerer prompt.
+- **PostgreSQL / database** — Read your own product or CRM tables (signups, orders, cohorts) so Claude can tie marketing activity to real outcomes. What it removes: pinging an engineer for a one-off number. Setup note: the reference `@modelcontextprotocol/server-postgres` works well. Connect with a read-only database user, never an admin role.
+
+### Search and web
+
+- **Web search (Brave or similar)** — Gives Claude live search results for SERP checks, competitor scanning, and fact-checking claims before they ship. What it removes: switching to a browser mid-task. Setup note: get an API key from the provider, add it as the server's env var. Free tiers cover light use.
+- **Fetch / web page reader** — Pulls the actual content of a URL so Claude can tear down a competitor page or summarize an article you paste as a link. What it removes: copying page text by hand. Setup note: the reference `fetch` server needs no API key and is the fastest first install.
+
+### Social and content
+
+- **Buffer or social scheduler (community MCP)** — Read your posting queue and past post performance so Claude can slot new content into real gaps. What it removes: cross-checking a spreadsheet against your scheduler. Setup note: use a community server that wraps your scheduler's API, authorize with an app-scoped token, and confirm it is read-plus-create only if you want Claude to draft into drafts, not publish.
+- **Notion or Google Docs** — Read and write your content calendar, briefs, and notes where the team already works. What it removes: retyping a brief out of Claude and into your doc tool. Setup note: official Notion and Google Workspace MCP servers exist. Scope access to the specific database or folder marketing uses, not the whole workspace.
+
+### Project and issues
+
+- **Linear or Jira** — Read the marketing project board so Claude can see what is shipping and when, and draft updates from real task status. What it removes: manually summarizing a board for a status note. Setup note: official servers exist for both. Authorize with a token scoped to the marketing team's project.
+
+## How to use
+
+1. Pick one server that kills a repeated copy-paste in your week (analytics or docs is the usual first).
+2. Run `claude mcp add ...` with the command from that server's README, then `claude mcp list` to confirm it connected.
+3. Ask Claude a question that needs the live data (for example, "which channel drove the most conversions last month?") to check the connection works end to end.
+4. Prefer read-only, scoped keys, and review what each server can touch before authorizing.
+5. Add a second server only when a real task needs it, not all at once.

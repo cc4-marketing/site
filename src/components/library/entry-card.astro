@@ -1,0 +1,105 @@
+---
+import type { LibraryEntry } from '../../lib/library';
+import { entryUrl, typeLabel } from '../../lib/library';
+
+interface Props {
+  entry: LibraryEntry;
+}
+
+const { entry } = Astro.props;
+const { name, tagline, type, access } = entry.data;
+---
+
+<a href={entryUrl(entry)} class="lib-card">
+  <div class="lib-card-badges">
+    <span class="lib-badge lib-badge-type">{typeLabel(type)}</span>
+    <span class={`lib-badge lib-badge-access lib-badge-${access}`}>
+      {access === 'free' ? 'Free' : 'Paid'}
+    </span>
+  </div>
+  <h3 class="lib-card-name">{name}</h3>
+  <p class="lib-card-tagline">{tagline}</p>
+  <span class="lib-card-link">Open {typeLabel(type).toLowerCase()}</span>
+</a>
+
+<style>
+  .lib-card {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    padding: 24px;
+    text-decoration: none;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+    height: 100%;
+  }
+
+  .lib-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 8px 8px 0 var(--mustard);
+    border-color: var(--rust);
+  }
+
+  .lib-card-badges {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .lib-badge {
+    font-size: 0.7em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 10px;
+    border: 1px solid var(--border-color);
+  }
+
+  .lib-badge-type {
+    background: var(--plum);
+    color: #fff;
+    border-color: var(--plum);
+  }
+
+  .lib-badge-free {
+    background: var(--tint-rust-2);
+    color: var(--rust);
+    border-color: var(--rust);
+  }
+
+  .lib-badge-paid {
+    background: var(--mustard);
+    color: var(--ink-on-mustard);
+    border-color: var(--ink-on-mustard);
+  }
+
+  .lib-card-name {
+    font-family: var(--font-display);
+    font-size: 1.25em;
+    margin: 0 0 8px;
+    line-height: 1.2;
+    color: var(--text-primary);
+  }
+
+  .lib-card-tagline {
+    font-size: 0.92em;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0 0 16px;
+    flex: 1;
+  }
+
+  .lib-card-link {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--rust);
+    margin-top: auto;
+  }
+
+  .lib-card:hover .lib-card-link {
+    text-decoration: underline;
+  }
+</style>

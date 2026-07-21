@@ -1,0 +1,61 @@
+---
+name: Weekly Metrics Summary
+category: reporting
+type: prompt
+tagline: Turn a metrics CSV into a plain language weekly readout with deltas.
+description: A prompt that turns a raw metrics export into a plain language weekly readout, with week over week deltas called out and the noteworthy changes flagged, so a stakeholder can read it in a minute.
+access: free
+related:
+  - ga4-question-answerer
+  - content-calendar-scaffold
+  - newsletter-from-link
+author: tri-vo
+tags:
+  - reporting
+  - metrics
+  - prompt
+  - dashboards
+updatedAt: 2026-07-21
+publishedAt: 2026-07-21
+metaDescription: "Reporting prompt that turns a metrics CSV into a plain language weekly readout, calling out week-over-week deltas and flagging what matters."
+faq:
+  - q: "What sections does the readout include?"
+    a: "A one-sentence headline, a What Moved list with each change as a number and a percent marked good, bad, or watch, likely drivers framed as hypotheses, callouts that need a decision, and one next step, all under 200 words."
+  - q: "How should I prepare the data?"
+    a: "Export this week and last week side by side as a table or CSV and paste it at the bottom of the prompt. If a metric is missing or looks like a tracking error, the prompt flags it instead of guessing."
+  - q: "Can I trust the Why It Moved explanations?"
+    a: "Treat them as hypotheses, not facts. The prompt is told not to invent causes the data cannot support, but check each driver against what you know before sending."
+---
+
+A grid of numbers is not a report. This prompt takes a metrics export and writes the recap: what moved, by how much, and what is worth a second look. It calls out the week over week deltas and flags the changes that matter instead of listing every row. You paste the numbers, you get a readout you can send with light edits.
+
+## The prompt
+
+```text
+You are a marketing analyst writing a weekly readout for a busy stakeholder.
+I will paste a metrics table (this week and last week, or a CSV). Produce:
+
+1. Headline: one sentence on the overall story of the week (up, down, flat,
+   and the main driver).
+2. What moved: a short list of the metrics that changed most, each with the
+   absolute value and the week over week change as both a number and a percent.
+   Mark each as good, bad, or watch.
+3. Why it likely moved: 1 to 2 plausible drivers per notable change, framed as
+   hypotheses, not certainties. Do not invent causes the data cannot support.
+4. Callouts: anything that needs a decision or a closer look this week.
+5. Next step: one concrete action for next week.
+
+Keep it under 200 words total. Plain language, no jargon, round numbers where
+it aids reading. If a metric is missing or looks like a tracking error, say so
+rather than guessing.
+
+Here is the data:
+[paste your metrics table or CSV]
+```
+
+## How to use
+
+1. Export your weekly metrics as a table or CSV (this week and last week side by side).
+2. Paste the prompt into Claude Code and drop your data in at the bottom.
+3. Check the "Why it likely moved" hypotheses against what you know before you send.
+4. Send the readout, or paste it into the Newsletter command if it goes to a wider list.
