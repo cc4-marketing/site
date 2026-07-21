@@ -1,6 +1,6 @@
 ---
-export const prerender = true;
-
+// SSR (not prerendered), matches the modules route so Emdash does not redirect
+// these paths to /_emdash/admin/setup in production.
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Header from '../../../components/Header.astro';
@@ -17,15 +17,12 @@ import {
   metaFor,
 } from '../../../lib/library';
 
-export async function getStaticPaths() {
-  const entries = await getCollection('library');
-  return entries.map((entry) => ({
-    params: { category: entry.data.category, entry: fileSlug(entry) },
-    props: { entry, all: entries },
-  }));
-}
-
-const { entry, all } = Astro.props;
+const { category: categorySlug, entry: entrySlug } = Astro.params;
+const all = await getCollection('library');
+const entry = all.find(
+  (e) => e.data.category === categorySlug && fileSlug(e) === entrySlug,
+);
+if (!entry) return Astro.redirect('/404');
 const { data } = entry;
 const category = getCategory(data.category)!;
 const slug = fileSlug(entry);

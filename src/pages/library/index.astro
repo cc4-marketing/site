@@ -1,6 +1,8 @@
 ---
-export const prerender = true;
-
+// SSR (not prerendered) so requests route through Astro like the modules pages.
+// Prerendered library routes were falling through to the Emdash SSR handler in
+// production and redirecting to /_emdash/admin/setup. Matching the modules SSR
+// pattern fixes that.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
