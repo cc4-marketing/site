@@ -1,4 +1,5 @@
 import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import { TYPE_LABELS } from '../data/library-categories';
 
 export type LibraryEntry = CollectionEntry<'library'>;
@@ -88,6 +89,24 @@ export function resolveRelated(entry: LibraryEntry, all: LibraryEntry[]): Librar
   }
 
   return picked.slice(0, 5);
+}
+
+/**
+ * Look up a skill entry by its file slug for the install/download routes.
+ * Returns null unless the slug matches a `type: 'skill'` entry that carries a
+ * repoUrl or downloadKey. Slugs are assumed globally unique, so the download
+ * route can trust this as its allow-list before touching R2.
+ */
+export async function getLibraryEntryBySlug(slug: string): Promise<LibraryEntry | null> {
+  if (!slug) return null;
+  const all = await getCollection('library');
+  const match = all.find(
+    (e) =>
+      fileSlug(e) === slug &&
+      e.data.type === 'skill' &&
+      (e.data.repoUrl || e.data.downloadKey),
+  );
+  return match ?? null;
 }
 
 export interface FaqPair {

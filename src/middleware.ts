@@ -9,6 +9,12 @@ export const onRequest = defineMiddleware((context, next) => {
   const url = new URL(request.url);
   const { pathname } = url;
 
+  // The /skills gallery never shipped: it was folded into /library/. Any
+  // pre-merge shares or stray index entries get a 301 to the library hub.
+  if (pathname === '/skills' || pathname.startsWith('/skills/')) {
+    return context.redirect('/library/', 301);
+  }
+
   const isPage =
     !pathname.endsWith('/') &&
     !pathname.startsWith('/api/') &&

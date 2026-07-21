@@ -48,6 +48,10 @@ const libraryCollection = defineCollection({
     publishedAt: z.coerce.date().optional(),
     metaDescription: z.string().max(160).optional(),
     faq: z.array(z.object({ q: z.string(), a: z.string() })).optional(),
+    // Skill-only in practice: source repo (clone target) and the R2 object
+    // suffix under skills/ that the download route streams.
+    repoUrl: z.string().url().optional(),
+    downloadKey: z.string().optional(),
   }),
 });
 
