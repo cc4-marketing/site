@@ -15,19 +15,24 @@ Trạng thái: `[x]` xong, `[~]` chặn/chờ, `[ ]` chưa làm.
   - [ ] `subscribe.ts`: bỏ push Resend audience (dòng 73-83 + read `RESEND_AUDIENCE_ID`)
   - [ ] `download.astro`: bỏ popup `window.open` Substack (dòng 313-318)
 
-## Phase 1 — Library (chưa bắt đầu)
-- [ ] Tạo MDX content collection `library` (copy pattern `modules`)
-- [ ] Routes `/library/`, `/library/[category]/`, `/library/[category]/[entry]/` + `deriveLibraryUrls()` vào astro.config
-- [ ] 9 category theo chức năng marketing
-- [ ] Entry schema (type, access free|paid, polarProductId, author, related, tags)
-- [ ] Viết ~26 seed entry (19 free + 5 paid pack + 1 bundle)
-- [ ] Free/paid split UI: paid entry = preview + locked artifact + nút Polar
-- [ ] Master public doc (GitHub repo) + link-back flywheel
-- [ ] AEO per entry: SoftwareSourceCode + BreadcrumbList JSON-LD + Q&A block + mục llms.txt
+## Phase 1 — Library (PR #27, chờ merge)
+- [x] MDX content collection `library` + Zod schema (paid field sẵn)
+- [x] Routes hub/category/entry + `deriveLibraryUrls()` sitemap
+- [x] 9 category theo chức năng marketing
+- [x] 13 seed entry free phủ 9 category (artifact thật)
+- [x] AEO per entry: SoftwareSourceCode + FAQPage + BreadcrumbList JSON-LD
+- [~] Paid entry (5 pack + bundle) + free/paid split UI + nút Polar — chặn Polar (Task 4)
+- [ ] Mục `## Marketing Library` trong llms.txt/llms-full.txt (deferred)
+- [ ] Nav link `/library/` vào siteData.ts (thuộc PR #26, thêm khi merge)
+- [ ] Master GitHub repo `cc4-marketing/marketing-library` (hub đã forward-link)
 - [ ] Cập nhật `faq.astro` ("no paid tier") khi pack đầu ship
 
-## Phase 2+ — nội dung & phân phối (chưa bắt đầu)
-- [ ] Template tutorial "How to [task] with Claude Code (+ prompt)", 2 bài/tuần, AI-assisted (Tri + Alice)
+## Phase 2 — nội dung & phân phối (đã bắt đầu)
+- [x] Template tutorial + cadence + ownership — `phase-02-content-engine.md`
+- [x] Draft bài đầu "SEO Content Brief with Claude Code" — `first-tutorial-draft.md`
+- [ ] Publish bài đầu qua /publish-post + /ship (chờ bạn cho phép deploy production)
+- [ ] Draft 5 bài batch đầu (map 1:1 với library entry)
+- [ ] Retrofit internal link: blog + Module 2 lesson -> library entry (PR nhỏ)
 - [ ] Launch Library như sự kiện: Product Hunt, Show HN, r/ClaudeAI, LinkedIn, X
 - [ ] Expert roundup "N marketers dùng Claude Code thế nào" (backlink)
 - [ ] Substack nurture hàng tuần: 1 entry + 1 tutorial + 1 nhắc paid
