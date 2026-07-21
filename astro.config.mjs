@@ -116,7 +116,8 @@ export default defineConfig({
       filter: (page) =>
         !page.includes('/og-preview') &&
         !page.includes('/og/preview') &&
-        !page.includes('/og/debug'),
+        !page.includes('/og/debug') &&
+        !page.includes('/library/download/'),
       serialize(item) {
         const url = item.url;
         // No lastmod: stamping build time on every URL told Google all pages

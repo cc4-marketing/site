@@ -13,6 +13,10 @@
         return;
       }
 
+      // Skip opt-out containers (e.g. the stack cart's command block, which
+      // ships its own "Copy all" control).
+      if (pre.closest('[data-no-copy-btn]')) return;
+
       // Create wrapper
       const wrapper = document.createElement('div');
       wrapper.className = 'code-block-wrapper';

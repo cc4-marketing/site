@@ -1,0 +1,51 @@
+---
+name: Campaign Review Dashboard
+category: project-ops
+type: skill
+tagline: Turn a campaign folder into one HTML page a client can review in full.
+description: "A Claude Code skill that scans a campaign workspace and builds a single self-contained HTML dashboard: asset inventory with statuses, an open-items checklist, and an inline viewer that renders every file, plus an optional zip you can send."
+access: paid
+price: 19.99
+related:
+  - content-calendar-scaffold
+  - marketing-mcp-starter
+  - monthly-report-outline
+author: tri-vo
+tags:
+  - project ops
+  - campaign management
+  - client review
+updatedAt: 2026-07-22
+publishedAt: 2026-07-22
+metaDescription: "A Claude Code skill that turns a campaign folder into one HTML dashboard: asset inventory, statuses, open items, and an inline viewer for every file."
+faq:
+  - q: "What goes into the dashboard?"
+    a: "A top overview with a stat band and the campaign's proof numbers, one table per asset group with a status tag on each item (done, live, verify, hold, or choose), an open-items checklist with owners, and a knowledge summary. Below that, an inline viewer embeds every file: markdown renders, HTML and PDF embed, and binaries link out."
+  - q: "Can I send it to someone who does not have the files?"
+    a: "Yes. Run it with the zip option and the skill packages the review page plus every included file and referenced asset into one archive. Whoever you send it to extracts the zip and opens the page offline, with all the inline views and download links intact."
+  - q: "Where do the asset statuses come from?"
+    a: "From your own plan files and prior reports, not invented. The skill reads the phase tables and status notes already in the workspace, so the dashboard reflects the real state of the campaign rather than a guess."
+---
+
+When a campaign is spread across a dozen files (briefs, landing pages, ad copy, PDFs, a plan), handing someone a folder is a bad review experience. They have to open each file, guess what is done, and ping you for status. Campaign Review Dashboard is a Claude Code skill that reads the whole workspace and builds one HTML page: the campaign overview on top, every file readable inline below it. You send one link, and a client or manager reviews the entire campaign without opening anything else.
+
+## What it does
+
+Point the skill at a campaign folder and it produces a single self-contained HTML file with two parts.
+
+**The overview.** A title and meta line (product, engagement, date), a stat band with the campaign's proof numbers, one table per asset group with a status tag on each item (done, live, verify, hold, or choose), an open-items checklist with owner labels, and a short knowledge summary of what the campaign encodes. Statuses come from your plan files and prior reports, so they match reality.
+
+**The inline viewer.** Every campaign file, embedded on the same page. Markdown renders to formatted text, HTML and PDF embed in place, and binaries link out. The sidebar lists every file so a reviewer can jump straight to one. Each section has copy and open-in-editor controls, and markdown sections can be edited and saved as a timestamped version.
+
+Add the zip option and the skill packages the review page plus every included file and referenced asset (fonts, images, logos) into one archive that opens offline anywhere.
+
+## How to use
+
+1. Ask Claude to run the campaign review skill on your campaign workspace.
+2. It scans the default roots (docs, marketing, plans) and asks you to confirm if the campaign root is ambiguous.
+3. It writes the overview, embeds every file, self-validates the output, and opens the finished page.
+4. When you want to send it, ask for the zip and hand off the single archive.
+
+## Install
+
+This skill is part of a paid pack. Install will be available at launch. Add it to your stack now with the button above and you will get the install link when the pack ships.

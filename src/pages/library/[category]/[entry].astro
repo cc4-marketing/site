@@ -7,6 +7,7 @@ import Header from '../../../components/Header.astro';
 import Footer from '../../../components/Footer.astro';
 import CategorySidebar from '../../../components/library/category-sidebar.astro';
 import EntryCard from '../../../components/library/entry-card.astro';
+import StackCart from '../../../components/library/stack-cart.astro';
 import { LIBRARY_CATEGORIES, getCategory } from '../../../data/library-categories';
 import {
   fileSlug,
@@ -38,6 +39,12 @@ const { Content } = await render(entry);
 const siteUrl = 'https://cc4.marketing';
 const pageUrl = `${siteUrl}/library/${data.category}/${slug}/`;
 const author = authorName(data.author);
+
+// Skill-only install affordances. Non-skill entries keep their existing render.
+const isSkill = data.type === 'skill';
+const repoUrl = data.repoUrl;
+const downloadUrl = data.downloadKey ? `/library/download/${slug}.skill` : null;
+const cloneCommand = repoUrl ? `git clone ${repoUrl} ~/.claude/skills/${slug}` : null;
 
 const breadcrumb = {
   '@context': 'https://schema.org',
@@ -71,6 +78,30 @@ const softwareSchema = {
   ...(data.updatedAt && { dateModified: data.updatedAt.toISOString().slice(0, 10) }),
 };
 
+// Skills are apps, not source snippets: emit SoftwareApplication instead of
+// SoftwareSourceCode (the other 4 types keep softwareSchema above).
+const skillAppSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: data.name,
+  description: data.description,
+  url: pageUrl,
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Claude Code',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  author: { '@type': 'Person', name: author },
+  keywords: data.tags.join(', '),
+  isAccessibleForFree: data.access === 'free',
+  ...(repoUrl && { codeRepository: repoUrl }),
+  isPartOf: {
+    '@type': 'CollectionPage',
+    name: 'Claude Code Marketing Library',
+    url: `${siteUrl}/library/`,
+  },
+  ...(data.publishedAt && { datePublished: data.publishedAt.toISOString().slice(0, 10) }),
+  ...(data.updatedAt && { dateModified: data.updatedAt.toISOString().slice(0, 10) }),
+};
+
 const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -94,7 +125,7 @@ const faqSchema = {
 >
   <Header />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />
-  <script type="application/ld+json" set:html={JSON.stringify(softwareSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(isSkill ? skillAppSchema : softwareSchema)} />
   <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 
   <main class="lib-entry">
@@ -122,6 +153,62 @@ const faqSchema = {
         <p class="lib-entry-tagline">{data.tagline}</p>
         <p class="lib-entry-desc">{data.description}</p>
         <p class="lib-entry-by">By {author}</p>
+
+        {isSkill && (
+          <div class="lib-skill-install-wrap">
+            <div class="lib-skill-actions">
+              {repoUrl && (
+                <a href={repoUrl} target="_blank" rel="noopener" class="lib-skill-action lib-skill-action-primary">
+                  View on GitHub
+                </a>
+              )}
+              <button
+                type="button"
+                class="lib-skill-action lib-skill-add-btn"
+                data-skill-add
+                data-slug={slug}
+                data-name={data.name}
+                data-repo={repoUrl}
+                data-download-url={downloadUrl}
+                data-page-url={pageUrl}
+                aria-pressed="false"
+              >
+                <span data-add-label>Add to stack</span>
+              </button>
+            </div>
+
+            <section class="lib-skill-install" data-install-panel>
+              <h2 class="lib-skill-install-title">Install</h2>
+
+              <div class="lib-skill-tabs" role="tablist" aria-label="Install methods">
+                {cloneCommand && (
+                  <button type="button" class="lib-skill-tab" role="tab" id="lib-tab-clone" aria-controls="lib-panel-clone" aria-selected="true" data-tab="clone">git clone</button>
+                )}
+                {downloadUrl && (
+                  <button type="button" class="lib-skill-tab" role="tab" id="lib-tab-download" aria-controls="lib-panel-download" aria-selected={cloneCommand ? 'false' : 'true'} data-tab="download">Download</button>
+                )}
+              </div>
+
+              {cloneCommand && (
+                <div class="lib-skill-tabpanel" id="lib-panel-clone" role="tabpanel" aria-labelledby="lib-tab-clone" data-panel="clone">
+                  <p class="lib-skill-tabpanel-lead">Clone the skill straight into your Claude Code skills directory, then restart Claude Code.</p>
+                  <pre><code>{cloneCommand}</code></pre>
+                </div>
+              )}
+
+              {downloadUrl && (
+                <div class="lib-skill-tabpanel" id="lib-panel-download" role="tabpanel" aria-labelledby="lib-tab-download" data-panel="download" hidden={!!cloneCommand}>
+                  <p class="lib-skill-tabpanel-lead">Download the packaged skill, move it into <code>~/.claude/skills/</code>, then restart Claude Code.</p>
+                  <a href={downloadUrl} class="lib-skill-action lib-skill-action-primary" download={`${slug}.skill`}>Download {slug}.skill</a>
+                </div>
+              )}
+
+              {!cloneCommand && !downloadUrl && (
+                <p class="lib-skill-install-note">Install for this skill is available at launch.</p>
+              )}
+            </section>
+          </div>
+        )}
 
         <div class="prose">
           <Content />
@@ -151,8 +238,40 @@ const faqSchema = {
     </div>
   </main>
 
+  {isSkill && <StackCart />}
+
   <Footer />
 </BaseLayout>
+
+{isSkill && (
+  <script>
+    // Tabbed install panel: switch active tab/panel. Scoped to [data-install-panel].
+    function setupInstallTabs(): void {
+      document.querySelectorAll<HTMLElement>('[data-install-panel]').forEach((panel) => {
+        const tabs = panel.querySelectorAll<HTMLElement>('.lib-skill-tab');
+        const panes = panel.querySelectorAll<HTMLElement>('.lib-skill-tabpanel');
+        tabs.forEach((tab) => {
+          if (tab.dataset.tabBound) return;
+          tab.dataset.tabBound = '1';
+          tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+            panes.forEach((p) => {
+              p.hidden = p.dataset.panel !== target;
+            });
+          });
+        });
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupInstallTabs);
+    } else {
+      setupInstallTabs();
+    }
+    window.addEventListener('pageshow', setupInstallTabs);
+  </script>
+)}
 
 <style>
   .lib-entry {
@@ -310,4 +429,101 @@ const faqSchema = {
     .lib-entry-layout { grid-template-columns: 1fr; gap: 28px; }
     .lib-entry-aside { order: 2; }
   }
+
+  /* Skill-only install block (rendered only when data.type === 'skill'). */
+  .lib-skill-install-wrap { margin: 0 0 32px; }
+
+  .lib-skill-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .lib-skill-action {
+    display: inline-block;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--rust);
+    border: 2px solid var(--rust);
+    padding: 10px 22px;
+    transition: all 0.2s ease;
+  }
+
+  .lib-skill-action:hover { background: var(--rust); color: var(--cream); }
+
+  .lib-skill-action-primary { background: var(--rust); color: var(--cream); }
+  .lib-skill-action-primary:hover { background: var(--charcoal); border-color: var(--charcoal); }
+
+  .lib-skill-add-btn {
+    cursor: pointer;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  .lib-skill-add-btn:hover { background: var(--bg-primary); border-color: var(--rust); color: var(--rust); }
+  .lib-skill-add-btn.in-stack { background: var(--rust); border-color: var(--rust); color: var(--cream); }
+
+  .lib-skill-install {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    padding: 24px 28px;
+  }
+
+  .lib-skill-install-title {
+    font-family: var(--font-display);
+    font-size: 1.3em;
+    margin: 0 0 16px;
+    color: var(--text-primary);
+  }
+
+  .lib-skill-tabs {
+    display: flex;
+    margin-bottom: 16px;
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .lib-skill-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    padding: 8px 16px;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .lib-skill-tab[aria-selected='true'] { color: var(--rust); border-bottom-color: var(--rust); }
+
+  .lib-skill-tabpanel-lead {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    margin: 0 0 12px;
+    line-height: 1.5;
+  }
+
+  .lib-skill-tabpanel-lead code {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    padding: 1px 6px;
+  }
+
+  .lib-skill-install pre {
+    background: #1c1c1c;
+    color: #eaeaea;
+    border: 2px solid #2a2a2a;
+    padding: 16px;
+    overflow-x: auto;
+    margin: 0;
+    font-size: 0.85em;
+  }
+
+  .lib-skill-install pre code { color: inherit; background: transparent; border: none; padding: 0; }
+  .lib-skill-install code { font-size: 0.85em; }
+
+  .lib-skill-install-note { margin: 0; font-size: 0.9em; color: var(--text-secondary); }
 </style>

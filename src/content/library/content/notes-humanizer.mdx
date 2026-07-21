@@ -1,0 +1,62 @@
+---
+name: Notes Humanizer
+category: content
+type: skill
+tagline: Strip the AI tells out of a draft so it reads like a person wrote it.
+description: "A Claude Code skill that removes machine-written patterns from copy (em dashes, 'delve', 'leverage', empty transitions) and adds back specifics, one real opinion, and varied sentence rhythm before you publish."
+access: free
+repoUrl: https://github.com/cc4-marketing/notes-humanizer
+related:
+  - brand-voice-memory
+  - repurpose-blog-to-social
+  - blog-post-outline
+author: alice-marketer
+tags:
+  - content
+  - copy editing
+  - ai detection
+updatedAt: 2026-07-22
+publishedAt: 2026-07-22
+metaDescription: "A Claude Code skill that strips AI tells from copy (em dashes, 'delve', flat phrasing) and adds specifics and voice, so drafts read human before you ship."
+faq:
+  - q: "What exactly does it strip out?"
+    a: "The patterns that flag text as machine-written: em dashes used for clause breaks, words like 'delve', 'leverage', and 'utilize', the 'it's not just X, it's Y' tic, hedging adverbs such as 'essentially' and 'ultimately', and empty transitions like 'moreover' and 'furthermore'."
+  - q: "Does it change what my copy says?"
+    a: "No. It keeps your meaning and rewrites the texture. It cuts the mechanical phrasing, then adds a concrete number or name roughly every 80 words, one opinion an AI would not volunteer, and sentence-length variance so the rhythm sounds human."
+  - q: "When in my workflow should I run it?"
+    a: "Last, right before publishing. Draft the piece however you like, then run the skill as a final pass on newsletters, Substack notes, X posts, or landing-page body copy."
+---
+
+Most AI drafts read smooth and say nothing. They lean on the same tells: em dashes splitting every other sentence, words like "delve" and "leverage", the "it's not just X, it's Y" construction, and transitions that add no information. Readers clock that tone now, and so do AI detectors. Notes Humanizer is a Claude Code skill that runs as a final pass on a draft, cuts those patterns, and puts a human voice back in. You keep the AI speed and ship copy that does not sound like a model wrote it.
+
+## What it does
+
+The skill works in two passes.
+
+**Strip pass.** It removes the default set of AI tells:
+
+- Em dashes used for clause separation.
+- "Delve", "leverage", "utilize", "in today's fast-paced", "navigate the landscape".
+- The "it's not just X, it's Y" pattern.
+- Overuse of trios (the "X, Y, and Z" structure on repeat).
+- Hedging adverbs: "essentially", "fundamentally", "ultimately".
+- Empty transitions: "moreover", "furthermore", "in conclusion".
+
+**Inject pass.** It adds what a flat draft is missing:
+
+- One concrete number or proper noun about every 80 words.
+- One opinion or preference a model would not volunteer on its own.
+- Sentence-length variance, mixing short punchlines with longer setups.
+- A voice quirk that matches your prior writing.
+
+The result reads like one person wrote it on a good day, not like a template got filled in.
+
+## Install
+
+This one is free. Clone it straight into your Claude Code skills directory, then restart Claude Code.
+
+```bash
+git clone https://github.com/cc4-marketing/notes-humanizer ~/.claude/skills/notes-humanizer
+```
+
+Once it is installed, draft your copy as usual and ask Claude to run the notes-humanizer skill on it before you publish. Use the git clone tab above to copy the exact command.
