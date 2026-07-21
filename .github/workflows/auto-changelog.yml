@@ -38,11 +38,22 @@ jobs:
           CHANGED_FILES=$(git diff --name-only "$LAST_REF"..HEAD)
           echo "$CHANGED_FILES" > /tmp/changed_files.txt
 
+      - name: Set up Node
+        if: steps.commits.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Generate changelog entry with Claude
         if: steps.commits.outputs.skip != 'true'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Claude sign-in via subscription OAuth token (no Anthropic API key).
+          # Generate once locally with `claude setup-token` and add it as the
+          # CLAUDE_CODE_OAUTH_TOKEN repository secret.
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         run: |
+          npm install -g @anthropic-ai/claude-code
+
           COMMITS=$(cat /tmp/commits.txt)
           CHANGED_FILES=$(cat /tmp/changed_files.txt)
 
@@ -67,27 +78,23 @@ jobs:
             \"modules\": [\"affected modules like: course, homepage, module-0, module-1, module-2, infrastructure, seo, docs\"]
           }"
 
-          # Call Anthropic API
-          RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
-            -H "content-type: application/json" \
-            -H "x-api-key: $ANTHROPIC_API_KEY" \
-            -H "anthropic-version: 2023-06-01" \
-            -d "{
-              \"model\": \"claude-haiku-4-5-20251001\",
-              \"max_tokens\": 500,
-              \"messages\": [{\"role\": \"user\", \"content\": $(echo "$PROMPT" | jq -Rs .)}]
-            }")
+          # Run Claude headless, authenticated by the OAuth token (no API key).
+          # --output-format json wraps the model text in .result; the prompt asks
+          # for raw JSON so .result is the entry JSON itself.
+          RAW=$(printf '%s' "$PROMPT" | claude -p --output-format json 2>/tmp/claude_err.txt || true)
+          ENTRY_JSON=$(echo "$RAW" | jq -r '.result // empty')
 
-          # Extract the text content
-          ENTRY_JSON=$(echo "$RESPONSE" | jq -r '.content[0].text // empty')
+          # Strip accidental code fences just in case.
+          ENTRY_JSON=$(echo "$ENTRY_JSON" | sed 's/^```json//; s/^```//; s/```$//')
 
-          # Guard against Anthropic API errors (missing key, rate-limit, etc.)
-          # producing an empty or non-JSON ENTRY_JSON. Fail loudly here instead
-          # of silently writing "null" to entry.json and tripping jq later.
+          # Fail loudly if Claude did not return usable entry JSON, instead of
+          # silently writing "null" to entry.json and tripping jq later.
           if [ -z "$ENTRY_JSON" ] || ! echo "$ENTRY_JSON" | jq -e '.modules' > /dev/null 2>&1; then
-            echo "::error::Anthropic API did not return a usable entry JSON"
-            echo "Raw response:"
-            echo "$RESPONSE"
+            echo "::error::Claude did not return a usable entry JSON (check the CLAUDE_CODE_OAUTH_TOKEN secret)"
+            echo "Raw result:"
+            echo "$RAW"
+            echo "Stderr:"
+            cat /tmp/claude_err.txt || true
             exit 1
           fi
 
