@@ -66,6 +66,15 @@ export async function resolveOgImage(
     return `/og/modules/${module}-${slug}.png`;
   }
 
+  // Library entry pages: /library/{category}/{slug}/ → build-time OG asset.
+  // Two path segments required, so the hub and category index pages fall
+  // through to the default cover.
+  const libraryMatch = ctx.path.match(/^\/library\/([^/]+)\/([^/]+)\/?$/);
+  if (libraryMatch) {
+    const [, category, slug] = libraryMatch;
+    return `/og/library/${category}-${slug}.png`;
+  }
+
   return STATIC_FALLBACK_DEFAULT;
 }
 

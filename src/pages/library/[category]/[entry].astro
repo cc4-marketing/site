@@ -14,6 +14,7 @@ import {
   typeLabel,
   resolveRelated,
   buildEntryFaq,
+  metaFor,
 } from '../../../lib/library';
 
 export async function getStaticPaths() {
@@ -63,6 +64,13 @@ const softwareSchema = {
   codeSampleType: 'full solution',
   programmingLanguage: 'Claude Code',
   isAccessibleForFree: data.access === 'free',
+  license: 'https://opensource.org/licenses/MIT',
+  isPartOf: {
+    '@type': 'CollectionPage',
+    name: 'Claude Code Marketing Library',
+    url: `${siteUrl}/library/`,
+  },
+  ...(data.publishedAt && { datePublished: data.publishedAt.toISOString().slice(0, 10) }),
   ...(data.updatedAt && { dateModified: data.updatedAt.toISOString().slice(0, 10) }),
 };
 
@@ -78,8 +86,8 @@ const faqSchema = {
 ---
 
 <BaseLayout
-  title={`${data.name} — ${category.label} | Claude Code Marketing Library`}
-  description={data.description}
+  title={`${data.name}, ${category.label}`}
+  description={metaFor(data)}
   keywords={data.tags.length ? data.tags : [category.label, 'Claude Code', 'marketing']}
   type="article"
   author={author}

@@ -8,6 +8,7 @@ import Footer from '../../../components/Footer.astro';
 import CategorySidebar from '../../../components/library/category-sidebar.astro';
 import EntryCard from '../../../components/library/entry-card.astro';
 import { LIBRARY_CATEGORIES } from '../../../data/library-categories';
+import { fileSlug } from '../../../lib/library';
 
 export async function getStaticPaths() {
   const entries = await getCollection('library');
@@ -41,10 +42,22 @@ const breadcrumb = {
     { '@type': 'ListItem', position: 3, name: category.label, item: catUrl },
   ],
 };
+
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: `${category.label}, Claude Code Marketing Library`,
+  itemListElement: entries.map((entry, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: entry.data.name,
+    url: `${siteUrl}/library/${entry.data.category}/${fileSlug(entry)}/`,
+  })),
+};
 ---
 
 <BaseLayout
-  title={`${category.label} — Claude Code Marketing Library`}
+  title={`${category.label}, Marketing Library`}
   description={category.blurb}
   keywords={[`${category.label} prompts`, 'Claude Code', 'marketing library', 'AI marketing']}
   showCourseSchema={false}
@@ -52,6 +65,9 @@ const breadcrumb = {
 >
   <Header />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />
+  {entries.length > 0 && (
+    <script type="application/ld+json" set:html={JSON.stringify(itemList)} />
+  )}
 
   <main class="lib-cat">
     <nav class="lib-breadcrumb" aria-label="Breadcrumb">

@@ -27,6 +27,25 @@ export function typeLabel(type: string): string {
 }
 
 /**
+ * SERP-safe meta description for an entry. Prefers the hand-written
+ * `metaDescription`, otherwise trims the long on-page `description` to a clean
+ * word boundary under 155 chars (the on-page paragraph keeps the full text).
+ */
+export function metaFor(data: LibraryEntry['data']): string {
+  if (data.metaDescription) return data.metaDescription;
+  return truncateAtWord(data.description, 155);
+}
+
+/** Cuts text to <= max chars at the last word boundary, no trailing punctuation. */
+export function truncateAtWord(text: string, max: number): string {
+  const clean = text.trim();
+  if (clean.length <= max) return clean;
+  const slice = clean.slice(0, max);
+  const cut = slice.slice(0, slice.lastIndexOf(' '));
+  return cut.replace(/[\s,.;:]+$/, '');
+}
+
+/**
  * Resolve the related entries for a card row. Prefer the hand-picked `related`
  * slugs (matched by file slug), then fill from same-category siblings. Returns
  * 3 to 5 entries, never the entry itself.
@@ -77,34 +96,21 @@ export interface FaqPair {
 }
 
 /**
- * Standard question and answer pairs derived from entry metadata. Kept in code
- * (not frontmatter) so every entry emits a consistent, valid FAQPage without an
- * extra schema field. Real, useful answers, not filler.
+ * Q&A pairs for an entry. One generic, code-derived question always leads (so
+ * every entry emits a valid FAQPage), then any entry-specific `faq` pairs from
+ * frontmatter follow. The visible <details> and the FAQPage JSON-LD read from
+ * this same array, so they stay identical (Google's visible-match requirement).
  */
 export function buildEntryFaq(entry: LibraryEntry): FaqPair[] {
-  const { name, access } = entry.data;
+  const { name, access, faq } = entry.data;
   const kind = typeLabel(entry.data.type).toLowerCase();
-  const priceLine =
-    access === 'free'
-      ? `Yes. ${name} is a free entry in the marketing library. Copy the ${kind} and use it in your own projects at no cost.`
-      : `${name} is a paid entry. The free artifacts in the library stay free to copy; paid packs add extended versions.`;
+  const generic: FaqPair = {
+    q: `Is ${name} free to use in Claude Code?`,
+    a:
+      access === 'free'
+        ? `Yes. ${name} is a free entry in the marketing library. Copy the ${kind} and use it in Claude Code at no cost.`
+        : `${name} is a paid entry. The free artifacts in the library stay free to copy; paid packs add extended versions.`,
+  };
 
-  return [
-    {
-      q: `Is ${name} free to use?`,
-      a: priceLine,
-    },
-    {
-      q: `What does ${name} do?`,
-      a: entry.data.description,
-    },
-    {
-      q: `How do I use ${name} in Claude Code?`,
-      a: `Copy the ${kind} from the block above, paste it into Claude Code (as a message, or save it in your project as a slash command or memory file), then swap the placeholders for your own details and run it.`,
-    },
-    {
-      q: `Do I need to know how to code to use ${name}?`,
-      a: `No. ${name} is written for marketers. If you can copy text into Claude Code and edit a few placeholders, you can run it. No programming required.`,
-    },
-  ];
+  return [generic, ...(faq ?? [])];
 }

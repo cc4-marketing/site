@@ -18,8 +18,10 @@ import { html as satoriHtml } from 'satori-html';
 import { Resvg } from '@resvg/resvg-js';
 import { renderModuleLessonTemplate } from './templates/module-lesson';
 import { renderGenericTemplate, type GenericTemplateInput } from './templates/generic';
+import { renderLibraryTemplate } from './templates/library';
 import { OG_DIMENSIONS, OG_TEMPLATE_VERSION } from './config';
 import { injectPngText } from './png-metadata';
+import { LIBRARY_CATEGORIES, TYPE_LABELS } from '../../data/library-categories';
 
 const BUILD_STAMP = {
   'engine-version': String(OG_TEMPLATE_VERSION),
@@ -31,6 +33,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '../../..');
 const OUT_DIR = join(ROOT, 'public/og');
 const MODULES_DIR = join(ROOT, 'src/content/modules');
+const LIBRARY_DIR = join(ROOT, 'src/content/library');
 
 const FONTS_DIR = join(__dirname, 'fonts');
 const fonts = [
@@ -123,6 +126,45 @@ function urlSlugForLesson(filePath: string, fm: ModuleFrontmatter): string {
   return `${fm.module}-${kebab}`;
 }
 
+interface LibraryFrontmatter {
+  name: string;
+  category: string;
+  type: string;
+  tagline?: string;
+}
+
+/** Reads name/category/type/tagline from a library entry's frontmatter block. */
+function parseLibraryFrontmatter(source: string): LibraryFrontmatter {
+  const match = source.match(/^---\n([\s\S]+?)\n---/);
+  if (!match) throw new Error('No frontmatter block');
+  const data: Record<string, string> = {};
+  for (const line of match[1].split('\n')) {
+    const m = line.match(/^(\w+):\s*(.+)$/);
+    if (!m) continue;
+    data[m[1]] = m[2].trim().replace(/^['"]|['"]$/g, '');
+  }
+  return {
+    name: String(data.name),
+    category: String(data.category),
+    type: String(data.type),
+    tagline: data.tagline ? String(data.tagline) : undefined,
+  };
+}
+
+/** Walks src/content/library/ recursively and returns all MDX files. */
+function listLibraryFiles(): string[] {
+  const out: string[] = [];
+  function walk(dir: string) {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.isFile() && entry.name.endsWith('.mdx')) out.push(full);
+    }
+  }
+  walk(LIBRARY_DIR);
+  return out;
+}
+
 const STATIC_PAGES: Record<
   string,
   Omit<GenericTemplateInput, never> & { badge: string }
@@ -175,6 +217,7 @@ async function main(): Promise<void> {
   const startedAt = Date.now();
   mkdirSync(join(OUT_DIR, 'pages'), { recursive: true });
   mkdirSync(join(OUT_DIR, 'modules'), { recursive: true });
+  mkdirSync(join(OUT_DIR, 'library'), { recursive: true });
 
   let total = 0;
   let totalBytes = 0;
@@ -209,6 +252,25 @@ async function main(): Promise<void> {
     total += 1;
     totalBytes += png.byteLength;
     console.log(`✓ modules/${slug}.png (${(png.byteLength / 1024).toFixed(0)} KB)`);
+  }
+
+  // --- Marketing Library entries ---
+  const categoryLabels = new Map(LIBRARY_CATEGORIES.map((c) => [c.slug, c.label]));
+  for (const file of listLibraryFiles()) {
+    const fm = parseLibraryFrontmatter(readFileSync(file, 'utf8'));
+    const slug = file.split('/').at(-1)!.replace(/\.mdx$/, '');
+    const html = renderLibraryTemplate({
+      name: fm.name,
+      categoryLabel: categoryLabels.get(fm.category) ?? fm.category,
+      typeLabel: TYPE_LABELS[fm.type] ?? fm.type,
+      tagline: fm.tagline,
+    });
+    const png = await renderToPng(html);
+    const key = `${fm.category}-${slug}`;
+    writeFileSync(join(OUT_DIR, 'library', `${key}.png`), png);
+    total += 1;
+    totalBytes += png.byteLength;
+    console.log(`✓ library/${key}.png (${(png.byteLength / 1024).toFixed(0)} KB)`);
   }
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);

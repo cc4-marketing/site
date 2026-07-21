@@ -26,17 +26,30 @@ const breadcrumb = {
     { '@type': 'ListItem', position: 2, name: 'Library', item: 'https://cc4.marketing/library/' },
   ],
 };
+
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Claude Code Marketing Library categories',
+  itemListElement: LIBRARY_CATEGORIES.map((cat, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: cat.label,
+    url: `https://cc4.marketing/library/${cat.slug}/`,
+  })),
+};
 ---
 
 <BaseLayout
-  title="Marketing Library — Claude Code Prompts & Commands"
-  description="A free, curated library of Claude Code prompts, slash commands, subagents, and skills for marketers. Copy real artifacts for SEO, content, ads, analytics, email, and more."
+  title="Marketing Library, Claude Code Prompts and Commands"
+  description="Free Claude Code prompts, slash commands, subagents, and skills for marketers. Copy real artifacts for SEO, content, ads, analytics, email, and more."
   keywords={['Claude Code prompts', 'marketing slash commands', 'AI marketing prompts', 'Claude Code for marketers', 'marketing prompt library']}
   showCourseSchema={false}
   showBreadcrumb={false}
 >
   <Header />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />
+  <script type="application/ld+json" set:html={JSON.stringify(itemList)} />
 
   <section class="lib-hero">
     <div class="lib-hero-inner">

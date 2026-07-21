@@ -45,6 +45,9 @@ const libraryCollection = defineCollection({
     author: z.enum(['tri-vo', 'alice-marketer']),
     tags: z.array(z.string()).default([]),
     updatedAt: z.coerce.date().optional(),
+    publishedAt: z.coerce.date().optional(),
+    metaDescription: z.string().max(160).optional(),
+    faq: z.array(z.object({ q: z.string(), a: z.string() })).optional(),
   }),
 });
 

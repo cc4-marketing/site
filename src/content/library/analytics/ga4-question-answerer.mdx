@@ -16,6 +16,15 @@ tags:
   - prompt
   - reporting
 updatedAt: 2026-07-21
+publishedAt: 2026-07-21
+metaDescription: "GA4 prompt that turns a plain English question into exact exploration steps: which dimensions, metrics, filters, and how to read the result."
+faq:
+  - q: "What does the GA4 Question Answerer output?"
+    a: "A build sheet for one question: the exploration type, the exact dimensions and metrics to add, filters and segments, a date range, and a note on how to read the result. You follow it step by step inside GA4."
+  - q: "What if my question needs an event that is not configured?"
+    a: "The prompt flags it and states its assumption instead of guessing. Check whether the event exists in your GA4 setup before you trust the numbers."
+  - q: "How does it pair with the Weekly Metrics Summary?"
+    a: "Use this prompt to find the right numbers in GA4, then feed those numbers into the Weekly Metrics Summary to write the stakeholder readout."
 ---
 
 The hard part of GA4 is not the data, it is knowing which report holds the answer. This prompt takes a question in plain English and returns a build sheet: the exploration type, the dimensions, the metrics, the filters, and the segment to compare against, plus how to read what comes back. It turns a vague question into steps you can follow inside GA4.

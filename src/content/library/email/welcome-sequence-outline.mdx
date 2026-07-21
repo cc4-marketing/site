@@ -1,0 +1,76 @@
+---
+name: Welcome Sequence Outline
+category: email
+type: command
+tagline: Outline a 4 to 5 email onboarding drip with goal, subject, and CTA per email.
+description: "A /welcome-sequence slash command that outlines a 4 to 5 email onboarding drip: each email gets a goal, subject line, body beats, and one CTA, so new subscribers get a real journey instead of a single welcome note."
+access: free
+related:
+  - newsletter-from-link
+  - ad-copy-variants
+  - weekly-social-plan
+author: alice-marketer
+tags:
+  - email
+  - onboarding
+  - drip sequence
+updatedAt: 2026-07-21
+publishedAt: 2026-07-21
+metaDescription: "Outline a 4 to 5 email welcome sequence with Claude Code. Each email gets a goal, subject line, body beats, send delay, and one CTA."
+faq:
+  - q: How many emails should a welcome sequence have?
+    a: "Four to five is the workable default this command targets: welcome and set expectations, deliver a quick win, handle the top objection, share proof, then make the ask. Fewer than four rushes the trust build. More than five usually repeats itself."
+  - q: How is this different from the newsletter command?
+    a: "The newsletter command turns one link into one broadcast issue. This plans a whole automated sequence that runs on send delays after signup, with a distinct goal per email that moves someone from new subscriber toward first purchase or activation."
+  - q: Does it write finished email copy?
+    a: "It writes the outline: goal, subject options, body beats, and CTA per email, plus a send delay. That is the layer worth reviewing before anyone drafts. Expand a single email into full copy in a follow up pass once the arc is approved."
+---
+
+Most welcome flows are one email that says "thanks for subscribing" and then silence. This command outlines the whole arc instead: 4 to 5 emails, each with a clear goal, subject line options, the beats the body should hit, a send delay, and one call to action. You review the journey as a shape (does it build trust before it asks?) before anyone writes a word of final copy.
+
+## The command
+
+Save this as `.claude/commands/welcome-sequence.md` in your project.
+
+```markdown
+---
+description: Outline a 4 to 5 email welcome and onboarding sequence.
+argument-hint: [product, audience, the signup source, and the sequence goal]
+---
+
+You are a lifecycle email strategist. The brief is: $ARGUMENTS
+
+If the product, audience, where people signed up, or the goal of the sequence
+(for example first purchase, activation, first login) is missing, ask for it
+first. Then outline a 4 to 5 email welcome sequence.
+
+For each email, give:
+- Email number and its single goal in one line.
+- Send delay from the previous step (for example: immediately, day 2, day 4).
+- Two subject line options, written to be opened, not clever for its own sake.
+- Body beats: 3 to 5 bullet points for what the email covers, in order.
+- One CTA: the exact action and where it points.
+
+Arc to follow across the sequence:
+1. Welcome and set expectations: confirm what they get and how often.
+2. Deliver a quick win or the single most useful thing right away.
+3. Handle the top objection or friction that stops people acting.
+4. Show proof (a result, a case, a number, a testimonial).
+5. Make the ask: the primary conversion, with a reason to act now.
+
+If four emails fit better than five, merge steps 3 and 4 and say so.
+
+Rules:
+- One goal and one CTA per email. Do not stack asks.
+- Keep it specific to the product and audience, not generic onboarding filler.
+- End with a short note on what should happen when the sequence finishes
+  (move to the main list, tag as engaged, or enter a nurture track).
+```
+
+## How to use
+
+1. Save the block above as `.claude/commands/welcome-sequence.md`.
+2. Run `/welcome-sequence` and describe the product, audience, signup source, and goal.
+3. Read the goals column top to bottom: the sequence should build trust before the ask in the last email.
+4. Adjust send delays to match your tool, then build the automation.
+5. Draft each email's full copy in a follow up pass, one email at a time.

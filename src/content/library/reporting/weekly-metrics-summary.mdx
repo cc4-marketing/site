@@ -16,6 +16,15 @@ tags:
   - prompt
   - dashboards
 updatedAt: 2026-07-21
+publishedAt: 2026-07-21
+metaDescription: "Reporting prompt that turns a metrics CSV into a plain language weekly readout, calling out week-over-week deltas and flagging what matters."
+faq:
+  - q: "What sections does the readout include?"
+    a: "A one-sentence headline, a What Moved list with each change as a number and a percent marked good, bad, or watch, likely drivers framed as hypotheses, callouts that need a decision, and one next step, all under 200 words."
+  - q: "How should I prepare the data?"
+    a: "Export this week and last week side by side as a table or CSV and paste it at the bottom of the prompt. If a metric is missing or looks like a tracking error, the prompt flags it instead of guessing."
+  - q: "Can I trust the Why It Moved explanations?"
+    a: "Treat them as hypotheses, not facts. The prompt is told not to invent causes the data cannot support, but check each driver against what you know before sending."
 ---
 
 A grid of numbers is not a report. This prompt takes a metrics export and writes the recap: what moved, by how much, and what is worth a second look. It calls out the week over week deltas and flags the changes that matter instead of listing every row. You paste the numbers, you get a readout you can send with light edits.

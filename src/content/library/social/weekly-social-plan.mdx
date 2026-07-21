@@ -1,0 +1,74 @@
+---
+name: Weekly Social Plan
+category: social
+type: command
+tagline: Turn your content pillars into a 7 day social plan with hooks and CTAs.
+description: "A /social-plan slash command that builds a 7 day posting plan from your content pillars: one post per day with channel, hook, format, and CTA, so a week of social goes from blank to bookable in one pass."
+access: free
+related:
+  - linkedin-post-from-notes
+  - repurpose-blog-to-social
+  - content-calendar-scaffold
+author: alice-marketer
+tags:
+  - social
+  - content pillars
+  - slash command
+updatedAt: 2026-07-21
+publishedAt: 2026-07-21
+metaDescription: "Build a 7 day social media plan from your content pillars with Claude Code. One post per day: channel, hook, format, and CTA, ready to schedule."
+faq:
+  - q: How is this different from a content calendar?
+    a: "This plans one specific week at the post level: exact hook, format, and CTA per day. A calendar scaffolds themes and slots across a quarter. Use the calendar to decide what a week is about, then run this to fill it."
+  - q: Can I run it for more than one channel?
+    a: "Yes. Name every channel in the brief (for example LinkedIn plus Instagram) and the command assigns each day a channel and tailors the hook and format to it, rather than reposting one message everywhere."
+  - q: Does it write the full posts?
+    a: "No, and that is intentional. It gives you the angle, hook line, and CTA per day so you approve the plan fast. Expand any single day into a full post with the LinkedIn Post From Notes command when it is up next."
+---
+
+A week of social usually dies as a vague intention to "post more." This command turns your content pillars into a concrete 7 day plan: one post per day, each with a channel, a hook line, a format, and a call to action. You approve or swap at the plan level in two minutes, then hand each day to a drafting step. No blank calendar, no Monday scramble.
+
+## The command
+
+Save this as `.claude/commands/social-plan.md` in your project.
+
+```markdown
+---
+description: Build a 7 day social content plan from content pillars.
+argument-hint: [pillars, channels, audience, and the week's goal]
+---
+
+You are a social media strategist. The brief is: $ARGUMENTS
+
+If the content pillars, channels, audience, or the goal for this week are
+missing, ask for them first. Then build a 7 day plan as a table, one row per
+day (Monday to Sunday).
+
+Columns: Day, Channel, Pillar, Format, Hook, CTA.
+
+Rules:
+- Assign each day exactly one pillar. Spread the pillars across the week so no
+  pillar runs two days in a row.
+- Match the format to the channel and pillar (for example: carousel, short
+  video, text post, poll, single image, thread). Vary formats across the week.
+- Write the Hook as a real opening line a reader would stop on, not a topic
+  label. Make it specific to the audience.
+- Give each day one clear CTA (comment, save, click, sign up, DM). Do not put
+  the same CTA on every day.
+- Keep one lighter or community day in the week so it does not read as seven
+  sales posts.
+
+After the table:
+- List 2 backup posts that fit any pillar, for a day that falls through.
+- Note the single best-performing day to boost if there is budget, and why.
+
+Keep it realistic for one person to ship in a week.
+```
+
+## How to use
+
+1. Save the block above as `.claude/commands/social-plan.md`.
+2. Run `/social-plan` and give it your pillars, channels, audience, and this week's goal.
+3. Skim the Hook column first: if a hook is dull, ask for three alternates on that row.
+4. Copy the table into your scheduler and set the dates.
+5. Expand any single day into a finished post with the LinkedIn Post From Notes command.
