@@ -1,0 +1,308 @@
+---
+export const prerender = true;
+
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import CategorySidebar from '../../../components/library/category-sidebar.astro';
+import EntryCard from '../../../components/library/entry-card.astro';
+import { LIBRARY_CATEGORIES, getCategory } from '../../../data/library-categories';
+import {
+  fileSlug,
+  authorName,
+  typeLabel,
+  resolveRelated,
+  buildEntryFaq,
+} from '../../../lib/library';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('library');
+  return entries.map((entry) => ({
+    params: { category: entry.data.category, entry: fileSlug(entry) },
+    props: { entry, all: entries },
+  }));
+}
+
+const { entry, all } = Astro.props;
+const { data } = entry;
+const category = getCategory(data.category)!;
+const slug = fileSlug(entry);
+
+const counts: Record<string, number> = {};
+for (const cat of LIBRARY_CATEGORIES) counts[cat.slug] = 0;
+for (const e of all) counts[e.data.category] = (counts[e.data.category] ?? 0) + 1;
+
+const related = resolveRelated(entry, all);
+const faq = buildEntryFaq(entry);
+const { Content } = await render(entry);
+
+const siteUrl = 'https://cc4.marketing';
+const pageUrl = `${siteUrl}/library/${data.category}/${slug}/`;
+const author = authorName(data.author);
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteUrl}/` },
+    { '@type': 'ListItem', position: 2, name: 'Library', item: `${siteUrl}/library/` },
+    { '@type': 'ListItem', position: 3, name: category.label, item: `${siteUrl}/library/${data.category}/` },
+    { '@type': 'ListItem', position: 4, name: data.name, item: pageUrl },
+  ],
+};
+
+const softwareSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareSourceCode',
+  name: data.name,
+  description: data.description,
+  url: pageUrl,
+  author: { '@type': 'Person', name: author },
+  keywords: data.tags.join(', '),
+  codeSampleType: 'full solution',
+  programmingLanguage: 'Claude Code',
+  isAccessibleForFree: data.access === 'free',
+  ...(data.updatedAt && { dateModified: data.updatedAt.toISOString().slice(0, 10) }),
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((pair) => ({
+    '@type': 'Question',
+    name: pair.q,
+    acceptedAnswer: { '@type': 'Answer', text: pair.a },
+  })),
+};
+---
+
+<BaseLayout
+  title={`${data.name} — ${category.label} | Claude Code Marketing Library`}
+  description={data.description}
+  keywords={data.tags.length ? data.tags : [category.label, 'Claude Code', 'marketing']}
+  type="article"
+  author={author}
+  modifiedDate={data.updatedAt?.toISOString()}
+  showCourseSchema={false}
+  showBreadcrumb={false}
+>
+  <Header />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />
+  <script type="application/ld+json" set:html={JSON.stringify(softwareSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+  <main class="lib-entry">
+    <nav class="lib-breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span>/</span>
+      <a href="/library/">Library</a>
+      <span>/</span>
+      <a href={`/library/${data.category}/`}>{category.label}</a>
+      <span>/</span>
+      <span aria-current="page">{data.name}</span>
+    </nav>
+
+    <div class="lib-entry-layout">
+      <aside class="lib-entry-aside">
+        <CategorySidebar active={data.category} counts={counts} />
+      </aside>
+
+      <article class="lib-entry-main">
+        <div class="lib-entry-badges">
+          <span class="lib-badge lib-badge-type">{typeLabel(data.type)}</span>
+          <span class={`lib-badge lib-badge-${data.access}`}>{data.access === 'free' ? 'Free' : 'Paid'}</span>
+        </div>
+        <h1 class="lib-entry-name">{data.name}</h1>
+        <p class="lib-entry-tagline">{data.tagline}</p>
+        <p class="lib-entry-desc">{data.description}</p>
+        <p class="lib-entry-by">By {author}</p>
+
+        <div class="prose">
+          <Content />
+        </div>
+
+        <section class="lib-faq" aria-labelledby="lib-faq-title">
+          <h2 id="lib-faq-title">Questions and answers</h2>
+          {faq.map((pair) => (
+            <details class="lib-faq-item">
+              <summary>{pair.q}</summary>
+              <p>{pair.a}</p>
+            </details>
+          ))}
+        </section>
+
+        {related.length > 0 && (
+          <section class="lib-related" aria-labelledby="lib-related-title">
+            <h2 id="lib-related-title">Related in the library</h2>
+            <div class="lib-related-grid">
+              {related.map((rel) => (
+                <EntryCard entry={rel} />
+              ))}
+            </div>
+          </section>
+        )}
+      </article>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .lib-entry {
+    padding: 110px 24px 80px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .lib-breadcrumb {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .lib-breadcrumb a { color: var(--rust); text-decoration: none; }
+  .lib-breadcrumb a:hover { text-decoration: underline; }
+
+  .lib-entry-layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+
+  .lib-entry-badges {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .lib-badge {
+    font-size: 0.72em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 10px;
+    border: 1px solid var(--border-color);
+  }
+
+  .lib-badge-type { background: var(--plum); color: #fff; border-color: var(--plum); }
+  .lib-badge-free { background: var(--tint-rust-2); color: var(--rust); border-color: var(--rust); }
+  .lib-badge-paid { background: var(--mustard); color: var(--ink-on-mustard); border-color: var(--ink-on-mustard); }
+
+  .lib-entry-name {
+    font-family: var(--font-display);
+    font-size: 2.6em;
+    margin: 0 0 12px;
+    line-height: 1.1;
+    color: var(--text-primary);
+  }
+
+  .lib-entry-tagline {
+    font-size: 1.2em;
+    color: var(--text-primary);
+    margin: 0 0 8px;
+  }
+
+  .lib-entry-desc {
+    font-size: 1.02em;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0 0 8px;
+  }
+
+  .lib-entry-by {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--rust);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 32px;
+  }
+
+  /* Prose (mirrors the lesson prose so MDX bodies render consistently). */
+  .prose { font-size: 1.05em; line-height: 1.8; }
+  .prose :global(h2) {
+    font-family: var(--font-display);
+    font-size: 1.6em;
+    margin: 40px 0 18px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border-color);
+    color: var(--text-primary);
+  }
+  .prose :global(h3) {
+    font-family: var(--font-display);
+    font-size: 1.3em;
+    margin: 28px 0 14px;
+    color: var(--text-primary);
+  }
+  .prose :global(p) { margin-bottom: 18px; }
+  .prose :global(ul), .prose :global(ol) { margin: 0 0 20px 24px; }
+  .prose :global(li) { margin-bottom: 10px; }
+  .prose :global(code) {
+    background: var(--bg-primary);
+    padding: 2px 8px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9em;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+  }
+  .prose :global(pre) {
+    background: var(--code-surface);
+    color: var(--code-ink);
+    padding: 24px;
+    overflow-x: auto;
+    margin: 24px 0;
+    border: 3px solid var(--border-color);
+  }
+  .prose :global(pre code) { background: none; border: none; padding: 0; color: inherit; }
+
+  .lib-faq { margin-top: 48px; }
+  .lib-faq h2, .lib-related h2 {
+    font-family: var(--font-display);
+    font-size: 1.6em;
+    color: var(--text-primary);
+    margin: 0 0 20px;
+  }
+
+  .lib-faq-item {
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    padding: 4px 18px;
+    margin-bottom: 12px;
+  }
+
+  .lib-faq-item summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 14px 0;
+    color: var(--text-primary);
+    list-style-position: inside;
+  }
+
+  .lib-faq-item p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    padding: 0 0 16px;
+    margin: 0;
+  }
+
+  .lib-related { margin-top: 48px; }
+
+  .lib-related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+  }
+
+  @media (max-width: 860px) {
+    .lib-entry-layout { grid-template-columns: 1fr; gap: 28px; }
+    .lib-entry-aside { order: 2; }
+  }
+</style>

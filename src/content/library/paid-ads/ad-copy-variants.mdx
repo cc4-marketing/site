@@ -1,0 +1,65 @@
+---
+name: Ad Copy Variant Generator
+category: paid-ads
+type: command
+tagline: Generate 10 headline and primary text variants, each with an angle.
+description: A /ad-variants slash command that produces 10 distinct headline and primary text variants for one offer, each tagged with the angle it plays, so a paid test starts with real variety instead of ten rewordings.
+access: free
+related:
+  - meta-title-description-writer
+  - competitor-page-teardown
+  - linkedin-post-from-notes
+author: tri-vo
+tags:
+  - paid ads
+  - ad copy
+  - slash command
+  - a/b testing
+updatedAt: 2026-07-21
+---
+
+Paid performance comes from testing distinct angles, not ten versions of the same sentence. This command takes one offer and returns ten headline and primary text variants, each labeled with the angle it plays: pain, proof, curiosity, urgency, and so on. You get a batch with real spread that you can drop straight into your ad platform and test.
+
+## The command
+
+Save this as `.claude/commands/ad-variants.md` in your project.
+
+```markdown
+---
+description: Generate 10 angle labeled ad copy variants for one offer.
+argument-hint: [product, audience, and offer]
+---
+
+You are a direct response copywriter. The offer is: $ARGUMENTS
+
+If any of product, target audience, or the specific offer is missing, ask for
+it before writing. Then produce 10 ad variants. Each variant must play a
+DIFFERENT angle. Use these angles, one per variant:
+
+1. Pain (name the problem)
+2. Outcome (paint the after state)
+3. Proof (a result, number, or testimonial style claim)
+4. Curiosity (an open loop)
+5. Objection (handle the top reason they hesitate)
+6. Speed or ease (how little effort it takes)
+7. Urgency or scarcity (a real reason to act now)
+8. Comparison (versus the old way or an alternative)
+9. Us and them (the identity the reader steps into)
+10. Direct offer (state the deal plainly)
+
+For each variant output:
+
+Angle: [the angle name]
+Headline: [30 characters or fewer]
+Primary text: [125 characters or fewer]
+
+Keep claims honest, do not invent specific numbers, use a placeholder like
+[X%] if you need one. After the 10, name the 3 you would test first and why.
+```
+
+## How to use
+
+1. Save the block above as `.claude/commands/ad-variants.md`.
+2. Run `/ad-variants` and describe your product, audience, and offer.
+3. Swap any [X%] placeholders for your real numbers before publishing.
+4. Launch the 3 recommended angles first, then test the rest against the winner.

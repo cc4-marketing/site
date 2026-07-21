@@ -1,0 +1,59 @@
+---
+name: Brand Voice Memory Block
+category: content
+type: prompt
+tagline: A CLAUDE.md block that keeps every draft on brand across a project.
+description: A project memory block for CLAUDE.md that encodes your brand tone, voice rules, and banned words so everything Claude Code writes in that project stays consistent without re-explaining the brand each time.
+access: free
+related:
+  - blog-post-outline
+  - repurpose-blog-to-social
+  - linkedin-post-from-notes
+author: alice-marketer
+tags:
+  - content
+  - brand voice
+  - claude.md
+  - project memory
+updatedAt: 2026-07-21
+---
+
+Re-explaining your brand voice in every prompt is a tax you pay forever. Claude Code reads a `CLAUDE.md` file at the root of a project automatically, so a voice block placed there applies to every draft without you pasting it again. Fill in the placeholders once and the whole project inherits your tone.
+
+## The memory block
+
+Add this to `CLAUDE.md` at the root of your marketing project.
+
+```markdown
+## Brand voice
+
+Apply these rules to all copy you write in this project: blog posts, emails,
+social posts, ad copy, and page text.
+
+Personality: [describe the brand in 3 to 5 adjectives, e.g. direct, warm,
+technical but plain spoken].
+
+We sound like: [name a reference, e.g. a knowledgeable friend who respects the
+reader's time].
+
+Rules:
+- Write in [first person plural / second person]. Address the reader as "you".
+- Reading level: aim for [e.g. grade 7 to 9]. Short sentences over long ones.
+- Lead with the outcome, then the detail. No throat clearing.
+- Use concrete specifics (numbers, names, examples) over vague claims.
+- Format for scanning: short paragraphs, lists, and bold subheads.
+
+Never use: [list banned words and phrases, e.g. em dashes, "leverage",
+"seamless", "game changer", "in today's world", exclamation stacks].
+
+When unsure whether something is on brand, choose the plainer, more specific
+option. Show, do not hype.
+```
+
+## How to use
+
+1. Create or open `CLAUDE.md` at the root of your project.
+2. Paste the block and fill in every placeholder with your real brand details.
+3. Start a new Claude Code session so the file is picked up, then write as normal.
+4. Spot check the first few outputs and tighten the rules where the voice drifts.
+5. Commit `CLAUDE.md` so your whole team shares the same voice.

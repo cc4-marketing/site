@@ -1,0 +1,99 @@
+---
+import { LIBRARY_CATEGORIES } from '../../data/library-categories';
+
+interface Props {
+  /** Slug of the active category, if any, to highlight in the list. */
+  active?: string;
+  counts?: Record<string, number>;
+}
+
+const { active, counts } = Astro.props;
+---
+
+<nav class="lib-sidebar" aria-label="Library categories">
+  <a href="/library/" class="lib-sidebar-home">All categories</a>
+  <ul class="lib-sidebar-list">
+    {LIBRARY_CATEGORIES.map((cat) => (
+      <li>
+        <a
+          href={`/library/${cat.slug}/`}
+          class={`lib-sidebar-link ${cat.slug === active ? 'is-active' : ''}`}
+          aria-current={cat.slug === active ? 'page' : undefined}
+        >
+          <span>{cat.label}</span>
+          {counts && <span class="lib-sidebar-count">{counts[cat.slug] ?? 0}</span>}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .lib-sidebar {
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 96px;
+  }
+
+  .lib-sidebar-home {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--rust);
+    text-decoration: none;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .lib-sidebar-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .lib-sidebar-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95em;
+    border: 2px solid transparent;
+    transition: all 0.15s ease;
+  }
+
+  .lib-sidebar-link:hover {
+    border-color: var(--border-color);
+    color: var(--rust);
+  }
+
+  .lib-sidebar-link.is-active {
+    background: var(--tint-rust-2);
+    border-color: var(--rust);
+    color: var(--rust);
+    font-weight: 600;
+  }
+
+  .lib-sidebar-count {
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    padding: 1px 8px;
+    min-width: 24px;
+    text-align: center;
+  }
+</style>
