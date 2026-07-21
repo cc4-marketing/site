@@ -222,6 +222,7 @@ Entries:
 - Blog to Social Repurposer (https://cc4.marketing/library/content/repurpose-blog-to-social/): Turn one blog post into a LinkedIn post, an X thread, and a carousel.
 - Newsletter Section from a Link (https://cc4.marketing/library/email/newsletter-from-link/): Summarize a URL into a newsletter section with subject line and CTA.
 - Welcome Sequence Outline (https://cc4.marketing/library/email/welcome-sequence-outline/): Outline a 4 to 5 email onboarding drip with goal, subject, and CTA per email.
+- Resend Setup Audit (https://cc4.marketing/library/email/resend-setup-audit/): Audit a Resend setup end to end (domain, DMARC, tracking, broadcast hygiene) with proof per item.
 - Ad Copy Variant Generator (https://cc4.marketing/library/paid-ads/ad-copy-variants/): Generate 10 headline and primary text variants, each with an angle.
 - Negative Keyword Finder (https://cc4.marketing/library/paid-ads/negative-keyword-finder/): Mine a Google Ads search terms export for negative keywords, grouped by reason.
 - Content Calendar Scaffold (https://cc4.marketing/library/project-ops/content-calendar-scaffold/): Build a 90 day rolling content calendar from a short description.

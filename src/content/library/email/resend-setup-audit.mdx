@@ -1,0 +1,67 @@
+---
+name: Resend Setup Audit
+category: email
+type: prompt
+tagline: "Audit your Resend setup end to end: domain, DMARC, tracking, and broadcast hygiene."
+description: "A prompt that walks Claude Code through a seven-point audit of your Resend email setup, from sending-domain verification and DMARC to custom click tracking and pre-send broadcast checks, and asks for proof on each item before touching anything irreversible."
+access: free
+related:
+  - newsletter-from-link
+  - welcome-sequence-outline
+  - brand-voice-memory
+author: alice-marketer
+tags:
+  - email
+  - resend
+  - deliverability
+  - dmarc
+updatedAt: 2026-07-22
+publishedAt: 2026-07-22
+faq:
+  - q: "What does the audit actually check?"
+    a: "Seven things: sending domain (DKIM and SPF), audience wiring and counts, custom click-tracking subdomain, open tracking, DMARC record, where DMARC reports route, and broadcast hygiene before a send."
+  - q: "Will it change my DNS or send emails on its own?"
+    a: "No. The prompt tells the agent to stop and ask before anything irreversible: sends, DNS changes, and releases. It reports state and asks for a decision rather than acting."
+  - q: "Where does this prompt come from?"
+    a: "It is the copyable version of the checklist in the blog post Set Up Resend Right. The post walks through the reasoning behind each item."
+---
+
+Resend is easy to start and easy to leave half configured: shared click tracking, no DMARC, an audience the signup form never writes to. This prompt runs a fixed seven-point audit of your Resend setup and asks Claude Code to show proof for each item (dashboard state, DNS answers, or API responses) before it changes anything. Run it once after setup, then again before your first real broadcast.
+
+## The prompt
+
+```text
+Audit my Resend setup end to end. Work through this checklist and
+show me proof for each item (dashboard state, DNS answers, or API
+responses). Stop and ask before anything irreversible: sends, DNS
+changes, releases.
+
+1. SENDING DOMAIN. Confirm the sending subdomain is verified:
+   DKIM and SPF records all green in Resend.
+2. AUDIENCE. Confirm the signup flow both sends the welcome email
+   AND inserts the contact into an Audience. Report current counts:
+   total, subscribed, unsubscribed.
+3. CLICK TRACKING. Check whether the domain uses shared click
+   tracking. If yes, configure a custom tracking subdomain
+   (links.<sending-domain>), add the CNAME (DNS-only, not proxied),
+   and verify it.
+4. OPEN TRACKING. Confirm it is off unless I explicitly want it.
+5. DMARC. Check the _dmarc TXT record on the sending subdomain.
+   If missing, add: v=DMARC1; p=none; rua=mailto:dmarc@<root-domain>
+   and verify with dig. Remind me to tighten to p=quarantine after
+   a month of clean reports.
+6. REPORT ROUTING. Confirm dmarc@<root-domain> routes to a real
+   inbox (a catch-all rule counts).
+7. BROADCAST HYGIENE. Before any send: report the recipient count,
+   send me a test email, confirm every image URL in the email
+   returns 200, and confirm the unsubscribe link is present.
+List anything you could not verify at the end.
+```
+
+## How to use
+
+1. Open your project in Claude Code with the Resend API key available (as an environment variable or in your secrets manager, never pasted in plain text).
+2. Paste the prompt. Swap `<sending-domain>` and `<root-domain>` for your real domains.
+3. Read each item's proof before you approve a fix. If the agent proposes a DNS change or a send, it will pause for your go-ahead.
+4. Run it again right before your first broadcast, so the recipient count, test email, and image checks are fresh.
+5. For the reasoning behind each step, read the full walkthrough: [Set Up Resend Right: A Marketer's Checklist with an AI Agent](/blog/resend-setup-checklist-for-marketers/).
