@@ -39,3 +39,7 @@ public/og/
 
 # Local Claude Code scheduling lock
 .claude/scheduled_tasks.lock
+
+# Python bytecode cache (publish-post helper)
+__pycache__/
+*.pyc

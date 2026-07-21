@@ -134,23 +134,17 @@ If no bespoke cover exists, `featured_image` can stay null — the OG engine han
 > sips --cropToHeightWidth 630 1200 /tmp/tmp.png --out public/blog/cover-{slug}.png
 > ```
 
-### Step 5b: Update llms.txt and llms-full.txt
+### Step 5b: Update llms.txt and llms-full.txt (automatic)
 
-Both files must be updated so AI crawlers (Perplexity, Claude, etc.) can discover the new post.
+Both files feed AI crawlers (Perplexity, Claude, etc.) so they discover the new post.
 
-**`public/llms.txt`** — append to the `### Published Posts` section:
+`publish_post.py` now updates both automatically on `--execute` (right after the sitemap step), reusing the frontmatter `excerpt`:
+- `public/llms.txt` gets `- [{title}]({url})`.
+- `public/llms-full.txt` gets `- [{title}]({url}) ({excerpt})`.
 
-```markdown
-- [{Post Title}](https://cc4.marketing/blog/{slug}/)
-```
+Both inserts are idempotent (skip if the post URL is already present), so re-running is safe. No manual edit needed.
 
-**`public/llms-full.txt`** — append to the `### Published Posts` section with a one-sentence description:
-
-```markdown
-- [{Post Title}](https://cc4.marketing/blog/{slug}/) — {one-sentence description of the post's topic and value}
-```
-
-Stage both files alongside the cover PNG so they ship in the same commit.
+Verify after running: confirm the two new lines landed (`git diff public/llms.txt public/llms-full.txt`). If `--skip-sitemap` was passed, the llms update is skipped too; add the lines by hand or re-run without the flag. Stage both files alongside the cover PNG so they ship in the same commit.
 
 ### Step 6: Ship
 

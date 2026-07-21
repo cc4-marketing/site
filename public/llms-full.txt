@@ -1,6 +1,6 @@
 # CC4.Marketing — Full Course Reference
 
-> This is the extended version of llms.txt with complete lesson details. Course summary: 4 modules, 18 lessons. For a concise overview, see: https://cc4.marketing/llms.txt
+> This is the extended version of llms.txt with complete lesson details. Course summary: 4 modules, 19 lessons. For a concise overview, see: https://cc4.marketing/llms.txt
 
 ## Blog
 The CC4.Marketing blog publishes practical guides on AI-powered marketing with Claude Code.
@@ -124,7 +124,7 @@ Objectives:
 
 ---
 
-## Module 2: Advanced Applications (6 lessons, ~4-5 hours)
+## Module 2: Advanced Applications (7 lessons, ~4-5 hours)
 
 ### Lesson 2.1 — Write a Campaign Brief (45 min)
 Path: /modules/2/campaign-brief/
@@ -179,6 +179,16 @@ Objectives:
 - Optimize content for search engines
 - Build pillar pages and topic clusters
 - Understand technical SEO fundamentals
+
+### Lesson 2.7 — Service Package from a Real Engagement (60 min)
+Path: /modules/2/service-package-from-engagement/
+Description: Turn a successful client engagement into a sellable service package: mine the project docs with an agent, write a service blueprint, and derive a case study, landing page, deck, and one-pager that all tell the same story.
+Objectives:
+- Mine a real project corpus for operations, metrics, feedback, and proof points
+- Make the five decisions that shape a service package before writing anything
+- Write a service blueprint an operations team can actually run
+- Derive marketing assets from one source of truth so numbers never drift
+- Apply anonymization and verification gates before anything ships
 
 ---
 
