@@ -1,5 +1,39 @@
 [
   {
+    "id": "bc_site_020",
+    "slug": "marketing-library-launch",
+    "title": "Free Claude Code Marketing Library",
+    "summary": "A curated directory of 20 free prompts, slash commands, subagents, and MCP lists for marketers across 9 categories. Every entry is a real, copyable artifact with its own OG image and SEO/AEO schema.",
+    "type": "added",
+    "version": "unreleased",
+    "modules": [
+      "site",
+      "library",
+      "seo"
+    ],
+    "machine_summary": "New /library hub, category, and entry routes (SSR, matching the modules pages to avoid the Emdash setup redirect). Added a library MDX content collection, 20 free entries across 9 categories, per-entry build-time OG images, and SoftwareSourceCode + FAQPage + BreadcrumbList + ItemList JSON-LD, plus a Marketing Library section in llms.txt and llms-full.txt.",
+    "status": "published",
+    "published_at": "2026-07-21T18:08:05Z",
+    "created_at": "2026-07-21T18:08:05Z"
+  },
+  {
+    "id": "bc_site_021",
+    "slug": "lesson-count-19-llms-autosync",
+    "title": "Course reconciled to 19 lessons",
+    "summary": "The lesson count is now consistently 19 across the README, FAQ, homepage, OG image, and llms files. The blog publish flow also auto-syncs llms.txt and llms-full.txt so new posts reach AI crawlers without a manual edit.",
+    "type": "changed",
+    "version": "unreleased",
+    "modules": [
+      "site",
+      "seo",
+      "docs"
+    ],
+    "machine_summary": "Reconciled lesson count to 19 (github-pr-guide counted as a lesson) across README, siteData.ts, faq.astro, llms.txt, llms-full.txt, index.astro, and og/build.ts. publish_post.py now appends new posts to llms.txt and llms-full.txt on --execute, idempotent.",
+    "status": "published",
+    "published_at": "2026-07-21T18:08:05Z",
+    "created_at": "2026-07-21T18:08:05Z"
+  },
+  {
     "id": "bc_site_019",
     "slug": "site-service-package-post-seo-revision",
     "title": "Service package post: SEO/AEO revision + discovery fixes",
@@ -18,8 +52,8 @@
   {
     "id": "bc_site_018",
     "slug": "site-module-2-7-service-package",
-    "title": "Module 2.7 \u2014 Service Package from a Real Engagement",
-    "summary": "New 60-minute lesson: turn a completed client engagement into a sellable service package with the mine \u2192 decide \u2192 blueprint \u2192 derive practice. Includes copy-paste prompts, quality gates, and an Alice Marketer blog post with the full packaging prompt. Course now: 4 modules, 19 lessons.",
+    "title": "Module 2.7 — Service Package from a Real Engagement",
+    "summary": "New 60-minute lesson: turn a completed client engagement into a sellable service package with the mine → decide → blueprint → derive practice. Includes copy-paste prompts, quality gates, and an Alice Marketer blog post with the full packaging prompt. Course now: 4 modules, 19 lessons.",
     "type": "added",
     "version": "0.5.0",
     "modules": [
@@ -35,7 +69,7 @@
   {
     "id": "bc_site_013",
     "slug": "site-module-3-sigil-capstone",
-    "title": "Module 3 capstone \u2014 Ship a Real Follow-Up with sigil",
+    "title": "Module 3 capstone — Ship a Real Follow-Up with sigil",
     "summary": "New 75-minute hands-on capstone lesson that bridges Modules 0-2 into a real, shippable artifact: a personalized post-event follow-up campaign powered by sigil, an open-source MIT CLI inside Claude Code. Course now: 4 modules, 18 lessons.",
     "type": "added",
     "version": "0.4.0",
@@ -44,7 +78,7 @@
       "course",
       "module-3"
     ],
-    "machine_summary": "Added /modules/3/ship-with-sigil/ \u2014 capstone lesson using blacklogos/sigil CLI for a real email send pipeline on Cloudflare Workers, custom /email-rewrite slash command, per-recipient handcrafted sentences. Home and llms.txt updated to 4 modules / 18 lessons.",
+    "machine_summary": "Added /modules/3/ship-with-sigil/ — capstone lesson using blacklogos/sigil CLI for a real email send pipeline on Cloudflare Workers, custom /email-rewrite slash command, per-recipient handcrafted sentences. Home and llms.txt updated to 4 modules / 18 lessons.",
     "status": "published",
     "published_at": "2026-05-16T20:13:26.525Z",
     "created_at": "2026-05-16T20:13:26.525Z"
@@ -76,7 +110,7 @@
       "site",
       "analytics"
     ],
-    "machine_summary": "Added GA4 gtag.js snippet inline in BaseLayout.astro <head>, next to existing Beam tag. No env gating \u2014 fires on all environments. Beam unchanged.",
+    "machine_summary": "Added GA4 gtag.js snippet inline in BaseLayout.astro <head>, next to existing Beam tag. No env gating — fires on all environments. Beam unchanged.",
     "status": "published",
     "published_at": "2026-05-16T20:13:26.525Z",
     "created_at": "2026-05-16T20:13:26.525Z"
@@ -204,7 +238,7 @@
       "seo",
       "homepage"
     ],
-    "machine_summary": "cc4-marketing/site. Corrected lesson count 16/18\u219217 in JSON-LD and homepage. Module 0 card 3\u21924 lessons. Normalized Ko-fi URLs. Fixed BaseLayout title template duplication. Updated install steps for Substack subscribe flow.",
+    "machine_summary": "cc4-marketing/site. Corrected lesson count 16/18→17 in JSON-LD and homepage. Module 0 card 3→4 lessons. Normalized Ko-fi URLs. Fixed BaseLayout title template duplication. Updated install steps for Substack subscribe flow.",
     "status": "published",
     "published_at": "2026-03-16T15:57:00.000Z",
     "created_at": "2026-03-16T15:57:00.000Z"
@@ -253,7 +287,7 @@
       "site",
       "blog"
     ],
-    "machine_summary": "cc4-marketing/site v0.3.0. Astro 5\u21926 upgrade with @astrojs/cloudflare adapter (server mode). Emdash CMS integration with D1 database and R2 storage. New /blog section with SSR post index and detail pages (PortableText rendering). /blog/authors static page with Person schema. BlogPosting + CollectionPage + AboutPage structured data. Custom og-blog.png OG image. Blog cover illustrations per post. Migrated /api/subscribe from custom worker.js to Astro API route using cloudflare:workers env. Added live.config.ts for Astro Live Collections. Nav updated with Blog link. Sitemap priority 0.9 for blog routes. llms.txt updated with blog section.",
+    "machine_summary": "cc4-marketing/site v0.3.0. Astro 5→6 upgrade with @astrojs/cloudflare adapter (server mode). Emdash CMS integration with D1 database and R2 storage. New /blog section with SSR post index and detail pages (PortableText rendering). /blog/authors static page with Person schema. BlogPosting + CollectionPage + AboutPage structured data. Custom og-blog.png OG image. Blog cover illustrations per post. Migrated /api/subscribe from custom worker.js to Astro API route using cloudflare:workers env. Added live.config.ts for Astro Live Collections. Nav updated with Blog link. Sitemap priority 0.9 for blog routes. llms.txt updated with blog section.",
     "status": "published",
     "published_at": "2026-04-08T08:00:00.000Z",
     "created_at": "2026-04-08T08:00:00.000Z"
@@ -303,7 +337,7 @@
       "seo",
       "blog"
     ],
-    "machine_summary": "cc4-marketing/site. BaseLayout: showCourseSchema default false, titleSuffix split (articles get '| CC4M'), publisher logo og-image.png\u2192apple-touch-icon.png (180x180). LessonLayout: 3-level BreadcrumbList (Home\u2192Module N\u2192Lesson), module-enriched title prefix. blog/index.astro: standalone top-level BreadcrumbList script tag. blog/[slug].astro: per-post keywords from title stopword filter, author URL with #anchor for named authors, publisher logo fix. robots.txt: added Google-Extended, Meta-ExternalAgent, Bytespider, cohere-ai. llms.txt + llms-full.txt: all 6 posts listed. sitemap: lastmod added. Homepage description trimmed to 159 chars.",
+    "machine_summary": "cc4-marketing/site. BaseLayout: showCourseSchema default false, titleSuffix split (articles get '| CC4M'), publisher logo og-image.png→apple-touch-icon.png (180x180). LessonLayout: 3-level BreadcrumbList (Home→Module N→Lesson), module-enriched title prefix. blog/index.astro: standalone top-level BreadcrumbList script tag. blog/[slug].astro: per-post keywords from title stopword filter, author URL with #anchor for named authors, publisher logo fix. robots.txt: added Google-Extended, Meta-ExternalAgent, Bytespider, cohere-ai. llms.txt + llms-full.txt: all 6 posts listed. sitemap: lastmod added. Homepage description trimmed to 159 chars.",
     "status": "published",
     "published_at": "2026-04-28T10:00:00.000Z",
     "created_at": "2026-04-28T10:00:00.000Z"
@@ -391,7 +425,7 @@
     "id": "bc_site_mjg",
     "slug": "blog-resend-setup-checklist-post",
     "title": "New post: Set Up Resend Right (Alice Marketer)",
-    "summary": "New blog post by Alice Marketer: Set Up Resend Right: A Marketer's Checklist with an AI Agent \u2014 eight-item Resend setup checklist with a copyable agent audit prompt.",
+    "summary": "New blog post by Alice Marketer: Set Up Resend Right: A Marketer's Checklist with an AI Agent — eight-item Resend setup checklist with a copyable agent audit prompt.",
     "type": "added",
     "version": "0.6.0",
     "modules": [
