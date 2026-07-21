@@ -217,9 +217,11 @@ Entries:
 - UTM Builder (https://cc4.marketing/library/analytics/utm-builder/): Build consistent UTM tagged URLs from your naming rules and flag drift.
 - Competitor Page Teardown (https://cc4.marketing/library/competitive/competitor-page-teardown/): Analyze one competitor landing page for offer, proof, CTA, and gaps.
 - Content Gap Finder (https://cc4.marketing/library/competitive/content-gap-finder/): Compare a competitor's topic coverage to yours and rank the gaps to target.
+- Last 30 Days (https://cc4.marketing/library/competitive/last-30-days/): Skill that reads recent community opinion on a tool or trend across Reddit, X, and web.
 - Blog Post Outline Builder (https://cc4.marketing/library/content/blog-post-outline/): Turn a keyword into an H2 and H3 outline with intent notes.
 - Brand Voice Memory Block (https://cc4.marketing/library/content/brand-voice-memory/): A CLAUDE.md block that keeps every draft on brand across a project.
 - Blog to Social Repurposer (https://cc4.marketing/library/content/repurpose-blog-to-social/): Turn one blog post into a LinkedIn post, an X thread, and a carousel.
+- Notes Humanizer (https://cc4.marketing/library/content/notes-humanizer/): Skill that strips AI tells from a draft so it reads like a person wrote it.
 - Newsletter Section from a Link (https://cc4.marketing/library/email/newsletter-from-link/): Summarize a URL into a newsletter section with subject line and CTA.
 - Welcome Sequence Outline (https://cc4.marketing/library/email/welcome-sequence-outline/): Outline a 4 to 5 email onboarding drip with goal, subject, and CTA per email.
 - Resend Setup Audit (https://cc4.marketing/library/email/resend-setup-audit/): Audit a Resend setup end to end (domain, DMARC, tracking, broadcast hygiene) with proof per item.
@@ -227,8 +229,10 @@ Entries:
 - Negative Keyword Finder (https://cc4.marketing/library/paid-ads/negative-keyword-finder/): Mine a Google Ads search terms export for negative keywords, grouped by reason.
 - Content Calendar Scaffold (https://cc4.marketing/library/project-ops/content-calendar-scaffold/): Build a 90 day rolling content calendar from a short description.
 - Marketing MCP Starter (https://cc4.marketing/library/project-ops/marketing-mcp-starter/): A starter set of MCP servers marketers actually use with Claude Code.
+- Campaign Review Dashboard (https://cc4.marketing/library/project-ops/campaign-review/): Skill that turns a campaign folder into one HTML page a client can review in full.
 - Weekly Metrics Summary (https://cc4.marketing/library/reporting/weekly-metrics-summary/): Turn a metrics CSV into a plain language weekly readout with deltas.
 - Monthly Report Outline (https://cc4.marketing/library/reporting/monthly-report-outline/): Produce an executive monthly marketing report outline leaders will read.
+- Slide Deck Builder (https://cc4.marketing/library/reporting/slide-deck-builder/): Skill that builds and edits real PowerPoint decks for pitches and readouts.
 - Content Brief Generator (https://cc4.marketing/library/seo/content-brief-generator/): Turn one keyword into a full SEO content brief a writer can follow.
 - Meta Title and Description Writer (https://cc4.marketing/library/seo/meta-title-description-writer/): Write SERP length checked title and description pairs that fit Google.
 - SERP Intent Classifier (https://cc4.marketing/library/seo/serp-intent-classifier/): Label a keyword list by search intent, with a reason for each call.
