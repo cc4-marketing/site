@@ -34,6 +34,7 @@ const EXPECTED_MODULES = [
   '2-competitive-analysis',
   '2-seo-optimization',
   '2-service-package-from-engagement',
+  '3-merge-campaigns-safely',
   '3-ship-with-sigil',
 ];
 
