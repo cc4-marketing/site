@@ -1,0 +1,169 @@
+---
+title: "Send Merge Campaigns at Scale, Safely"
+module: 3
+lesson: 1
+description: "Bulk, structured personalization instead of handcrafted-per-row: build a real mail-merge sender with Claude Code, then run the safe-send protocol that stops a wrong guess or a rendering bug from reaching hundreds of real inboxes."
+duration: "60 min"
+objectives:
+  - Build a merge-personalized email with real fields (name, company, account owner) instead of handcrafted sentences
+  - Run the full safe-send protocol — preview, test, dry-run, explicit confirm, record
+  - Catch a merge-field isolation bug before it ships, not after
+  - Apply personalization ethics when a field like gendered honorific isn't in your data
+  - Embed images as real attachments and avoid the inbox-clipping bug the "easy" way causes
+  - Treat an agent's claim about what's technically possible as testable, not settled
+order: 19
+---
+
+## Why This Lesson Exists
+
+Lesson 2.3 taught you to *write* email copy. Lesson 3.2 (next) teaches you to *send* a handcrafted, per-recipient email — but caps out on purpose around 50 recipients, because writing 200 individual sentences by hand doesn't scale, and sigil says so itself.
+
+This lesson is the other half. Planerio's growth team doesn't need 30 handcrafted sentences for a VIP roundtable — they need a trial-conversion nudge sent to 200 free-trial signups pulled from a CRM export, each one routed to a different Customer Success owner, with the recipient's actual name and company filled in. That's a **merge** campaign: structured fields, not handcrafted prose, at a scale where a bug doesn't affect one email — it affects all of them, simultaneously, before anyone notices.
+
+The skill here isn't the merge template. Claude Code can write that in one prompt. It's the discipline around it — because at bulk scale, a coding agent will confidently execute a wrong assumption exactly as fast as a right one.
+
+> **This lesson trades scale for craft; 3.2 trades craft for scale.** Read both, use whichever fits the send in front of you.
+
+### What You'll Learn
+
+- How to brief an agent to build a real mail-merge sender, not just describe one
+- The exact sequence that turns "looks good" into a safe real send: preview → test → dry-run → explicit confirm → record
+- Why account-manager or owner assignment needs to be *verified* isolated per recipient, not assumed
+- What to do when your recipient list has a personalization field (like `Mr.`/`Ms.`) your data doesn't actually have
+- Why pasting an image into an email "the easy way" can silently truncate the entire message
+- Why an agent telling you something "isn't possible" is a claim, not a fact, until it's actually tested
+
+### What You'll Build
+
+A working merge-send pipeline for a fictional Planerio re-engagement campaign — free Resend account, a CSV of trial signups, a template with real merge fields, a safe-send script — sent for real, to your own inbox, by the end of the lesson.
+
+## Prerequisites Check
+
+- ✅ Completed Modules 1 and 2
+- ✅ Claude Code installed and working
+- ✅ Comfort in a terminal
+- ✅ A free [Resend](https://resend.com) account (no domain, no Cloudflare, no billing — the free tier's sandbox sender is enough for this whole lesson)
+
+Notice what's *not* on this list, compared to 3.2: no Cloudflare account, no domain DNS setup, no Workers Paid plan. That's deliberate — this pattern is the low-friction on-ramp; 3.2 is the higher-ceiling, higher-setup-cost approach for when craft matters more than reach.
+
+## Step-by-Step
+
+### Step 1 — Get your sandbox sender (5 min)
+
+Sign up at resend.com with your own email, create an API key from the dashboard. Resend's shared sandbox sender, `onboarding@resend.dev`, can send without any domain setup — with one constraint that becomes a safety feature: it can only deliver **to the address you signed up with**. Nothing you build in this lesson can reach a real recipient by accident.
+
+### Step 2 — Brief the agent (10 min)
+
+Open Claude Code in a fresh project folder and describe the job, not the implementation:
+
+```
+I need a mail-merge email sender for a Planerio re-engagement campaign.
+Recipients come from a CSV with: email, honorific, name, company, and
+which Customer Success owner they're assigned to (we have two: Mai and
+Duc, each with their own name/email/phone). Build:
+
+- a registry of the two CS owners
+- an email template with merge fields for name, company, and the
+  assigned owner's contact info
+- a script that reads the CSV and sends one email per row via Resend
+- a preview script that renders each row to local HTML without sending
+- a --dry-run flag that lists who would receive what, with no send
+
+Use my own Resend account (sandbox sender, no domain). Ask me before
+writing any code if anything about the recipient data or CS-owner
+routing is unclear.
+```
+
+Notice the brief specifies the *shape* of the personalization (owner routing, not just name merge) and explicitly invites clarifying questions — the agent can't know your CS-owner assignment logic unless you tell it.
+
+### Step 3 — Preview before you trust it (10 min)
+
+Once the agent has a working template, don't take "it's ready" as an answer. Ask for the actual rendered output:
+
+```
+Render the template for two fake rows with different CS owners
+assigned, and show me the HTML output for both — not a description.
+```
+
+Open both. Read them. This is the single habit that catches the most expensive class of bug: a template that looks right in the code but wrong on screen.
+
+### Step 4 — Verify merge-field isolation (10 min)
+
+This is the highest-stakes check in the whole lesson. With two rendered previews in front of you — one routed to Mai, one to Duc — confirm neither contains the other's contact info:
+
+```
+Grep both rendered preview files for both CS owners' email addresses.
+Show me the output.
+```
+
+If Mai's email shows up anywhere in Duc's recipient's preview, stop and fix it before writing another line. At bulk scale, this exact bug means dozens of real customers get the wrong point of contact, simultaneously, and nobody notices until a reply goes to the wrong inbox.
+
+### Step 5 — Handle missing personalization data honestly (10 min)
+
+Give the agent a deliberately messy mock CSV — some rows with no gender/honorific data at all, a couple of genuinely ambiguous names. Ask it to build the clean recipient list:
+
+```
+Here's a raw signup export with no honorific column. Build the clean
+recipients.csv. For any name where you're not confident of the right
+honorific, don't guess — flag it and tell me which ones, with your
+reasoning for the ones you did fill in.
+```
+
+A wrong guess here isn't a typo — it's a personalization detail that makes an otherwise-good email land badly. The right agent behavior is showing its reasoning and flagging genuine uncertainty, not filling every cell to look complete.
+
+### Step 6 — Images without the clipping bug (10 min)
+
+If your template includes a logo or header image, ask specifically how it's being embedded:
+
+```
+Is the header image a real email attachment (cid: reference) or is it
+pasted in as base64 inside the HTML? If it's base64, convert it to a
+real attachment.
+```
+
+Why this matters: base64-embedded images inflate the HTML enough to trip Gmail's clipping threshold on real sends — the message gets cut short mid-body and the "[Message clipped]" banner shows up, with the image often not rendering at all. Real attachments (`cid:` references) avoid both problems and are the only technique guaranteed to render inline across major clients. If you add or swap an image later, size it roughly 2x its display width, or it reads blurry on a phone.
+
+### Step 7 — Dry-run, then test, then real send (10 min)
+
+```
+bun send-campaign.ts --file recipients.csv --dry-run
+```
+Read the entire printed list, not just the count. Then:
+```
+bun send-campaign.ts --file test.csv
+```
+with `test.csv` pointed at your own inbox — check it on desktop and phone. Only once both look right:
+
+```
+Send the real batch to all N recipients in recipients.csv.
+```
+
+Say the scope explicitly. "Send it" after a good test round is genuinely ambiguous — the agent has everything it needs to send for real at that point, and an ambiguous instruction is how a test confirmation turns into an accidental real send.
+
+### Step 8 — Read the results honestly (5 min)
+
+Ask the agent to check delivery status per recipient. If it tells you something isn't technically retrievable — open/click counts, for instance, depending on your provider's API — don't take that as final if it matters for a decision:
+
+```
+Are you sure that's not retrievable? Actually try the call and show me
+the raw response before concluding it's not available.
+```
+
+And if you do get open/click numbers: a 100% open rate across a list with several corporate or enterprise domains is often partly security scanners pre-fetching links and images before a human ever opens the email, not proof of human engagement. Treat a suspiciously perfect number as a reason to check the breakdown, not a reason to celebrate.
+
+## Exercise: Full Cycle on a Harder List
+
+Build a second, messier fictional recipient list (15-20 rows, inconsistent source columns, several ambiguous names, two CS owners) and run the complete cycle end to end: brief → template → preview → isolation check → honorific cleanup → dry-run → test → explicit real send → results read. Write three sentences afterward: what the agent got right without being told, what you personally caught that would have gone out wrong otherwise, and what you'd brief differently next time.
+
+## Key Takeaways
+
+- **Bulk personalization needs verification, not trust.** A merge template that looks right in one preview can still leak data across recipients — check by grepping the actual rendered output, not by reading the code.
+- **A wrong guess on a personalization field is worse than no personalization.** Flag genuine uncertainty; don't fill every field just to look complete.
+- **Images belong in as real attachments.** Pasting them in "the easy way" is the single most common cause of a real send getting silently truncated.
+- **"Send it" is not a scope.** State the real number of recipients in your send instruction, every time, separate from any test confirmation.
+- **An agent's negative claim ("that's not possible") is a claim, not a fact**, until something was actually tried. This applies to whether data is retrievable as much as whether a bug is fixed.
+- **This pattern and sigil's aren't competing — they're sized differently.** Reach for this lesson's approach past ~50 recipients or when the personalization is structured fields; reach for 3.2 when craft matters more than throughput and the list stays small.
+
+> **Starter kit.** A working reference implementation of everything in this lesson — the merge template, the safe-send script, a fictional practice sandbox with no real data or keys required beyond your own free Resend account — is available at [github.com/blacklogos/campaign-merge-kit](https://github.com/blacklogos/campaign-merge-kit). Clone it if you'd rather start from a working example than a blank prompt.
+
+> **Read the real version of this.** Every bug in this lesson happened on a real send, not a hypothetical — the full account, including the encoding bug, the tracking claim that turned out wrong, and why a 100% open rate from a list of banks isn't the win it looks like, is in [How to Send Personalized Email Campaigns with an AI Coding Agent](/blog/what-i-caught-before-a-coding-agent-sent-real-emails/) on the blog.

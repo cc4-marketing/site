@@ -14,7 +14,8 @@ type Segment =
   | { kind: 'portable'; blocks: any[]; headingId?: string }
   | { kind: 'code'; language: string; code: string; key: string }
   | { kind: 'image'; url: string; alt: string; key: string }
-  | { kind: 'releaseBox'; data: any; key: string };
+  | { kind: 'releaseBox'; data: any; key: string }
+  | { kind: 'chatMessage'; text: string; key: string };
 
 const segments: Segment[] = [];
 let current: any[] = [];
@@ -29,6 +30,9 @@ for (const block of blocks) {
   } else if (block._type === 'releaseHighlight') {
     if (current.length) { segments.push({ kind: 'portable', blocks: current }); current = []; }
     segments.push({ kind: 'releaseBox', data: block, key: block._key });
+  } else if (block._type === 'chatMessage') {
+    if (current.length) { segments.push({ kind: 'portable', blocks: current }); current = []; }
+    segments.push({ kind: 'chatMessage', text: block.text || '', key: block._key });
   } else {
     // If this is an h2 block, flush current and start a new segment with the heading id
     if (block._type === 'block' && block.style === 'h2') {
@@ -55,6 +59,17 @@ if (current.length) segments.push({ kind: 'portable', blocks: current });
       <figure class="blog-inline-image">
         <img src={seg.url} alt={seg.alt} loading="lazy" />
       </figure>
+    );
+  }
+  if (seg.kind === 'chatMessage') {
+    return (
+      <div class="blog-chat-message">
+        <div class="blog-chat-message-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          What I actually typed
+        </div>
+        <p class="blog-chat-message-text">{seg.text}</p>
+      </div>
     );
   }
   if (seg.kind === 'releaseBox') {
@@ -88,6 +103,42 @@ if (current.length) segments.push({ kind: 'portable', blocks: current });
   .blog-inline-image img {
     max-width: 100%;
     border-radius: 4px;
+  }
+
+  .blog-chat-message {
+    margin: 1.75em 0;
+    max-width: 88%;
+    background: var(--tint-plum-1);
+    border: 3px solid var(--ink-100);
+    border-radius: 4px 16px 16px 16px;
+    box-shadow: 6px 6px 0 var(--shadow-ink);
+    padding: 14px 20px 16px;
+  }
+
+  .blog-chat-message-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--plum);
+    margin-bottom: 8px;
+  }
+
+  .blog-chat-message-text {
+    margin: 0;
+    font-family: monospace;
+    font-size: 0.98em;
+    line-height: 1.55;
+    color: var(--ink-100);
+  }
+
+  @media (max-width: 640px) {
+    .blog-chat-message {
+      max-width: 100%;
+    }
   }
 
   .blog-release-box {

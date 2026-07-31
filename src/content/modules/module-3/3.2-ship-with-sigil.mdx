@@ -1,7 +1,7 @@
 ---
 title: "Ship a Real Follow-Up with sigil"
 module: 3
-lesson: 1
+lesson: 2
 description: "Capstone — apply Modules 0–2 to send personalized post-event follow-up emails using sigil, an open-source CLI that lives inside Claude Code. One handcrafted sentence per recipient, signed PDF links, real send to your inbox first."
 duration: "75 min"
 objectives:
@@ -11,7 +11,7 @@ objectives:
   - Send a verified test campaign, then a real one (with a built-in confirm gate)
   - Read click-rates via `sig status` and reason about what they mean
   - Explain why this is a CLI + slash command, not a SaaS dashboard
-order: 19
+order: 20
 ---
 
 ## Why a Capstone, and Why This One?
@@ -21,6 +21,8 @@ You've spent the last three modules learning to partner with Claude on briefs, c
 You'll use **[sigil](https://github.com/blacklogos/sigil)** — a small open-source CLI built as the companion artifact to this course. It speaks the same agent-loop philosophy Module 1 introduced: a custom AI agent (`/email-rewrite`) handcrafts one sentence per recipient, while a real CLI handles the boring parts (tokens, tracking, deliverability).
 
 > **Heads up — prerequisites matter for this one.** You'll need a terminal, a Cloudflare account, and ~75 minutes. If that's a stretch right now, skim the lesson and bookmark it for when you have an event to send for real. There's also a done-with-you setup offer linked at the end if you'd rather pair on it once.
+
+> **Wrong lesson if your list is bigger than ~50, or you actually want merge tags.** Sigil is built for VIP-size sends where a handcrafted sentence per recipient is worth the time. If you're sending a segmented campaign to hundreds of contacts with structured personalization (name, company, account owner) instead of handcrafted prose, [Lesson 3.1](/modules/3/merge-campaigns-safely/) covers that case — plus the send-safety and personalization-ethics discipline this lesson assumes you already have.
 
 ### What You'll Learn
 

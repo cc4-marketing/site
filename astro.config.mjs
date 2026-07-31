@@ -98,6 +98,7 @@ const blogPages = [
   '/blog/introducing-threadmark/',
   '/blog/service-package-from-real-engagement/',
   '/blog/resend-setup-checklist-for-marketers/',
+  '/blog/what-i-caught-before-a-coding-agent-sent-real-emails/',
 ].map((p) => `${SITE_URL}${p}`);
 
 // https://astro.build/config

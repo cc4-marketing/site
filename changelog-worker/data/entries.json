@@ -34,6 +34,23 @@
     "created_at": "2026-07-21T18:08:05Z"
   },
   {
+    "id": "bc_site_022",
+    "slug": "site-module-3-1-merge-campaigns-safely",
+    "title": "Module 3.1 \u2014 Send Merge Campaigns at Scale, Safely",
+    "summary": "New 60-minute lesson covering bulk, structured merge-personalization and the full safe-send protocol \u2014 preview, test, dry-run, explicit confirm, record. Paired with an open starter kit (campaign-merge-kit) and a companion blog post walking through a real send: the Gmail clipping bug, an encoding bug, a wrong tracking claim caught on verification, and why a 100% open rate from a list of banks isn't the win it looks like. The former Lesson 3.1 (sigil capstone) is now 3.2. Course now: 4 modules, 20 lessons.",
+    "type": "added",
+    "version": "unreleased",
+    "modules": [
+      "site",
+      "course",
+      "module-3",
+      "blog"
+    ],
+    "machine_summary": "Added /modules/3/merge-campaigns-safely/ (order 19, was previously occupied by sigil capstone, now moved to /modules/3/ship-with-sigil/ order 20). Added blog post /blog/what-i-caught-before-a-coding-agent-sent-real-emails/ with FAQPage schema, byline tri-vo, cross-links to both Module 3 lessons and the Resend setup checklist post. Added public GitHub repo blacklogos/campaign-merge-kit. Updated astro.config.mjs blogPages, llms.txt, llms-full.txt, faq.astro and index.astro lesson counts (18\u219220), hello bar and floating banner CTAs.",
+    "status": "published",
+    "published_at": "2026-07-31T17:49:15.000Z",
+    "created_at": "2026-07-31T17:49:15.000Z"
+  },  {
     "id": "bc_site_019",
     "slug": "site-service-package-post-seo-revision",
     "title": "Service package post: SEO/AEO revision + discovery fixes",

@@ -141,4 +141,50 @@ export const extraSchemas: Record<string, object> = {
       },
     ],
   },
+  'what-i-caught-before-a-coding-agent-sent-real-emails': {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': [
+      {
+        '@type': 'Question',
+        'name': 'Why does Gmail clip long HTML emails?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': "Usually because images are embedded as base64 data directly inside the HTML instead of sent as real attachments. That inflates the message size enough to trip Gmail's clipping threshold, cutting the email short and often failing to render the images at all. Sending images as real attachments, referenced by a cid: token in the HTML, avoids both problems.",
+        },
+      },
+      {
+        '@type': 'Question',
+        'name': 'Can an AI coding agent actually send a real email campaign?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': 'Yes — a coding agent like Claude Code can write and run a script that sends through a real email provider, including merge fields, attachments, and a full recipient list. The mechanics take an afternoon. The part that takes real judgment is the safety layer around it: previewing actual output before sending, testing to your own inbox first, and verifying personalization is correct rather than assuming a template is right because it compiles.',
+        },
+      },
+      {
+        '@type': 'Question',
+        'name': 'How do you personalize emails safely at scale with an AI agent?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': "Treat merge-field isolation as something to verify, not assume — render at least two different recipients' versions and confirm one recipient's data never leaks into another's. For any personalization field you're missing data on, have the agent flag genuine uncertainty instead of guessing every row to look complete.",
+        },
+      },
+      {
+        '@type': 'Question',
+        'name': 'Is a 100% email open rate a good sign?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': 'Not necessarily, especially on B2B or enterprise recipient lists. Corporate email security systems commonly pre-fetch links and scan embedded images before a human ever opens the message, which can register as a false open or even a false click. A suspiciously perfect open rate is a reason to check the breakdown by domain, not a reason to report the number at face value.',
+        },
+      },
+      {
+        '@type': 'Question',
+        'name': 'What causes garbled or mojibake text in an HTML email?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': 'Almost always a missing character-encoding declaration. If the email\'s HTML has no <meta charset="utf-8"> in a <head> tag, some email clients guess the encoding and guess wrong — non-ASCII text renders as garbled symbols even though the underlying text was correct UTF-8 the whole time. Adding that one meta tag fixes it.',
+        },
+      },
+    ],
+  },
 };

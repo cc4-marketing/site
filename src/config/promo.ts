@@ -7,10 +7,10 @@ export const promoConfig = {
     // Hello Bar (top banner)
     helloBar: {
         enabled: true,
-        text: "New lesson — Module 2.7: Turn a finished engagement into a sellable service",
+        text: "New lesson — Send Merge Campaigns at Scale, Safely (Module 3.1)",
         linkText: "Start lesson",
-        linkUrl: "https://cc4.marketing/modules/2/service-package-from-engagement/",
-        storageKey: "hellobar-m27-service-package",
+        linkUrl: "https://cc4.marketing/modules/3/merge-campaigns-safely/",
+        storageKey: "hellobar-m31-merge-campaigns",
         cooldownDays: 3
     },
 
@@ -18,10 +18,10 @@ export const promoConfig = {
     floatingBanner: {
         enabled: true,
         badge: "NEW LESSON",
-        title: "Sell it as a service",
-        subtitle: "Module 2.7: turn a finished engagement into a sellable service package",
+        title: "Merge campaigns, safely",
+        subtitle: "Module 3.1: the safe-send protocol for bulk personalized email with an AI agent",
         linkText: "Start the lesson",
-        linkUrl: "https://cc4.marketing/modules/2/service-package-from-engagement/",
+        linkUrl: "https://cc4.marketing/modules/3/merge-campaigns-safely/",
         triggerPercent: 70
     },
 

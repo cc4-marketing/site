@@ -1,6 +1,6 @@
 # CC4.Marketing — Full Course Reference
 
-> This is the extended version of llms.txt with complete lesson details. Course summary: 4 modules, 19 lessons. For a concise overview, see: https://cc4.marketing/llms.txt
+> This is the extended version of llms.txt with complete lesson details. Course summary: 4 modules, 20 lessons. For a concise overview, see: https://cc4.marketing/llms.txt
 
 ## Blog
 The CC4.Marketing blog publishes practical guides on AI-powered marketing with Claude Code.
@@ -19,6 +19,7 @@ The CC4.Marketing blog publishes practical guides on AI-powered marketing with C
 - [Introducing Threadmark — bring threads into your AI workflow](https://cc4.marketing/blog/introducing-threadmark/) — A new tool for capturing and replaying conversation threads inside your AI workflow.
 - [Turn a Client Engagement into a Sellable Service Package](https://cc4.marketing/blog/service-package-from-real-engagement/) — Lesson-launch post for Module 2.7: a four-step practice (mine, decide, blueprint, derive) that turns a completed client engagement into a service blueprint, case study, and marketing kit, with the full prompt to copy.
 - [Set Up Resend Right: A Marketer's Checklist with an AI Agent](https://cc4.marketing/blog/resend-setup-checklist-for-marketers/) — Eight-item Resend setup checklist for marketers (custom click-tracking subdomain, DMARC monitor mode, audience wiring, broadcast hygiene) plus a copyable audit prompt an AI agent can run end to end.
+- [How to Send Personalized Email Campaigns with an AI Coding Agent](https://cc4.marketing/blog/what-i-caught-before-a-coding-agent-sent-real-emails/) — Real case study: building and sending a real B2B merge-personalized campaign with Claude Code — the Gmail clipping bug, a Vietnamese-text encoding bug, a wrong claim about tracking data self-corrected on verification, and why a 100% open rate from a list of banks isn't the win it looks like. Companion lesson: Module 3.1.
 
 ## Module 0: Getting Started (4 lessons, ~30 minutes)
 
@@ -192,9 +193,23 @@ Objectives:
 
 ---
 
-## Module 3: Capstone (1 lesson, ~75 minutes)
+## Module 3: Capstone (2 lessons, ~135 minutes)
 
-### Lesson 3.1 — Ship a Real Follow-Up with sigil (75 min)
+### Lesson 3.1 — Send Merge Campaigns at Scale, Safely (60 min)
+Path: /modules/3/merge-campaigns-safely/
+Description: Bulk, structured personalization instead of handcrafted-per-row: build a real mail-merge sender with Claude Code, then run the safe-send protocol that stops a wrong guess or a rendering bug from reaching hundreds of real inboxes.
+Objectives:
+- Build a merge-personalized email with real fields (name, company, account owner) instead of handcrafted sentences
+- Run the full safe-send protocol — preview, test, dry-run, explicit confirm, record
+- Catch a merge-field isolation bug before it ships, not after
+- Apply personalization ethics when a field like gendered honorific isn't in your data
+- Embed images as real attachments and avoid the inbox-clipping bug the "easy" way causes
+- Treat an agent's claim about what's technically possible as testable, not settled
+
+Starter kit: https://github.com/blacklogos/campaign-merge-kit (MIT, open-source) — free Resend account, fictional sandbox data, no real recipients required
+Companion post: https://cc4.marketing/blog/what-i-caught-before-a-coding-agent-sent-real-emails/
+
+### Lesson 3.2 — Ship a Real Follow-Up with sigil (75 min)
 Path: /modules/3/ship-with-sigil/
 Description: Capstone — apply Modules 0–2 to send personalized post-event follow-up emails using sigil, an open-source CLI that lives inside Claude Code. One handcrafted sentence per recipient, signed PDF links, real send to your inbox first.
 Objectives:

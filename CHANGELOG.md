@@ -12,10 +12,12 @@ For changes to the interactive course content, see the [course repo](https://git
 ### Added
 
 - Free Claude Code Marketing Library: a curated directory of 20 prompts, slash commands, subagents, and MCP lists for marketers across 9 categories (SEO, content, ads, analytics, email, social, reporting, competitive research, project ops). Every entry is a real, copyable artifact with a per-entry OG image and SoftwareSourceCode, FAQPage, and BreadcrumbList schema. Browse at [/library/](https://cc4.marketing/library/). Routes are SSR (matching the modules pages) so they do not hit the Emdash setup redirect.
+- Module 3.1 — ["Send Merge Campaigns at Scale, Safely"](https://cc4.marketing/modules/3/merge-campaigns-safely/): bulk, structured merge-personalization and the full safe-send protocol (preview, test, dry-run, explicit confirm, record). Paired with an open starter kit, [campaign-merge-kit](https://github.com/blacklogos/campaign-merge-kit), and a companion blog post, ["How to Send Personalized Email Campaigns with an AI Coding Agent"](https://cc4.marketing/blog/what-i-caught-before-a-coding-agent-sent-real-emails/). Course now: 4 modules, 20 lessons.
 
 ### Changed
 
-- Course lesson count reconciled to 19 across the README, FAQ, homepage, OG image, and the llms files (previously drifted between 17 and 18). The blog publish helper (`publish_post.py`) now auto-appends new posts to `llms.txt` and `llms-full.txt` on publish, so AI crawlers pick them up without a manual edit.
+- Course lesson count reconciled to 19 (then 20 with Module 3.1 above) across the README, FAQ, homepage, OG image, and the llms files (previously drifted between 17 and 18). The blog publish helper (`publish_post.py`) now auto-appends new posts to `llms.txt` and `llms-full.txt` on publish, so AI crawlers pick them up without a manual edit.
+- The former Lesson 3.1 (sigil capstone) is now 3.2, at the same URL (`/modules/3/ship-with-sigil/`).
 
 ## [0.6.0] - 2026-07-17
 

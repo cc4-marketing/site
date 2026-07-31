@@ -1,6 +1,6 @@
 # CC4.Marketing — Claude Code for Marketers
 
-> A free, interactive course teaching marketers how to use Claude Code to work 10x faster. 4 modules, 19 lessons, taught entirely inside Claude Code itself.
+> A free, interactive course teaching marketers how to use Claude Code to work 10x faster. 4 modules, 20 lessons, taught entirely inside Claude Code itself.
 
 ## About
 CC4.Marketing is an open-source course that teaches AI-powered marketing workflows. Students install Claude Code, clone a starter project, then type /start-0-0 to begin interactive lessons. The practice project simulates working as a Marketing Strategist at "Markit" agency, running campaigns for a B2B SaaS client called "Planerio."
@@ -30,12 +30,13 @@ The blog publishes practical guides, tutorials, and insights on AI-powered marke
 - [Introducing Threadmark — bring threads into your AI workflow](https://cc4.marketing/blog/introducing-threadmark/)
 - [Turn a Client Engagement into a Sellable Service Package](https://cc4.marketing/blog/service-package-from-real-engagement/)
 - [Set Up Resend Right: A Marketer's Checklist with an AI Agent](https://cc4.marketing/blog/resend-setup-checklist-for-marketers/)
+- [How to Send Personalized Email Campaigns with an AI Coding Agent](https://cc4.marketing/blog/what-i-caught-before-a-coding-agent-sent-real-emails/)
 
 ## Course Modules
 - Module 0: Getting Started (4 lessons, 30 min) — Installation, setup, first task
 - Module 1: Core Concepts (7 lessons, 3-4 hours) — Agents, sub-agents, project memory, marketing workflows
-- Module 2: Advanced Applications (7 lessons, 4-5 hours) — Campaign briefs, content strategy, copy, analytics, competitive analysis, SEO, service packaging
-- Module 3: Capstone (1 lesson, 75 min) — Ship a Real Follow-Up with sigil, an open-source CLI inside Claude Code (https://github.com/blacklogos/sigil). Real send pipeline on Cloudflare Workers, custom `/email-rewrite` slash command, per-recipient handcrafted sentences.
+- Module 2: Advanced Applications (7 lessons, 4-5 hours) — Campaign briefs, content strategy, copy, analytics, SEO, service packaging
+- Module 3: Capstone (2 lessons, 135 min) — Lesson 3.1: Send Merge Campaigns at Scale, Safely — bulk, structured personalization with a full safe-send protocol, using a free Resend account and an open starter kit (https://github.com/blacklogos/campaign-merge-kit). Lesson 3.2: Ship a Real Follow-Up with sigil, an open-source CLI inside Claude Code (https://github.com/blacklogos/sigil) — real send pipeline on Cloudflare Workers, custom `/email-rewrite` slash command, per-recipient handcrafted sentences for VIP-size sends.
 
 ## Marketing Library
 The Marketing Library is a curated directory of free Claude Code prompts, slash commands, subagents, and MCP lists for marketers. Every entry is a real, copyable artifact organized into 9 categories.
