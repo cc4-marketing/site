@@ -134,9 +134,13 @@ const breadcrumbSchema = {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <!-- Analytics -->
+  <!-- Beam: shutting down Sep 2026, remove then -->
   <script src="https://beamanalytics.b-cdn.net/beam.min.js" data-token="a46f220a-19be-4dec-b14f-c91818639a8d" async></script>
 
-  <!-- Google tag (gtag.js) -->
+  <!-- Plausible (self-hosted, primary going forward) -->
+  <script defer data-domain="cc4.marketing" src="https://bialytics.biplus.com.vn/js/script.js"></script>
+
+  <!-- Google tag (gtag.js): kept in parallel during Plausible migration -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RERRE2NHVP"></script>
   <script is:inline>
     window.dataLayer = window.dataLayer || [];
@@ -199,6 +203,7 @@ const breadcrumbSchema = {
 
   <!-- Preconnect for analytics -->
   <link rel="preconnect" href="https://beamanalytics.b-cdn.net">
+  <link rel="preconnect" href="https://bialytics.biplus.com.vn">
   
   <!-- Theme Color -->
   <meta name="theme-color" content="#B85C3C">
