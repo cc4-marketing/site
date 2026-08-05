@@ -1,0 +1,7 @@
+# Cloudflare Workers static-assets headers.
+# /_emdash/* (the Emdash CMS admin + internal routes) is served as a static
+# asset at the edge, bypassing the Astro Worker/middleware — so the noindex has
+# to be set here, not in middleware. Keeps the CMS admin out of Google's index
+# without a robots.txt Disallow (which would block the recrawl that drops it).
+/_emdash/*
+  X-Robots-Tag: noindex, nofollow
