@@ -81,25 +81,51 @@ function deriveLibraryUrls() {
   return [...urls].sort();
 }
 
+// Library entries carry a real `updatedAt` in frontmatter; collect them into a
+// URL->date map so the sitemap can emit an honest <lastmod> (not a build-time
+// stamp, which would tell Google every page changed on every deploy).
+function deriveLibraryLastmod() {
+  const ROOT = './src/content/library';
+  const map = new Map();
+  if (!fs.existsSync(ROOT)) return map;
+  for (const dir of fs.readdirSync(ROOT, { withFileTypes: true })) {
+    if (!dir.isDirectory()) continue;
+    for (const file of fs.readdirSync(`${ROOT}/${dir.name}`)) {
+      if (!file.endsWith('.mdx')) continue;
+      const fm = fs.readFileSync(`${ROOT}/${dir.name}/${file}`, 'utf8');
+      const m = fm.match(/^updatedAt:\s*'?(\d{4}-\d{2}-\d{2})'?/m);
+      if (!m) continue;
+      map.set(`${SITE_URL}/library/${dir.name}/${file.replace(/\.mdx$/, '')}/`, m[1]);
+    }
+  }
+  return map;
+}
+
 const modulePages = deriveModuleLessonUrls();
 const authorPages = deriveAuthorUrls();
 const libraryPages = deriveLibraryUrls();
 const modulesHub = `${SITE_URL}/modules/`;
 
-// Blog post URLs are still hardcoded — Emdash D1 is not queryable from this
-// node-only config context. Update this list when a new post ships.
-const blogPages = [
-  '/blog/claude-code-for-marketing-guide-2026/',
-  '/blog/write-campaign-brief-with-ai/',
-  '/blog/anthropic-growth-marketing-claude-code/',
-  '/blog/ai-workflows-not-automation/',
-  '/blog/the-last-mile-of-shipping/',
-  '/blog/castmd-vibe-coding-chrome-extension/',
-  '/blog/introducing-threadmark/',
-  '/blog/service-package-from-real-engagement/',
-  '/blog/resend-setup-checklist-for-marketers/',
-  '/blog/what-i-caught-before-a-coding-agent-sent-real-emails/',
-].map((p) => `${SITE_URL}${p}`);
+// Blog posts live in the Emdash D1 CMS, which is not queryable from this
+// node/Vite config context. `scripts/generate-blog-sitemap-data.mjs` (run in
+// prebuild) syncs published posts + lastmod from D1 into this JSON, so the
+// sitemap stays current with zero manual upkeep. Fall back to empty if the file
+// is missing (e.g. `astro check`/dev before a sync) so config load never throws.
+let blogSitemapData = [];
+try {
+  blogSitemapData = JSON.parse(fs.readFileSync('./src/data/blog-sitemap-data.json', 'utf8'));
+} catch {
+  console.warn('[sitemap] blog-sitemap-data.json missing — run `npm run sync:blog-sitemap`. Blog URLs omitted this build.');
+}
+const blogPages = blogSitemapData.map(({ slug }) => `${SITE_URL}/blog/${slug}/`);
+
+// URL -> real lastmod date, combining library frontmatter (updatedAt) with the
+// D1-sourced blog dates. Date-less URLs (module lessons, hubs, author pages) are
+// intentionally absent so they emit no <lastmod> rather than a fabricated one.
+const lastmodByUrl = deriveLibraryLastmod();
+for (const { slug, lastmod } of blogSitemapData) {
+  if (lastmod) lastmodByUrl.set(`${SITE_URL}/blog/${slug}/`, lastmod);
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -121,9 +147,11 @@ export default defineConfig({
         !page.includes('/library/download/'),
       serialize(item) {
         const url = item.url;
-        // No lastmod: stamping build time on every URL told Google all pages
-        // changed on every deploy, which erodes lastmod trust. Omitting it is
-        // better than a fake value.
+        // Real content lastmod where we have an honest date (library frontmatter,
+        // blog D1 dates). Date-less URLs (modules, hubs) stay without lastmod
+        // rather than getting a build-time stamp, which would erode trust.
+        const lm = lastmodByUrl.get(url);
+        if (lm) item.lastmod = new Date(`${lm}T00:00:00.000Z`).toISOString();
 
         // Homepage - highest priority
         if (url === 'https://cc4.marketing/') {

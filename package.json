@@ -4,8 +4,9 @@
   "version": "0.6.0",
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "tsx src/lib/og/build.ts",
+    "prebuild": "node scripts/generate-blog-sitemap-data.mjs && tsx src/lib/og/build.ts",
     "build": "astro build",
+    "sync:blog-sitemap": "node scripts/generate-blog-sitemap-data.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "og:build": "tsx src/lib/og/build.ts",
