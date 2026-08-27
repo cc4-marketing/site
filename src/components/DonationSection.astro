@@ -6,67 +6,90 @@ interface Props {
 const { showOnHomepage = false } = Astro.props;
 
 const paypalLink = 'https://paypal.me/MinhTriVo?locale.x=en_US&country.x=VN';
-const kofiId = 'cc4marketing';
+const kofiLink = 'https://ko-fi.com/cc4marketing';
 ---
 
 <section class="donation-section" class:list={[showOnHomepage && 'donation-homepage']}>
   <div class="container">
     <div class="donation-content">
       <div class="donation-header">
-        <h3>Support the Course Creator</h3>
-        <p class="donation-subtitle">Enjoying the course? Buy me a coffee or support ongoing development.</p>
+        <h3>Keep this work free</h3>
+        <p class="donation-subtitle">
+          The course, the library, and the skills are free for everyone.
+          Donations pay for the servers, the email sending, and the next lesson.
+        </p>
       </div>
 
       <div class="donation-methods">
-        <!-- PayPal Button -->
+        <!-- PayPal -->
         <div class="donation-method paypal">
           <div class="method-icon">🛒</div>
-          <h4>PayPal Donation</h4>
-          <p>Support with a one-time donation</p>
+          <h4>PayPal</h4>
+          <p>One-time donation, from anywhere in the world</p>
           <a href={paypalLink} target="_blank" rel="noopener noreferrer" class="donation-btn paypal-btn">
-            Donate with PayPal →
+            Donate via PayPal →
           </a>
         </div>
 
-        <!-- Ko-fi Button -->
+        <!-- Ko-fi -->
         <div class="donation-method kofi">
           <div class="method-icon">☕</div>
-          <h4>Ko-fi Support</h4>
-          <p>Buy me a coffee or send a tip</p>
-          <a href="https://ko-fi.com/cc4marketing" target="_blank" rel="noopener noreferrer" class="donation-btn kofi-btn">
-            Support on Ko-fi →
+          <h4>Ko-fi</h4>
+          <p>Coffee-sized support, takes under a minute</p>
+          <a href={kofiLink} target="_blank" rel="noopener noreferrer" class="donation-btn kofi-btn">
+            Tip on Ko-fi →
           </a>
         </div>
 
-        <!-- VietQR for Vietnamese users -->
+        <!-- VietQR -->
         <div class="donation-method vietqr">
           <div class="method-icon">📱</div>
           <h4>VietQR (Việt Nam)</h4>
-          <p>Quét mã bằng app ngân hàng bất kỳ (Napas 247)</p>
-          <figure class="qr-card">
-            <img
-              class="qr-img"
-              src="/donate-vietqr-tpbank.png"
-              alt="VietQR chuyển khoản TPBank, VO MINH TRI, 0201 9971 401"
-              loading="lazy"
-              width="478"
-              height="482"
-            />
-            <figcaption class="qr-caption">
-              <span class="qr-bank">TPBank</span>
-              <span class="qr-holder">Vo Minh Tri</span>
-              <span class="qr-account">0201 9971 401</span>
-            </figcaption>
-          </figure>
+          <p>Chuyển khoản nhanh Napas 247, quét bằng app ngân hàng bất kỳ</p>
+          <button type="button" class="donation-btn vietqr-btn" id="vietqr-open">
+            Quét mã QR →
+          </button>
         </div>
       </div>
 
       <p class="donation-note">
-        All donations help fund course improvements, new content, and better tools for learning.
+        Every donation goes straight back into new content, better tools, and keeping the platform running.
       </p>
     </div>
   </div>
+
+  <!-- VietQR modal -->
+  <dialog class="vietqr-dialog" id="vietqr-dialog" aria-label="VietQR chuyển khoản">
+    <div class="vietqr-dialog-inner">
+      <button type="button" class="vietqr-close" id="vietqr-close" aria-label="Đóng">×</button>
+      <img
+        class="vietqr-dialog-img"
+        src="/donate-vietqr-tpbank.png"
+        alt="VietQR chuyển khoản TPBank, VO MINH TRI, 0201 9971 401"
+        loading="lazy"
+        width="478"
+        height="482"
+      />
+      <div class="vietqr-dialog-details">
+        <span class="vietqr-bank">TPBank</span>
+        <span class="vietqr-holder">Vo Minh Tri</span>
+        <span class="vietqr-account">0201 9971 401</span>
+        <span class="vietqr-hint">Quét mã bằng app ngân hàng bất kỳ (Napas 247)</span>
+      </div>
+    </div>
+  </dialog>
 </section>
+
+<script>
+  // VietQR modal: open on card button, close on X or backdrop click, Escape is native to <dialog>
+  const dialog = document.getElementById('vietqr-dialog') as HTMLDialogElement | null;
+  document.getElementById('vietqr-open')?.addEventListener('click', () => dialog?.showModal());
+  document.getElementById('vietqr-close')?.addEventListener('click', () => dialog?.close());
+  dialog?.addEventListener('click', (e) => {
+    // A click on the backdrop targets the dialog element itself, not its inner content
+    if (e.target === dialog) dialog.close();
+  });
+</script>
 
 <style>
   .donation-section {
@@ -89,7 +112,7 @@ const kofiId = 'cc4marketing';
 
   .donation-content {
     text-align: center;
-    max-width: 700px;
+    max-width: 900px;
     margin: 0 auto;
   }
 
@@ -109,15 +132,19 @@ const kofiId = 'cc4marketing';
     margin: 0;
   }
 
+  /* Strict 3-column row on desktop; cards mirror each other */
   .donation-methods {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 32px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
     margin-bottom: 32px;
   }
 
   .donation-method {
-    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 24px;
     background: var(--bg-primary);
     border: 2px solid var(--border-color);
     border-radius: 8px;
@@ -138,17 +165,20 @@ const kofiId = 'cc4marketing';
   .donation-method h4 {
     font-size: 1.3em;
     color: var(--text-primary);
-    margin: 16px 0 8px 0;
+    margin: 0 0 8px 0;
   }
 
   .donation-method p {
     color: var(--text-secondary);
     margin: 0 0 20px 0;
     font-size: 0.95em;
+    line-height: 1.5;
   }
 
+  /* Button pinned to the bottom so all three cards align */
   .donation-btn {
     display: inline-block;
+    margin-top: auto;
     padding: 12px 24px;
     border-radius: 6px;
     text-decoration: none;
@@ -157,6 +187,7 @@ const kofiId = 'cc4marketing';
     border: none;
     cursor: pointer;
     font-size: 0.95em;
+    font-family: inherit;
   }
 
   .paypal-btn {
@@ -179,37 +210,14 @@ const kofiId = 'cc4marketing';
     transform: translateY(-2px);
   }
 
-  /* VietQR card */
-  .qr-card {
-    margin: 0;
+  .vietqr-btn {
+    background: var(--rust, #B85C3C);
+    color: white;
   }
 
-  .qr-img {
-    width: 100%;
-    max-width: 190px;
-    height: auto;
-    border: 2px solid var(--border-color);
-    border-radius: 6px;
-    background: #fff;
-  }
-
-  .qr-caption {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    margin-top: 10px;
-    font-size: 0.9em;
-    color: var(--text-secondary);
-  }
-
-  .qr-bank {
-    font-weight: 700;
-    color: var(--text-primary);
-  }
-
-  .qr-account {
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
+  .vietqr-btn:hover {
+    background: #9c4c30;
+    transform: translateY(-2px);
   }
 
   .donation-note {
@@ -219,7 +227,75 @@ const kofiId = 'cc4marketing';
     font-style: italic;
   }
 
-  @media (max-width: 600px) {
+  /* VietQR modal */
+  .vietqr-dialog {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0;
+    max-width: 340px;
+    width: calc(100vw - 48px);
+    background: var(--bg-primary, #fff);
+  }
+
+  .vietqr-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.55);
+  }
+
+  .vietqr-dialog-inner {
+    position: relative;
+    padding: 28px 24px 24px;
+    text-align: center;
+  }
+
+  .vietqr-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 1.6em;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-secondary);
+  }
+
+  .vietqr-close:hover {
+    color: var(--text-primary);
+  }
+
+  .vietqr-dialog-img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    background: #fff;
+  }
+
+  .vietqr-dialog-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 12px;
+    color: var(--text-secondary);
+    font-size: 0.95em;
+  }
+
+  .vietqr-bank {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .vietqr-account {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+
+  .vietqr-hint {
+    margin-top: 6px;
+    font-size: 0.85em;
+    font-style: italic;
+  }
+
+  @media (max-width: 720px) {
     .donation-section {
       padding: 32px 0;
       margin: 40px 0;
@@ -229,7 +305,9 @@ const kofiId = 'cc4marketing';
       font-size: 1.6em;
     }
 
+    /* Stack to one column on small screens */
     .donation-methods {
+      grid-template-columns: 1fr;
       gap: 20px;
     }
 
