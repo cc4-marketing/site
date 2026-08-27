@@ -37,6 +37,28 @@ const kofiId = 'cc4marketing';
             Support on Ko-fi →
           </a>
         </div>
+
+        <!-- VietQR for Vietnamese users -->
+        <div class="donation-method vietqr">
+          <div class="method-icon">📱</div>
+          <h4>VietQR (Việt Nam)</h4>
+          <p>Quét mã bằng app ngân hàng bất kỳ (Napas 247)</p>
+          <figure class="qr-card">
+            <img
+              class="qr-img"
+              src="/donate-vietqr-tpbank.png"
+              alt="VietQR chuyển khoản TPBank, VO MINH TRI, 0201 9971 401"
+              loading="lazy"
+              width="478"
+              height="482"
+            />
+            <figcaption class="qr-caption">
+              <span class="qr-bank">TPBank</span>
+              <span class="qr-holder">Vo Minh Tri</span>
+              <span class="qr-account">0201 9971 401</span>
+            </figcaption>
+          </figure>
+        </div>
       </div>
 
       <p class="donation-note">
@@ -155,6 +177,39 @@ const kofiId = 'cc4marketing';
   .kofi-btn:hover {
     background: #00B8E6;
     transform: translateY(-2px);
+  }
+
+  /* VietQR card */
+  .qr-card {
+    margin: 0;
+  }
+
+  .qr-img {
+    width: 100%;
+    max-width: 190px;
+    height: auto;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    background: #fff;
+  }
+
+  .qr-caption {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+  }
+
+  .qr-bank {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .qr-account {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
   }
 
   .donation-note {
