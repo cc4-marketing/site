@@ -7,10 +7,10 @@ export const promoConfig = {
     // Hello Bar (top banner)
     helloBar: {
         enabled: true,
-        text: "New lesson — Send Merge Campaigns at Scale, Safely (Module 3.1)",
-        linkText: "Start lesson",
-        linkUrl: "https://cc4.marketing/modules/3/merge-campaigns-safely/",
-        storageKey: "hellobar-m31-merge-campaigns",
+        text: "Free: Book Publisher turns one Markdown file into a real PDF + EPUB book",
+        linkText: "Get the skill",
+        linkUrl: "https://bookpublisher.cc4.marketing/?utm_source=hellobar&utm_campaign=book-publisher-launch",
+        storageKey: "hellobar-book-publisher-launch",
         cooldownDays: 3
     },
 
