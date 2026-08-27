@@ -31,6 +31,7 @@ The blog publishes practical guides, tutorials, and insights on AI-powered marke
 - [Turn a Client Engagement into a Sellable Service Package](https://cc4.marketing/blog/service-package-from-real-engagement/)
 - [Set Up Resend Right: A Marketer's Checklist with an AI Agent](https://cc4.marketing/blog/resend-setup-checklist-for-marketers/)
 - [How to Send Personalized Email Campaigns with an AI Coding Agent](https://cc4.marketing/blog/what-i-caught-before-a-coding-agent-sent-real-emails/)
+- [I Turned a Markdown File into a Real Book in 4 Minutes](https://cc4.marketing/blog/book-publisher-markdown-to-real-book/)
 
 ## Course Modules
 - Module 0: Getting Started (4 lessons, 30 min) — Installation, setup, first task

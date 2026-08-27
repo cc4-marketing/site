@@ -20,6 +20,7 @@ The CC4.Marketing blog publishes practical guides on AI-powered marketing with C
 - [Turn a Client Engagement into a Sellable Service Package](https://cc4.marketing/blog/service-package-from-real-engagement/) — Lesson-launch post for Module 2.7: a four-step practice (mine, decide, blueprint, derive) that turns a completed client engagement into a service blueprint, case study, and marketing kit, with the full prompt to copy.
 - [Set Up Resend Right: A Marketer's Checklist with an AI Agent](https://cc4.marketing/blog/resend-setup-checklist-for-marketers/) — Eight-item Resend setup checklist for marketers (custom click-tracking subdomain, DMARC monitor mode, audience wiring, broadcast hygiene) plus a copyable audit prompt an AI agent can run end to end.
 - [How to Send Personalized Email Campaigns with an AI Coding Agent](https://cc4.marketing/blog/what-i-caught-before-a-coding-agent-sent-real-emails/) — Real case study: building and sending a real B2B merge-personalized campaign with Claude Code — the Gmail clipping bug, a Vietnamese-text encoding bug, a wrong claim about tracking data self-corrected on verification, and why a 100% open rate from a list of banks isn't the win it looks like. Companion lesson: Module 3.1.
+- [I Turned a Markdown File into a Real Book in 4 Minutes](https://cc4.marketing/blog/book-publisher-markdown-to-real-book/) (Book Publisher is a free MIT agent skill that turns one Markdown file into a designed PDF and EPUB. The launch, a real timed run, and the full guide)
 
 ## Module 0: Getting Started (4 lessons, ~30 minutes)
 
