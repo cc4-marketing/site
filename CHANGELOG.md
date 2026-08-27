@@ -11,6 +11,7 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ### Added
 
+- Donation section now appears under every blog post, and the newsletter footer carries a "help keep it free" link to it.
 - Donation section redesigned: PayPal, Ko-fi, and VietQR as three matching cards in one row, with the VietQR code (TPBank, Napas 247) opening in a popup for Vietnamese readers.
 - Book Publisher launch: new blog post ["I Turned a Markdown File into a Real Book in 4 Minutes"](https://cc4.marketing/blog/book-publisher-markdown-to-real-book/) introducing the free MIT [book-publisher](https://github.com/blacklogos/book-publisher) agent skill, with a timed real run and a full usage guide.
 - Free Claude Code Marketing Library: a curated directory of 20 prompts, slash commands, subagents, and MCP lists for marketers across 9 categories (SEO, content, ads, analytics, email, social, reporting, competitive research, project ops). Every entry is a real, copyable artifact with a per-entry OG image and SoftwareSourceCode, FAQPage, and BreadcrumbList schema. Browse at [/library/](https://cc4.marketing/library/). Routes are SSR (matching the modules pages) so they do not hit the Emdash setup redirect.

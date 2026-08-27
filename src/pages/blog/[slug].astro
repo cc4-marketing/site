@@ -11,6 +11,7 @@ import PostMasthead from '../../components/blog/PostMasthead.astro';
 import PostToc from '../../components/blog/PostToc.astro';
 import PostNav from '../../components/blog/PostNav.astro';
 import PostCta from '../../components/blog/PostCta.astro';
+import DonationSection from '../../components/DonationSection.astro';
 import { slugify } from '../../lib/blog-slugify';
 import { readTimeMinutes } from '../../lib/blog-read-time';
 import { buildArticleSchema, buildBreadcrumbListSchema, extraSchemas } from '../../lib/blog-post-schemas';
@@ -169,6 +170,8 @@ const extraSchema = extraSchemas[slug!] ?? null;
       />
     </div>
   </div>
+
+  <DonationSection />
 
   <Footer />
 </BaseLayout>
