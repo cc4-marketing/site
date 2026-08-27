@@ -11,6 +11,7 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ### Added
 
+- Sitemap footer: Learn, Free tools (all seven sister products), and Support columns with a "Keep it free" donate chip, replacing the old two-button footer.
 - Donation section now appears under every blog post, and the newsletter footer carries a "help keep it free" link to it.
 - Donation section redesigned: PayPal, Ko-fi, and VietQR as three matching cards in one row, with the VietQR code (TPBank, Napas 247) opening in a popup for Vietnamese readers.
 - Book Publisher launch: new blog post ["I Turned a Markdown File into a Real Book in 4 Minutes"](https://cc4.marketing/blog/book-publisher-markdown-to-real-book/) introducing the free MIT [book-publisher](https://github.com/blacklogos/book-publisher) agent skill, with a timed real run and a full usage guide.

@@ -13,9 +13,29 @@ export const siteData = {
   footer: {
     brand: {
       name: 'Claude Code for Marketers',
+      tagline: 'A free, hands-on course for marketers who ship with AI agents.',
       copyright: 'CC4.Marketing. MIT License.',
     },
+    // Column link groups for the sitemap footer
+    learn: [
+      { label: 'Modules', href: '/#modules' },
+      { label: 'Library', href: '/library/' },
+      { label: 'Blog', href: '/blog/' },
+      { label: 'Changelog', href: '/changelog/' },
+      { label: 'Course on GitHub', href: 'https://github.com/cc4-marketing/cc4.marketing', external: true },
+    ],
+    // Sister products — every *.cc4.marketing tool
+    tools: [
+      { label: 'Book Publisher', href: 'https://bookpublisher.cc4.marketing', external: true },
+      { label: 'castmd', href: 'https://castmd.cc4.marketing', external: true },
+      { label: 'Threadmark', href: 'https://threadmark.cc4.marketing', external: true },
+      { label: 'MacMerge', href: 'https://macmerge.cc4.marketing', external: true },
+      { label: 'Sigil', href: 'https://sigil.cc4.marketing', external: true },
+      { label: 'Clip', href: 'https://clip.cc4.marketing', external: true },
+      { label: 'QR', href: 'https://qr.cc4.marketing', external: true },
+    ],
     support: {
+      donate: '/#donate',
       paypal: 'https://paypal.me/MinhTriVo?locale.x=en_US&country.x=VN',
       kofi: 'https://ko-fi.com/cc4marketing',
     }

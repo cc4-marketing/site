@@ -2,53 +2,77 @@
 import { siteData } from '../config/siteData';
 
 const currentYear = new Date().getFullYear();
+const { brand, learn, tools, support } = siteData.footer;
 ---
 
 <footer class="footer">
   <div class="container">
-    <!-- Main Footer Content -->
-    <div class="footer-main">
-      <!-- Left: Branding -->
+    <!-- Sitemap grid: brand + three link columns -->
+    <div class="footer-grid">
+      <!-- Brand -->
       <div class="footer-brand">
-        <h3>{siteData.footer.brand.name}</h3>
-        <p>© {currentYear} {siteData.footer.brand.copyright}</p>
+        <h3>{brand.name}</h3>
+        <p class="brand-tagline">{brand.tagline}</p>
+        <a href={support.donate} class="donate-chip">♥ Keep it free</a>
       </div>
 
-      <!-- Center: Support CTAs -->
-      <div class="footer-support">
-        <p class="support-headline">Support This Course</p>
-        <div class="support-buttons">
-          <a href={siteData.footer.support.paypal} target="_blank" rel="noopener noreferrer" class="support-btn paypal">
-            <span class="support-icon">💳</span>
-            <span class="support-text">
-              <strong>PayPal</strong>
-              <small>One-time</small>
-            </span>
-          </a>
-          <a href={siteData.footer.support.kofi} target="_blank" rel="noopener noreferrer" class="support-btn kofi">
-            <span class="support-icon">☕</span>
-            <span class="support-text">
-              <strong>Ko-fi</strong>
-              <small>Support us</small>
-            </span>
-          </a>
-        </div>
-      </div>
+      <!-- Learn -->
+      <nav class="footer-col" aria-label="Learn">
+        <h4>Learn</h4>
+        <ul>
+          {learn.map((l) => (
+            <li>
+              <a
+                href={l.href}
+                target={l.external ? '_blank' : undefined}
+                rel={l.external ? 'noopener noreferrer' : undefined}
+              >{l.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <!-- Free tools (sister products) -->
+      <nav class="footer-col" aria-label="Free tools">
+        <h4>Free tools</h4>
+        <ul>
+          {tools.map((t) => (
+            <li>
+              <a href={t.href} target="_blank" rel="noopener noreferrer">{t.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <!-- Support -->
+      <nav class="footer-col" aria-label="Support">
+        <h4>Support</h4>
+        <ul>
+          <li><a href={support.donate}>Donate</a></li>
+          <li><a href={support.paypal} target="_blank" rel="noopener noreferrer">PayPal</a></li>
+          <li><a href={support.kofi} target="_blank" rel="noopener noreferrer">Ko-fi</a></li>
+        </ul>
+        <p class="support-note">
+          Everything here is free and open source. Donations keep it that way.
+        </p>
+      </nav>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="footer-bottom">
+      <p>© {currentYear} {brand.copyright}</p>
+      <p class="built-with">Built with Claude Code, by a marketer</p>
     </div>
   </div>
 </footer>
 
 <style>
   .footer {
-    background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(255, 136, 102, 0.03) 100%);
+    background: var(--bg-secondary);
     color: var(--text-primary);
-    padding: 60px 24px;
-    border-top: 1px solid var(--border-color);
+    padding: 56px 24px 28px;
+    border-top: 2px solid var(--border-color);
     font-size: 0.95em;
-  }
-
-  html[data-theme="dark"] .footer {
-    background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(255, 136, 102, 0.05) 100%);
   }
 
   .container {
@@ -56,142 +80,132 @@ const currentYear = new Date().getFullYear();
     margin: 0 auto;
   }
 
-  /* Main Footer Layout */
-  .footer-main {
+  /* Sitemap grid: brand column wider than link columns */
+  .footer-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: center;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    align-items: start;
   }
 
-  /* Branding Section */
+  /* Brand */
   .footer-brand h3 {
     font-family: var(--font-display);
     font-size: 1.3em;
     color: var(--rust);
-    margin: 0 0 8px 0;
+    margin: 0 0 10px 0;
     font-weight: 600;
   }
 
-  .footer-brand p {
-    margin: 0;
-    font-size: 0.85em;
+  .brand-tagline {
+    margin: 0 0 18px 0;
     color: var(--text-secondary);
+    line-height: 1.55;
+    max-width: 34ch;
   }
 
-  /* Support Section */
-  .footer-support {
-    text-align: right;
-  }
-
-  .support-headline {
-    margin: 0 0 16px 0;
-    font-size: 0.85em;
-    font-weight: 600;
-    color: var(--rust);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .support-buttons {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    flex-direction: column;
-    align-items: flex-end;
-  }
-
-  .support-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border: 2px solid var(--border-color);
-    background: transparent;
+  /* Donate chip: small, hard-edged, on-brand */
+  .donate-chip {
+    display: inline-block;
+    padding: 8px 16px;
+    background: var(--rust);
+    color: #fff;
     text-decoration: none;
-    transition: all 0.3s ease;
-    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 0.9em;
+    border: 2px solid var(--border-color);
+    box-shadow: 4px 4px 0 var(--border-color);
+    transition: all 0.15s ease;
   }
 
-  .support-btn:hover {
-    border-color: var(--rust);
-    background: rgba(255, 136, 102, 0.1);
+  .donate-chip:hover {
     transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--border-color);
   }
 
-  .support-icon {
-    font-size: 1.4em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  /* Link columns */
+  .footer-col h4 {
+    margin: 0 0 14px 0;
+    font-size: 0.8em;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
   }
 
-  .support-text {
+  .footer-col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 9px;
   }
 
-  .support-text strong {
-    font-size: 0.95em;
+  .footer-col a {
     color: var(--text-primary);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.15s ease;
   }
 
-  .support-text small {
-    font-size: 0.75em;
+  .footer-col a:hover {
+    color: var(--rust);
+    border-bottom-color: var(--rust);
+  }
+
+  .support-note {
+    margin: 16px 0 0;
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.5;
+    max-width: 24ch;
+  }
+
+  /* Bottom bar */
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 44px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.85em;
     color: var(--text-secondary);
   }
 
-  .support-btn.paypal {
-    --btn-color: #0070BA;
-  }
-
-  .support-btn.kofi {
-    --btn-color: #13C3FF;
-  }
-
-  .support-btn:hover .support-icon {
-    transform: scale(1.15);
+  .footer-bottom p {
+    margin: 0;
   }
 
   /* Mobile */
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+    }
+
+    .footer-brand {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 520px) {
     .footer {
-      padding: 40px 20px;
+      padding: 40px 20px 24px;
     }
 
-    .footer-main {
+    .footer-grid {
       grid-template-columns: 1fr;
-      gap: 40px;
+      gap: 32px;
     }
 
-    .footer-support {
-      text-align: center;
-    }
-
-    .support-buttons {
-      justify-content: center;
-      flex-direction: row;
-      align-items: center;
-    }
-
-    .support-btn {
-      padding: 10px 14px;
+    .footer-bottom {
       flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-
-    .support-text {
-      display: block;
-    }
-
-    .support-text strong {
-      font-size: 0.9em;
-    }
-
-    .support-text small {
-      display: none;
+      align-items: flex-start;
+      gap: 6px;
     }
   }
 </style>
