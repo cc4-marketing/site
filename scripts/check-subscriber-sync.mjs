@@ -31,8 +31,21 @@ const substackPath = argValue('--substack');
 const apply = args.includes('--apply');
 const emitImportCsv = argValue('--emit-import-csv');
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const RESEND_AUDIENCE_ID = process.env.RESEND_AUDIENCE_ID;
+// Env first; fall back to the gitignored .dev.vars (written by
+// scripts/setup-resend-env.sh) so the weekly run is a single command.
+function devVar(name) {
+  if (process.env[name]) return process.env[name];
+  try {
+    const line = readFileSync(new URL('../.dev.vars', import.meta.url), 'utf8')
+      .split('\n')
+      .find((l) => l.startsWith(`${name}=`));
+    return line?.slice(name.length + 1).trim();
+  } catch {
+    return undefined;
+  }
+}
+const RESEND_API_KEY = devVar('RESEND_API_KEY');
+const RESEND_AUDIENCE_ID = devVar('RESEND_AUDIENCE_ID');
 
 if (!substackPath || !RESEND_API_KEY || !RESEND_AUDIENCE_ID) {
   console.error(
