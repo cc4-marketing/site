@@ -1,0 +1,84 @@
+---
+name: B2B Enterprise Naming
+category: content
+type: skill
+tagline: Turn a naming brief into a shortlist that reads like enterprise software, not a myth.
+description: "A Claude Code skill that names B2B and enterprise products, internal platforms, corporate events, or campaigns using grounded business vocabulary instead of mythic or story-driven names. Sources candidates from plain category words and a short glossary of borrowed industry terms, structures each as a Core Name plus a Subtitle pulled from your existing pillars, and scores finalists on a five-axis B2B fit matrix."
+access: free
+related:
+  - notes-humanizer
+  - brand-voice-memory
+  - blog-post-outline
+author: tri-vo
+tags:
+  - naming
+  - b2b
+  - positioning
+updatedAt: 2026-08-25
+publishedAt: 2026-08-25
+metaDescription: "A Claude Code skill that scores enterprise and PMO naming briefs on a 5-axis B2B fit matrix, sourced from real business vocabulary instead of myth."
+faq:
+  - q: "How is this different from a naming skill built for brand names?"
+    a: "A story-driven naming skill optimizes for narrative depth and memorability through metaphor, which is the right register for a consumer brand. This one assumes the audience already works in the domain and scores names for how well they read as business vocabulary on first pass, with no story required."
+  - q: "Where do the borrowed industry terms come from?"
+    a: "A short glossary of terms that already carry meaning in an adjacent enterprise field, like Control Tower from supply chain and IT ops, or Command Center from security and NOC tooling. The skill only reaches for one when a plain descriptive name reads too flat for the brief, never by default."
+  - q: "What if the name has to include a department word like PMO?"
+    a: "The skill flags that tradeoff instead of picking silently. It generates both a keep-word variant (precise, strong if the audience is exactly that department) and a swap-word variant using a broader term, so you can decide based on how wide the actual audience is."
+---
+
+Most naming approaches default to story and metaphor. That is the wrong register for a PMO platform, an internal tool, or a B2B campaign, where the name needs to read as business vocabulary on first pass, not a legend that needs explaining. This skill grew out of a real naming pass for an AI-powered PMO event: the first attempt used story-driven names, which scored well on memorability and badly on fit, since the audience was PMO leads at a B2B company, not a brand needing a myth to be remembered.
+
+## What it does
+
+The skill runs a naming brief through a structured process instead of freeform brainstorming.
+
+**Two vocabulary lanes.** Plain category words the audience already uses daily (project, delivery, portfolio, the department name itself), and a short glossary of borrowed industry terms that carry built-in meaning without a story (Control Tower, Command Center, Single Pane of Glass, Nerve Center). It defaults to the plain lane and only reaches for a borrowed term when the plain version reads too flat.
+
+**Core Name plus Subtitle.** Every candidate ships as a compact name (1 to 3 plain nouns) paired with a subtitle that states your existing pillars or value proposition directly, for example "Align, Predict, Optimize" or "Full Visibility, Total Control." It never invents new pillars, it reuses what your brief already defined.
+
+**Two dials for revision.** A concreteness axis (myth, then borrowed industry term, then plain description) and a seniority axis (executive-abstract to operational-concrete). React in plain language, "too generic" or "too strange" or "the audience is more senior than that," and the skill moves one step along the right axis instead of starting over.
+
+**Domain-word scope check.** If a candidate bakes in a department word like PMO, it produces both a keep-word variant and a broader swap-word variant, and names the tradeoff instead of choosing for you.
+
+**Five-axis scoring matrix.** Finalists get scored 1 to 5 on short, B2B-aware, domain related, easy and not too broad, and not too distant or strange, presented as a table with a one-line verdict on the top pick and a backup.
+
+## Install
+
+This one is free. Save the two files below into your Claude Code skills directory.
+
+```markdown
+---
+name: b2b-enterprise-naming
+description: Build names for B2B and enterprise products, internal platforms, corporate events, or campaigns using grounded business vocabulary instead of mythic or story-driven names. Use when the object is an enterprise product, PMO/IT platform, corporate event, or B2B campaign; when the user explicitly rejects mythic/story naming ("not some theme for star", "not anduril like", "too generic", "keep it business"); or when the audience is a business function (PMO, IT, sales, ops) rather than consumer. Produces a "Core Name: Subtitle" shortlist scored on a 5-axis B2B fit matrix, dials concreteness to audience seniority, and flags domain-word scope tradeoffs (e.g. keeping vs swapping a department name like PMO). Route to a story-driven naming skill instead when the user wants mythic, symbolically deep names.
+---
+
+# B2B Enterprise Naming
+
+Turn a business naming brief (event, product, platform, campaign) into a shortlist grounded in real enterprise vocabulary, not myth or metaphor.
+
+## Workflow
+
+### Step 1: Brief intake
+Capture what's being named, audience seniority (exec vs mid-level vs operational), and any pillars or tagline already agreed on. Reuse those verbatim later, never invent new ones. Note if a department word (PMO, Sales Ops, IT) is in play and whether the audience is exactly that function or broader.
+
+### Step 2: Source vocabulary, two lanes
+Lane A, plain category words the audience uses daily: project, delivery, portfolio, operations, the department name itself.
+Lane B, borrowed industry terms that carry built-in meaning: Control Tower, Command Center, Single Pane of Glass, Nerve Center. Reach for Lane B only when Lane A reads too flat.
+
+### Step 3: Structure candidates as Core Name: Subtitle
+Core Name: 1 to 3 plain nouns. Subtitle: state the brief's existing pillars or value prop directly. Always generate both halves together.
+
+### Step 4: Two dials for iteration
+Concreteness axis: myth, then borrowed industry term, then plain descriptive. Seniority axis: executive-abstract to operational-concrete. On "too generic," move toward Lane B. On "too strange," move toward Lane A. On an audience-seniority correction, slide that axis and regenerate, reusing what already scored well.
+
+### Step 5: Domain-word scope check
+If a candidate bakes in a department word, produce a keep-word and a swap-word variant, and state the tradeoff.
+
+### Step 6: Score with the B2B fit matrix
+Score each finalist 1 to 5 on: short, B2B-aware, domain related, easy and not too broad, not too distant or strange. Present as a table, then a one-line verdict naming the top pick and one backup.
+
+### Step 7: Deliver
+End with the finalists written out in full as complete "Core Name: Subtitle" strings, plus one line on the recommendation.
+```
+
+Save that block as `~/.claude/skills/b2b-enterprise-naming/SKILL.md`, restart Claude Code, then describe your naming brief: what's being named, how senior the audience is, and any pillars already agreed on.
