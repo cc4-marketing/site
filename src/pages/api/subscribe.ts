@@ -10,9 +10,16 @@ export const POST: APIRoute = async ({ request }) => {
   };
 
   try {
-    const { email } = await request.json();
+    const { email: rawEmail } = await request.json();
 
-    if (!email || !email.includes('@')) {
+    // Normalise at the boundary so Resend and Substack receive the same key
+    // (audit 2026-08-28: mixed-case signups made cross-list diffs unreliable).
+    const email = String(rawEmail ?? '').trim().toLowerCase();
+
+    // Shape check only, not a deliverability check. The old `includes('@')`
+    // admitted addresses like `x@gmail.comcom` with no local/domain structure.
+    const EMAIL_RE = /^[^\s@,;]+@[^\s@,;]+\.[a-zA-Z]{2,}$/;
+    if (!EMAIL_RE.test(email) || email.length > 254) {
       return Response.json(
         { error: 'Valid email is required' },
         { status: 400, headers: corsHeaders },
@@ -39,7 +46,10 @@ export const POST: APIRoute = async ({ request }) => {
     const emailBody = JSON.stringify({
       from: 'CC4 Marketing <hello@mail.cc4.marketing>',
       to: [email],
-      subject: "Welcome to Claude Code for Marketers — here's your download link",
+      // Phase 04 split: this email owns the download + quick start only.
+      // The newsletter half (what it is, cadence, archive) lives in the
+      // Substack welcome email, so the two first-touch emails never overlap.
+      subject: "Your Claude Code for Marketers download link",
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 560px; margin: 0 auto; padding: 40px 20px;">
           <h1 style="font-size: 24px; color: #2C2C2C; margin-bottom: 16px;">Welcome to CC4 Marketing!</h1>
@@ -81,6 +91,35 @@ export const POST: APIRoute = async ({ request }) => {
     } else {
       console.warn('RESEND_AUDIENCE_ID not set — subscriber not added to audience');
     }
+
+    // Server-side Substack subscribe. Replaces the popup-based client write that
+    // popup blockers killed for ~a third of signups (plans/20260828-0238).
+    // Rules: never gates the signup response, never retries (the reconcile
+    // script in phase 03 is the retry), failures logged with the address so
+    // Workers logs are the recovery record.
+    requests.push(
+      fetch('https://cc4marketing.substack.com/api/v1/free?nojs=true', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          // The endpoint rejects requests without a browser-like agent.
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+        },
+        body: new URLSearchParams({ email, source: 'subscribe_page' }),
+      })
+        .then(async (r) => {
+          if (!r.ok) {
+            console.error('substack subscribe failed', email, r.status, await r.text().catch(() => ''));
+          }
+          return r;
+        })
+        .catch((e) => {
+          // Swallow network errors: a Substack outage must never cost a signup.
+          console.error('substack subscribe failed', email, e);
+          return new Response(null, { status: 599 });
+        }),
+    );
 
     const [res] = await Promise.all(requests);
 

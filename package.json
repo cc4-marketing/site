@@ -14,7 +14,8 @@
     "og:size-guard": "tsx src/lib/og/size-guard.ts",
     "test": "vitest run",
     "check:blog-tokens": "node scripts/check-blog-tokens.mjs",
-    "check:download-links": "node scripts/check-download-links.mjs"
+    "check:download-links": "node scripts/check-download-links.mjs",
+    "check:subscriber-sync": "node scripts/check-subscriber-sync.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^13.1.7",

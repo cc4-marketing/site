@@ -305,17 +305,12 @@ import Footer from '../components/Footer.astro';
         throw new Error(data.error || "Something went wrong");
       }
 
-      // Success — show confirmation and open Substack
+      // Success — show confirmation. The Substack subscribe now happens
+      // server-side in /api/subscribe (popup blockers killed the old
+      // window.open path for ~a third of signups, plans/20260828-0238).
       sentEmail.textContent = email;
       form.hidden = true;
       successMessage.hidden = false;
-
-      // Also subscribe on Substack in background
-      window.open(
-        `https://cc4marketing.substack.com/subscribe?email=${encodeURIComponent(email)}`,
-        "_blank",
-        "noopener"
-      );
     } catch (err) {
       formNote.className = "form-note error";
       formNote.textContent = err.message || "Failed to send. Please try again.";
