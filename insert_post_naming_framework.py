@@ -57,6 +57,10 @@ def code(code_text: str, language: str = "bash") -> dict:
     return {"_type": "code", "_key": key(), "language": language, "code": code_text}
 
 
+def table(headers: list, rows: list, caption: str = None) -> dict:
+    return {"_type": "table", "_key": key(), "headers": headers, "rows": rows, "caption": caption}
+
+
 # --- Content ---------------------------------------------------------------
 
 content = [
@@ -210,6 +214,20 @@ content = [
     bullet(("Domain-related", None, True), " — does it clearly say PMO, or is it broadened on purpose"),
     bullet(("Easy and not too broad", None, True), " — could it be mistaken for an unrelated product category"),
     bullet(("Not too distant or strange", None, True), " — does it need an explainer sentence to land"),
+    block("normal", "Here's the actual shortlist, scored 1 to 5 on each axis:"),
+    table(
+        headers=["Candidate", "Short", "B2B-aware", "Domain-related", "Not too broad", "Not too strange", "Total"],
+        rows=[
+            ["Enterprise Project Intelligence", "3", "5", "3", "3", "5", "19"],
+            ["Smarter PMO", "5", "4", "5", "4", "5", "23"],
+            ["Smart Project Delivery", "4", "3", "2", "4", "5", "18"],
+            ["Augmented Project Delivery", "2", "4", "2", "3", "3", "14"],
+            ["AI-Powered PMO", "4", "4", "5", "5", "5", "23"],
+            ["AI-Driven PMO", "4", "4", "5", "5", "5", "23"],
+            ["Project Intelligence", "5", "4", "3", "3", "5", "20"],
+        ],
+        caption="1 = weakest, 5 = strongest on that axis. Total out of 25.",
+    ),
     image(
         "/blog/naming-illus-scoring-scale.jpg",
         "A two-pan balance scale: one pan holds a single heavy star-shaped tag, the other holds five small square tags and is sinking lower with a checkmark glowing above it",
@@ -218,7 +236,8 @@ content = [
         "normal",
         (
             "AI-Powered PMO: Align. Predict. Optimize. tied for the top score with two other "
-            "candidates. The tiebreaker wasn't taste — it was one question none of the "
+            "candidates, Smarter PMO and AI-Driven PMO, all at 23 out of 25. The tiebreaker "
+            "wasn't taste — it was the Domain-related column, the one question none of the "
             "earlier rounds had a rubric for: does this audience actually work in a PMO, or "
             "does baking that word into the name narrow the room. For this event, the answer "
             "was yes, they do. That's the deciding factor a scoring matrix catches and a gut "

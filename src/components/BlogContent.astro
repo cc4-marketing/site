@@ -15,7 +15,8 @@ type Segment =
   | { kind: 'code'; language: string; code: string; key: string }
   | { kind: 'image'; url: string; alt: string; key: string }
   | { kind: 'releaseBox'; data: any; key: string }
-  | { kind: 'chatMessage'; text: string; key: string };
+  | { kind: 'chatMessage'; text: string; key: string }
+  | { kind: 'table'; headers: string[]; rows: string[][]; caption?: string; key: string };
 
 const segments: Segment[] = [];
 let current: any[] = [];
@@ -33,6 +34,15 @@ for (const block of blocks) {
   } else if (block._type === 'chatMessage') {
     if (current.length) { segments.push({ kind: 'portable', blocks: current }); current = []; }
     segments.push({ kind: 'chatMessage', text: block.text || '', key: block._key });
+  } else if (block._type === 'table') {
+    if (current.length) { segments.push({ kind: 'portable', blocks: current }); current = []; }
+    segments.push({
+      kind: 'table',
+      headers: block.headers || [],
+      rows: block.rows || [],
+      caption: block.caption,
+      key: block._key,
+    });
   } else {
     // If this is an h2 block, flush current and start a new segment with the heading id
     if (block._type === 'block' && block.style === 'h2') {
@@ -70,6 +80,23 @@ if (current.length) segments.push({ kind: 'portable', blocks: current });
         </div>
         <p class="blog-chat-message-text">{seg.text}</p>
       </div>
+    );
+  }
+  if (seg.kind === 'table') {
+    return (
+      <figure class="blog-table">
+        <table>
+          <thead>
+            <tr>{seg.headers.map((h) => <th>{h}</th>)}</tr>
+          </thead>
+          <tbody>
+            {seg.rows.map((row) => (
+              <tr>{row.map((cell, i) => i === 0 ? <th scope="row">{cell}</th> : <td>{cell}</td>)}</tr>
+            ))}
+          </tbody>
+        </table>
+        {seg.caption && <figcaption>{seg.caption}</figcaption>}
+      </figure>
     );
   }
   if (seg.kind === 'releaseBox') {
@@ -139,6 +166,49 @@ if (current.length) segments.push({ kind: 'portable', blocks: current });
     .blog-chat-message {
       max-width: 100%;
     }
+  }
+
+  .blog-table {
+    margin: 2rem 0;
+    overflow-x: auto;
+  }
+
+  .blog-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92em;
+  }
+
+  .blog-table th,
+  .blog-table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--tint-rust-3);
+    white-space: nowrap;
+  }
+
+  .blog-table thead th {
+    background: var(--rust);
+    color: var(--tint-rust-1);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .blog-table tbody th[scope='row'] {
+    font-weight: 600;
+    color: var(--ink-100);
+    background: var(--tint-rust-1);
+  }
+
+  .blog-table tbody tr:nth-child(even) td {
+    background: var(--tint-rust-1);
+  }
+
+  .blog-table figcaption {
+    margin-top: 8px;
+    font-size: 0.82em;
+    color: var(--text-secondary);
+    font-style: italic;
   }
 
   .blog-release-box {
