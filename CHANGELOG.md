@@ -11,6 +11,7 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ### Added
 
+- Offline Notes launch: new blog post ["Offline Notes: Keep the Reason You Saved It"](https://cc4.marketing/blog/offline-notes-keep-the-reason/) introducing the free offline Chrome extension for article saving, highlights, and Markdown notes, with the v1.4.1 tester at [notes.cc4.marketing](https://notes.cc4.marketing).
 - Sitemap footer: Learn, Free tools (all seven sister products), and Support columns with a "Keep it free" donate chip, replacing the old two-button footer.
 - Donation section now appears under every blog post, and the newsletter footer carries a "help keep it free" link to it.
 - Donation section redesigned: PayPal, Ko-fi, and VietQR as three matching cards in one row, with the VietQR code (TPBank, Napas 247) opening in a popup for Vietnamese readers.
