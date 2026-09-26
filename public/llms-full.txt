@@ -259,6 +259,18 @@ Entries:
 
 ---
 
+## Free Tools
+Open-source tools published by CC4.Marketing. Each has its own llms.txt with a full FAQ.
+
+- [Book Publisher](https://bookpublisher.cc4.marketing/): Builds designed PDF and EPUB books from one Markdown file. Four real themes, cover pages, sidenotes, print-ready pagination. An agent skill, free and offline. ([llms.txt](https://bookpublisher.cc4.marketing/llms.txt))
+- [castmd](https://castmd.cc4.marketing/): Chrome extension that converts any webpage to clean Markdown for LLM workflows. One click → clipboard-ready MD, JSON, or Claude XML. Token-aware. Free and open source. ([llms.txt](https://castmd.cc4.marketing/llms.txt))
+- [Threadmark](https://threadmark.cc4.marketing/): Threadmark is a free Chrome extension that extracts Threads.com posts into clean Markdown, HTML, or plain text — AI-ready in one click. No server. No tracking. 100% local. ([llms.txt](https://threadmark.cc4.marketing/llms.txt))
+- [MacMerge](https://macmerge.cc4.marketing/): MacMerge sends personalized outreach emails from your Mac. On-device AI personalization, CSV import, open & click tracking. Native, private, no Mailchimp overhead. ([llms.txt](https://macmerge.cc4.marketing/llms.txt))
+- [sigil](https://sigil.cc4.marketing/): A tiny open-source CLI that sends one truly personalized email per recipient — with a signed PDF link, click tracking, and a Claude Code slash command that drafts the per-row sentence. VIP-list size, not bulk. ([llms.txt](https://sigil.cc4.marketing/llms.txt))
+- [Clip](https://clip.cc4.marketing/): A macOS menu bar app + CLI for content creators: read and annotate Markdown with AI-ready comment export, diff two texts side by side, style Unicode for social (Vietnamese-aware), manage assets — zero dependencies. ([llms.txt](https://clip.cc4.marketing/llms.txt))
+- [batch-qr](https://qr.cc4.marketing/): Free batch QR code generator. Paste URLs, generate bulk QR codes with labels, download as PNG/JPG or ZIP. No signup, no watermarks, 100% client-side. Open source. ([llms.txt](https://qr.cc4.marketing/llms.txt))
+- [Offline Notes](https://notes.cc4.marketing/): Save articles, highlight useful text, and keep your notes in Chrome. Read offline and export Markdown. Try the free Offline Notes tester build. ([llms.txt](https://notes.cc4.marketing/llms.txt))
+
 ## Changelog API
 - JSON: https://cc4-changelog.mtri-vo.workers.dev/api/changelog
 - RSS: https://cc4-changelog.mtri-vo.workers.dev/rss.xml

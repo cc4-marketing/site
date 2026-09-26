@@ -33,6 +33,7 @@ export const siteData = {
       { label: 'Sigil', href: 'https://sigil.cc4.marketing', external: true },
       { label: 'Clip', href: 'https://clip.cc4.marketing', external: true },
       { label: 'QR', href: 'https://qr.cc4.marketing', external: true },
+      { label: 'Offline Notes', href: 'https://notes.cc4.marketing', external: true },
     ],
     support: {
       donate: '/#donate',
