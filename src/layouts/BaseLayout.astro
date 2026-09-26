@@ -148,6 +148,19 @@ const breadcrumbSchema = {
     gtag('js', new Date());
     gtag('config', 'G-RERRE2NHVP');
   </script>
+
+  <!-- First-party ledger beacon (Worker `ledger` + D1, ours). Same zone as the site so
+       ITP and blocklists leave it alone. Host-gated, unlike Beam/Plausible/gtag above,
+       so localhost and preview deploys stay out of the numbers. -->
+  <script is:inline>
+    if (location.hostname === 'cc4.marketing') {
+      var lg = document.createElement('script');
+      lg.defer = true;
+      lg.setAttribute('data-site', 'cc4.marketing');
+      lg.src = 'https://s.cc4.marketing/beacon.js';
+      document.head.appendChild(lg);
+    }
+  </script>
   
   <!-- Primary Meta Tags -->
   <title>{fullTitle}</title>
