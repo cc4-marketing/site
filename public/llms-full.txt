@@ -22,6 +22,7 @@ The CC4.Marketing blog publishes practical guides on AI-powered marketing with C
 - [How to Send Personalized Email Campaigns with an AI Coding Agent](https://cc4.marketing/blog/what-i-caught-before-a-coding-agent-sent-real-emails/) — Real case study: building and sending a real B2B merge-personalized campaign with Claude Code — the Gmail clipping bug, a Vietnamese-text encoding bug, a wrong claim about tracking data self-corrected on verification, and why a 100% open rate from a list of banks isn't the win it looks like. Companion lesson: Module 3.1.
 - [I Turned a Markdown File into a Real Book in 4 Minutes](https://cc4.marketing/blog/book-publisher-markdown-to-real-book/) (Book Publisher is a free MIT agent skill that turns one Markdown file into a designed PDF and EPUB. The launch, a real timed run, and the full guide)
 - [Offline Notes: Keep the Reason You Saved It](https://cc4.marketing/blog/offline-notes-keep-the-reason/) (A free Chrome extension for saving articles, highlighting passages, and writing why they matter. Offline, no account, Markdown out. The v1.4.1 tester is open)
+- [GitHub Pull Requests for Marketers: A 10-Minute Guide](https://cc4.marketing/blog/github-pull-requests-for-marketers/) (Your AI wrote the change. Now it sits on a branch nobody sees. The 4-step pull request workflow for marketers, with copy-paste replies for every review)
 
 ## Module 0: Getting Started (4 lessons, ~30 minutes)
 

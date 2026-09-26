@@ -33,6 +33,7 @@ The blog publishes practical guides, tutorials, and insights on AI-powered marke
 - [How to Send Personalized Email Campaigns with an AI Coding Agent](https://cc4.marketing/blog/what-i-caught-before-a-coding-agent-sent-real-emails/)
 - [I Turned a Markdown File into a Real Book in 4 Minutes](https://cc4.marketing/blog/book-publisher-markdown-to-real-book/)
 - [Offline Notes: Keep the Reason You Saved It](https://cc4.marketing/blog/offline-notes-keep-the-reason/)
+- [GitHub Pull Requests for Marketers: A 10-Minute Guide](https://cc4.marketing/blog/github-pull-requests-for-marketers/)
 
 ## Course Modules
 - Module 0: Getting Started (4 lessons, 30 min) — Installation, setup, first task
