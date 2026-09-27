@@ -49,7 +49,20 @@ const siteUrl = "https://cc4.marketing";
 const currentPath = Astro.url.pathname;
 const canonicalUrl = canonical || `${siteUrl}${currentPath}`;
 const titleSuffix = type === "article" ? " | CC4M" : " | Claude Code for Marketers";
-const fullTitle = (title.includes("CC4") || title.includes("Claude Code for Marketers")) ? title : `${title}${titleSuffix}`;
+// Brand suffix only when it still fits Google's ~60 char title display;
+// long post titles (set in the CMS) keep their words instead of the brand.
+const hasBrand = title.includes("CC4") || title.includes("Claude Code for Marketers");
+const fullTitle = hasBrand || `${title}${titleSuffix}`.length > 60 ? title : `${title}${titleSuffix}`;
+
+// SERP snippets cut around 155-160 chars. CMS excerpts often run longer, so trim
+// the meta description at a word boundary; the on-page excerpt is untouched.
+function toMetaDescription(text: string, max = 158): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max - 1);
+  return `${cut.slice(0, cut.lastIndexOf(" ")).replace(/[\s,;:.\-]+$/, "")}…`;
+}
+const metaDescription = toMetaDescription(description);
 
 // Engine kill-switch — set OG_ENGINE_ENABLED=false in Cloudflare to fall back
 // to static defaults without a redeploy.
@@ -166,7 +179,7 @@ const breadcrumbSchema = {
   <!-- Primary Meta Tags -->
   <title>{fullTitle}</title>
   <meta name="title" content={fullTitle}>
-  <meta name="description" content={description}>
+  <meta name="description" content={metaDescription}>
   <meta name="keywords" content={keywords.join(", ")}>
   <meta name="author" content={author}>
   <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"}>

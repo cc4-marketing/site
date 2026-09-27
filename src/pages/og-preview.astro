@@ -10,7 +10,7 @@
 export const prerender = false;
 
 if (!import.meta.env.DEV) {
-  return Astro.redirect('/404');
+  return new Response(null, { status: 404 });
 }
 ---
 
