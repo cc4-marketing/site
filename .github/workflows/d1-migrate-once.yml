@@ -1,0 +1,29 @@
+# One-off: apply the 55 pending EmDash migrations (0.1 -> 0.41 upgrade) to the
+# production D1. Runs only on push to this ops branch; delete the branch after.
+# The fingerprint pins the exact target DB so it can't hit anything else.
+name: D1 migrate (one-off, emdash 0.41)
+
+on:
+  push:
+    branches: ["ops/d1-migrate-emdash-041"]
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Apply pending migrations
+        run: npx emdash migrate --wrangler-config wrangler.jsonc --expected-target-fingerprint=70d060c7d9a38721f590bde3fe44a9b00d8cc15825617c366bf969707b4860f4
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Confirm nothing pending
+        run: npx emdash migrate --check --wrangler-config wrangler.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
