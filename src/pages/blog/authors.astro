@@ -51,7 +51,7 @@ import { AUTHORS as authors, slugifyAuthorName as slugify } from '../../data/aut
   <section class="authors-body">
     <div class="authors-body-inner">
       {authors.map((author) => (
-        <a href={`/blog/authors/${slugify(author.name)}`} class="author-card">
+        <a href={`/blog/authors/${slugify(author.name)}/`} class="author-card">
           <div class="author-avatar">
             <img src={author.avatar} alt={author.name} class="author-avatar-img" width="80" height="80" loading="lazy" />
           </div>

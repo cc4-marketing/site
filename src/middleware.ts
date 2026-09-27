@@ -12,7 +12,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Force HTTPS. Cloudflare currently serves http:// with a 200 (no edge
   // redirect), so http and https are live duplicates — Google even indexed
   // http://cc4.marketing/_emdash/admin/setup. 301 any http request to https.
-  if (url.protocol === 'http:') {
+  // Localhost is exempt so `npm run preview` / wrangler dev keep working.
+  const isLocal = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+  if (url.protocol === 'http:' && !isLocal) {
     url.protocol = 'https:';
     return context.redirect(url.toString(), 301);
   }

@@ -1,97 +1,35 @@
 # robots.txt for cc4.marketing
-# Allow all search engines and AI bots to crawl
+# Search engines and AI crawlers are welcome. Every agent below shares ONE rule
+# group on purpose: a bot with its own "Allow: /" group ignores the "*" group,
+# which previously let named bots crawl /api/.
+# /_emdash/ is deliberately NOT disallowed: middleware sends X-Robots-Tag noindex
+# there, and Google must be able to recrawl to see it.
+# /_astro/ is NOT blocked: crawlers need its CSS/JS to render pages.
 
-# Default: Allow all bots
 User-agent: *
+User-agent: Googlebot
+User-agent: Googlebot-Image
+User-agent: Bingbot
+User-agent: DuckDuckBot
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: Google-Extended
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Meta-ExternalAgent
+User-agent: CCBot
 Allow: /
 Disallow: /api/
-Disallow: /_astro/
 Disallow: /og-preview
 Disallow: /og/preview.png
 Disallow: /og/debug
 
-# Google
-User-agent: Googlebot
-Allow: /
-
-User-agent: Googlebot-Image
-Allow: /
-
-User-agent: Googlebot-News
-Allow: /
-
-# Bing
-User-agent: Bingbot
-Allow: /
-
-User-agent: MSNBot
-Allow: /
-
-# Other major search engines
-User-agent: Slurp
-Allow: /
-
-User-agent: DuckDuckBot
-Allow: /
-
-User-agent: Baiduspider
-Allow: /
-
-User-agent: YandexBot
-Allow: /
-
-# AI Bots - Allow for training and indexing
-User-agent: GPTBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: Claude-Web
-Allow: /
-
-User-agent: Anthropic-AI
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: Meta-ExternalAgent
-Allow: /
-
-User-agent: Bytespider
-Allow: /
-
-User-agent: cohere-ai
-Allow: /
-
-User-agent: Applebot
-Allow: /
-
-User-agent: Applebot-Extended
-Allow: /
-
-# Social media crawlers
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: LinkedInBot
-Allow: /
-
-User-agent: Pinterest
-Allow: /
-
-# Sitemap location
 Sitemap: https://cc4.marketing/sitemap-index.xml
 
-# LLMs.txt for AI agents: https://cc4.marketing/llms.txt
-# (comment only; "LLMs-txt:" is not a valid robots.txt directive)
+# LLM-readable site summary: https://cc4.marketing/llms.txt (full: /llms-full.txt)
