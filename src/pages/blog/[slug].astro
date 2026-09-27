@@ -2,7 +2,7 @@
 import { jsonLd } from '../../lib/json-ld';
 export const prerender = false;
 
-import { getEmDashCollection, getEmDashEntry } from 'emdash';
+import { getEmDashCollection, getEmDashEntry, getSeoMeta } from 'emdash';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
@@ -25,6 +25,14 @@ const { entry: post } = await getEmDashEntry('posts', slug!);
 if (!post) {
   return new Response(null, { status: 404 });
 }
+
+// SEO panel values (seo_title / seo_description / noindex) win when an editor
+// sets them; otherwise fall back to the headline and excerpt. This lets a post
+// keep a long on-page H1 while Google gets a title that fits ~60 chars.
+const seo = getSeoMeta(post, {
+  defaultTitle: post.data.title,
+  defaultDescription: post.data.excerpt || post.data.title,
+});
 
 // Fields the OG engine needs (both for the hashed URL and for JSON-LD parity).
 const ogPost: OgPostInput = {
@@ -107,8 +115,9 @@ const extraSchema = extraSchemas[slug!] ?? null;
 ---
 
 <BaseLayout
-  title={post.data.title}
-  description={post.data.excerpt || post.data.title}
+  title={seo.title}
+  description={seo.description}
+  noindex={seo.robots?.includes('noindex') ?? false}
   type="article"
   publishedDate={post.data.publishedAt?.toISOString()}
   modifiedDate={post.data.updatedAt?.toISOString()}
