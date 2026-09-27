@@ -23,7 +23,7 @@ const { slug } = Astro.params;
 const author = AUTHORS.find((a) => slugify(a.name) === slug);
 
 if (!author) {
-  return Astro.redirect('/404');
+  return new Response(null, { status: 404 });
 }
 
 // Split intro into paragraphs (or fall back to bio).

@@ -24,7 +24,7 @@ const all = await getCollection('library');
 const entry = all.find(
   (e) => e.data.category === categorySlug && fileSlug(e) === entrySlug,
 );
-if (!entry) return Astro.redirect('/404');
+if (!entry) return new Response(null, { status: 404 });
 const { data } = entry;
 const category = getCategory(data.category)!;
 const slug = fileSlug(entry);

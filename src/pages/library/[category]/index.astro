@@ -13,7 +13,7 @@ import { fileSlug } from '../../../lib/library';
 
 const { category: categorySlug } = Astro.params;
 const category = LIBRARY_CATEGORIES.find((c) => c.slug === categorySlug);
-if (!category) return Astro.redirect('/404');
+if (!category) return new Response(null, { status: 404 });
 
 const allEntries = await getCollection('library');
 const entries = allEntries

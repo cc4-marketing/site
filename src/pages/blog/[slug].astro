@@ -23,7 +23,7 @@ const { slug } = Astro.params;
 const { entry: post } = await getEmDashEntry('posts', slug!);
 
 if (!post) {
-  return Astro.redirect('/404');
+  return new Response(null, { status: 404 });
 }
 
 // Fields the OG engine needs (both for the hashed URL and for JSON-LD parity).
