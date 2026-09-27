@@ -131,8 +131,20 @@ for (const { slug, lastmod } of blogSitemapData) {
 export default defineConfig({
   site: 'https://cc4.marketing',
   output: 'server',
+  compressHTML: true,
   adapter: cloudflare(),
   integrations: [
+    {
+      name: 'cc4-site-policy',
+      hooks: {
+        'astro:config:setup': ({ addMiddleware }) => {
+          addMiddleware({
+            entrypoint: new URL('./src/lib/site-middleware.ts', import.meta.url),
+            order: 'pre',
+          });
+        },
+      },
+    },
     react(),
     mdx(),
     sitemap({
@@ -223,6 +235,7 @@ export default defineConfig({
     emdash({
       database: d1({ binding: 'DB' }),
       storage: r2({ binding: 'MEDIA' }),
+      migrations: { runtime: 'check', dev: 'auto' },
     }),
   ],
   vite: {

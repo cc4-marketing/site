@@ -1,8 +1,9 @@
 // Contract tests for /api/subscribe (plans/20260828-0238 phase 01).
 // Stubs fetch and the cloudflare:workers env; asserts the contract, not the plumbing.
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { createContext } from 'astro/middleware';
 
-// Mutable so individual tests can attach a rate limiter binding.
+// Each test exercises the Cloudflare boundary without sending real emails.
 const mockEnv = vi.hoisted(() => ({
   RESEND_API_KEY: 'test-key',
   RESEND_AUDIENCE_ID: 'test-audience',
@@ -37,11 +38,11 @@ const ok = () => new Response('{}', { status: 200 });
 
 async function post(body: unknown): Promise<Response> {
   // Astro's APIRoute receives a context object; the handler only uses `request`.
-  return POST({ request: makeRequest(body) } as any);
+  return POST(createContext({ request: makeRequest(body) }));
 }
 
 beforeEach(() => {
-  delete mockEnv.SUBSCRIBE_LIMITER;
+  mockEnv.SUBSCRIBE_LIMITER = { limit: async () => ({ success: true }) };
   vi.unstubAllGlobals();
   vi.spyOn(console, 'error').mockImplementation(() => {});
   vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -113,21 +114,45 @@ describe('POST /api/subscribe', () => {
 
   it('rejects non-JSON bodies with 415 before any outbound call (blocks cross-site form posts)', async () => {
     const calls = stubFetch(ok);
-    const res = await POST({
+    const res = await POST(createContext({
       request: new Request('https://cc4.marketing/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ email: 'person@example.com' }),
       }),
-    } as any);
+    }));
     expect(res.status).toBe(415);
     expect(calls).toHaveLength(0);
   });
 
-  it('never reflects a foreign Origin in CORS headers', async () => {
-    stubFetch(ok);
-    const res = await post({ email: 'person@example.com' });
+  it('rejects a foreign Origin before sending email', async () => {
+    const calls = stubFetch(ok);
+    const request = makeRequest({ email: 'person@example.com' });
+    request.headers.set('Origin', 'https://example.com');
+    const res = await POST(createContext({ request }));
+    expect(res.status).toBe(403);
     expect(res.headers.get('access-control-allow-origin')).toBe('https://cc4.marketing');
+    expect(calls).toHaveLength(0);
+  });
+
+  it('fails closed when the rate limiter binding is missing', async () => {
+    delete mockEnv.SUBSCRIBE_LIMITER;
+    const calls = stubFetch(ok);
+    const res = await post({ email: 'person@example.com' });
+    expect(res.status).toBe(503);
+    expect(calls).toHaveLength(0);
+  });
+
+  it('rejects malformed JSON with no outbound calls', async () => {
+    const calls = stubFetch(ok);
+    const request = new Request('https://cc4.marketing/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{',
+    });
+    const res = await POST(createContext({ request }));
+    expect(res.status).toBe(400);
+    expect(calls).toHaveLength(0);
   });
 
   it('returns 429 with no outbound calls when the rate limiter says no', async () => {

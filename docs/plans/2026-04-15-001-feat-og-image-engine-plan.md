@@ -8,6 +8,8 @@ origin: docs/brainstorms/2026-04-15-og-image-engine-brainstorm.md
 
 # OG Image Engine + Hybrid Content Platform
 
+> 2026-09-27: This completed plan retains its historical size targets. The platform has since moved to a 64 MiB uncompressed limit, with no gzip ceiling. Current guard behavior and measured output are documented in [the bundle-size lesson](../solutions/integration-issues/workers-og-bundle-size-measurement.md#current-platform-limit-checked-2026-09-27).
+
 ## Overview
 
 Build a typographic Open Graph image generation engine for cc4.marketing, replacing the Python/Gemini cover-generation scripts (`generate_cover*.py`) with a TypeScript-native solution that runs on Cloudflare Workers via `workers-og` (Satori + resvg-wasm). Images are brand-compliant: Righteous display, Outfit body, cream/rust/plum/mustard palette, hard shadows, thick borders — matching the site's retro-futuristic aesthetic.

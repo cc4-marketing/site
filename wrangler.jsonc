@@ -36,5 +36,5 @@
 
   // Secrets (set via Cloudflare Dashboard or `wrangler secret put`):
   // - RESEND_API_KEY
-  // - GITHUB_TOKEN
+  // - RESEND_AUDIENCE_ID
 }

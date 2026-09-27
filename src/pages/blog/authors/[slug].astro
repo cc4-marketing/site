@@ -91,7 +91,7 @@ const breadcrumbSchema = {
   ],
 };
 
-const personSchema: Record<string, unknown> = {
+const personSchema: Record<string, unknown> | null = author.isAI ? null : {
   '@context': 'https://schema.org',
   '@type': 'Person',
   'name': author.name,
@@ -102,7 +102,7 @@ const personSchema: Record<string, unknown> = {
   'sameAs': Object.values(author.links).filter(Boolean),
 };
 
-if (hasTopics) {
+if (personSchema && hasTopics) {
   personSchema.knowsAbout = author.topics;
 }
 ---
@@ -118,7 +118,7 @@ if (hasTopics) {
   <Header />
 
   <script type="application/ld+json" set:html={jsonLd(breadcrumbSchema)} />
-  <script type="application/ld+json" set:html={jsonLd(personSchema)} />
+  {personSchema && <script type="application/ld+json" set:html={jsonLd(personSchema)} />}
 
   <section class="author-hero">
     <div class="author-hero-inner">
@@ -147,6 +147,7 @@ if (hasTopics) {
           <h1 class="author-profile-name">{author.name}</h1>
           <p class="author-profile-role">{author.role}</p>
           <p class="author-profile-bio">{author.bio}</p>
+          {author.isAI && author.disclosure && <p class="author-profile-bio"><strong>AI disclosure:</strong> {author.disclosure}</p>}
         </div>
       </div>
     </div>
@@ -223,7 +224,9 @@ if (hasTopics) {
         <h2 class="section-heading">Prompts to use with AI</h2>
         <p class="prompts-intro">
           Copy any of these into Claude, ChatGPT, or your AI of choice. They're written
-          to draw on {author.name}'s voice and the work they've shipped on CC4.Marketing.
+          to draw on {author.name}'s {author.isAI
+            ? 'AI editorial voice. Supply source material so the output can be checked, not mistaken for personal experience.'
+            : "voice and the work they've shipped on CC4.Marketing."}
         </p>
         <ul class="prompt-list">
           {promptCards.map((card) => (

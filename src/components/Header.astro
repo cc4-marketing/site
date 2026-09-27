@@ -1,8 +1,12 @@
 ---
 import { siteData } from '../config/siteData';
+interface Props {
+  latestChangelogId?: string;
+}
+const { latestChangelogId } = Astro.props;
 ---
 
-<header class="header">
+<header class="header" data-changelog-latest={latestChangelogId}>
   <div class="container">
     <a href="/" class="logo">CC4.Marketing</a>
 
@@ -342,6 +346,12 @@ import { siteData } from '../config/siteData';
     if (!dots.length) return;
     const hide = () => dots.forEach(d => d.classList.add('hidden'));
     try {
+      const renderedId = document.querySelector('header.header')?.getAttribute('data-changelog-latest');
+      if (renderedId != null) {
+        if (renderedId) localStorage.setItem('cc4-changelog-seen', renderedId);
+        hide();
+        return;
+      }
       const res = await fetch('https://cc4-changelog.mtri-vo.workers.dev/api/changelog');
       if (!res.ok) return;
       const data = await res.json();
@@ -349,10 +359,6 @@ import { siteData } from '../config/siteData';
       if (!latest) { hide(); return; }
       const seen = localStorage.getItem('cc4-changelog-seen');
       if (seen === latest.id) hide();
-      if (window.location.pathname === '/changelog' || window.location.pathname === '/changelog/') {
-        localStorage.setItem('cc4-changelog-seen', latest.id);
-        hide();
-      }
     } catch { /* silent */ }
   })();
 

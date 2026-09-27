@@ -16,6 +16,7 @@ import DonationSection from '../../components/DonationSection.astro';
 import { slugify } from '../../lib/blog-slugify';
 import { readTimeMinutes } from '../../lib/blog-read-time';
 import { buildArticleSchema, buildBreadcrumbListSchema, extraSchemas } from '../../lib/blog-post-schemas';
+import { AUTHORS, slugifyAuthorName } from '../../data/authors';
 import '../../styles/blog-prose.css';
 
 const { slug } = Astro.params;
@@ -39,8 +40,15 @@ const ogPost: OgPostInput = {
 // the house team byline so older un-backfilled posts still render cleanly.
 const primaryByline = post.data.bylines?.[0]?.byline;
 const authorName = primaryByline?.displayName ?? 'CC4.Marketing Team';
-const authorSlug = authorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-// Real authors link to their personal page; the house byline falls back to the hub.
+const authorSlug = slugifyAuthorName(authorName);
+const matchedAuthor = AUTHORS.find((author) => slugifyAuthorName(author.name) === authorSlug);
+const aiAuthors = AUTHORS.filter((author) =>
+  author.isAI && post.data.bylines?.some(
+    ({ byline }: { byline: { displayName: string } }) =>
+      slugifyAuthorName(byline.displayName) === slugifyAuthorName(author.name),
+  ),
+);
+// Named authors link to their profile; the house byline falls back to the hub.
 const authorPath = authorName === 'CC4.Marketing Team'
   ? '/blog/authors/'
   : `/blog/authors/${authorSlug}/`;
@@ -92,6 +100,7 @@ const articleSchema = buildArticleSchema({
   ogImageUrl: resolvedOgUrl,
   authorName,
   authorUrl,
+  authorIsAI: matchedAuthor?.isAI ?? false,
 });
 const breadcrumbListSchema = buildBreadcrumbListSchema(slug!, post.data.title);
 const extraSchema = extraSchemas[slug!] ?? null;
@@ -127,6 +136,9 @@ const extraSchema = extraSchemas[slug!] ?? null;
           authorPath={authorPath}
           readMinutes={readMinutes}
         />
+        {aiAuthors.map((author) => author.disclosure && (
+          <p class="author-disclosure"><strong>AI disclosure:</strong> {author.disclosure}</p>
+        ))}
 
         {/* Mobile TOC: default-closed disclosure after the masthead (R11).
             Rendered inside the sheet on mobile; the desktop sidebar variant
@@ -199,6 +211,13 @@ const extraSchema = extraSchemas[slug!] ?? null;
     box-shadow: var(--shadow-md);
     padding: 32px clamp(16px, 4vw, 56px) 48px;
     min-width: 0; /* wide children scroll internally, never stretch the grid */
+  }
+
+  .author-disclosure {
+    color: var(--text-secondary);
+    font-size: 0.9em;
+    line-height: 1.6;
+    margin: 0 0 28px;
   }
 
   .toc-slot-mobile {

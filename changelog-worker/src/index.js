@@ -92,9 +92,9 @@ async function handleFeedJson(kv, url) {
     feed_url: `${url.origin}/feed.json`,
     items: entries.map((e) => ({
       id: e.id,
-      url: `${url.origin}/entries/${e.slug}`,
+      url: `${url.origin}/entries/${encodeURIComponent(e.slug)}`,
       title: e.title,
-      content_html: `<p><strong>${e.type.toUpperCase()}</strong> · v${e.version}</p><p>${e.summary}</p>`,
+      content_html: `<p><strong>${escHtml(String(e.type).toUpperCase())}</strong> · v${escHtml(e.version)}</p><p>${escHtml(e.summary)}</p>`,
       date_published: e.published_at,
       tags: [e.type, ...(e.modules || [])],
     })),
@@ -107,12 +107,12 @@ async function handleRss(kv, url) {
     .map(
       (e) => `
     <item>
-      <title><![CDATA[${e.title}]]></title>
-      <link>${url.origin}/entries/${e.slug}</link>
-      <guid>${e.id}</guid>
+      <title>${escHtml(e.title)}</title>
+      <link>${escHtml(`${url.origin}/entries/${encodeURIComponent(e.slug)}`)}</link>
+      <guid isPermaLink="false">${escHtml(e.id)}</guid>
       <pubDate>${new Date(e.published_at).toUTCString()}</pubDate>
-      <description><![CDATA[${e.summary}]]></description>
-      <category>${e.type}</category>
+      <description>${escHtml(escHtml(e.summary))}</description>
+      <category>${escHtml(e.type)}</category>
     </item>`
     )
     .join('\n');
@@ -122,7 +122,7 @@ async function handleRss(kv, url) {
   <channel>
     <title>CC4.Marketing Changelog</title>
     <description>Course updates for humans &amp; agents</description>
-    <link>${url.origin}</link>${items}
+    <link>${escHtml(url.origin)}</link>${items}
   </channel>
 </rss>`;
 
@@ -131,8 +131,8 @@ async function handleRss(kv, url) {
   });
 }
 
-// Entries are partly model-written (auto-changelog workflow): escape before
-// putting them in the admin HTML so an entry can't script the admin session.
+// Entries are partly model-written: escape text before inserting it into HTML
+// or XML. RSS descriptions need both HTML and XML escaping for feed readers.
 const escHtml = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 async function handleAdmin(kv) {
@@ -148,7 +148,7 @@ async function handleAdmin(kv) {
 <td>v${escHtml(e.version)}</td>
 <td><span class="type type-${escHtml(e.type)}">${escHtml(e.type)}</span></td>
 <td>
-<form method="post" action="/admin/entries/${encodeURIComponent(e.id)}/status" style="display:inline-flex;gap:6px;">
+<form method="post" action="/admin/entries/${escHtml(encodeURIComponent(e.id))}/status" style="display:inline-flex;gap:6px;">
 <select name="status">
 <option value="draft" ${e.status === 'draft' ? 'selected' : ''}>draft</option>
 <option value="published" ${e.status === 'published' ? 'selected' : ''}>published</option>
@@ -286,6 +286,18 @@ export default {
     else if (path.startsWith('/admin')) {
       // Admin responses get no CORS headers: only same-origin / curl should reach them.
       if (!checkAuth(request, env)) return unauthorized();
+      if (method === 'POST') {
+        const origin = request.headers.get('Origin');
+        const fetchSite = request.headers.get('Sec-Fetch-Site');
+        const isJson = request.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase() === 'application/json';
+        // Forms require same-origin proof; authenticated JSON automation may omit Origin.
+        if (
+          (origin !== null && origin !== url.origin) ||
+          (origin === null && (!isJson || (fetchSite !== null && fetchSite !== 'same-origin')))
+        ) {
+          return new Response('Forbidden origin', { status: 403 });
+        }
+      }
 
       if (method === 'GET' && path === '/admin') {
         response = await handleAdmin(env.CHANGELOG_KV);

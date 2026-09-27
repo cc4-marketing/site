@@ -9,7 +9,7 @@ import { AUTHORS as authors, slugifyAuthorName as slugify } from '../../data/aut
 
 <BaseLayout
   title="Authors — CC4.Marketing Blog"
-  description="Meet the team behind CC4.Marketing. Practical AI marketing guides written by marketers who build with Claude Code every day."
+  description="Meet Tri Vo and Alice Marketer, CC4.Marketing's disclosed AI author. Read marketing workflows, source-grounded prompts, and practical guides."
   keywords={['CC4.Marketing authors', 'AI marketing writers', 'Claude Code experts']}
   ogPageKey="authors"
   showCourseSchema={false}
@@ -22,7 +22,7 @@ import { AUTHORS as authors, slugifyAuthorName as slugify } from '../../data/aut
     "@type": "AboutPage",
     "name": "CC4.Marketing Blog Authors",
     "url": "https://cc4.marketing/blog/authors",
-    "mainEntity": authors.map((a) => ({
+    "mainEntity": authors.filter((a) => !a.isAI).map((a) => ({
       "@type": "Person",
       "name": a.name,
       "jobTitle": a.role,
@@ -45,7 +45,7 @@ import { AUTHORS as authors, slugifyAuthorName as slugify } from '../../data/aut
     <div class="authors-hero-inner">
       <span class="authors-hero-label">The Team</span>
       <h1 class="authors-hero-title">Authors</h1>
-      <p class="authors-hero-desc">Marketers writing for marketers. Everything on this blog comes from real workflows we use every day.</p>
+      <p class="authors-hero-desc">Human perspective and a disclosed AI voice. Meet the authors behind our marketing workflows, checklists, and source-grounded prompts.</p>
     </div>
   </section>
 
@@ -60,6 +60,7 @@ import { AUTHORS as authors, slugifyAuthorName as slugify } from '../../data/aut
             <h2 class="author-name">{author.name}</h2>
             <span class="author-role">{author.role}</span>
             <p class="author-bio">{author.bio}</p>
+            {author.isAI && author.disclosure && <p class="author-bio"><strong>AI disclosure:</strong> {author.disclosure}</p>}
             <div class="author-links">
               {author.links.substack && (
                 <span class="author-link">
