@@ -1,4 +1,5 @@
 ---
+import { jsonLd } from '../../lib/json-ld';
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
@@ -16,7 +17,7 @@ import { AUTHORS as authors, slugifyAuthorName as slugify } from '../../data/aut
 >
   <Header />
 
-  <script type="application/ld+json" set:html={JSON.stringify({
+  <script type="application/ld+json" set:html={jsonLd({
     "@context": "https://schema.org",
     "@type": "AboutPage",
     "name": "CC4.Marketing Blog Authors",

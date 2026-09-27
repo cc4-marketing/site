@@ -89,6 +89,10 @@ const apiUrl = siteData.changelog.apiUrl;
     return 'site';
   }
 
+  // Changelog entries come from a remote API (partly model-written); escape every
+  // interpolated field so a crafted title can never become markup on cc4.marketing.
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
   function fmtDate(d) {
     return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   }
@@ -105,13 +109,13 @@ const apiUrl = siteData.changelog.apiUrl;
 
   function renderEntry(entry) {
     const tc = TC[entry.type] || '';
-    const label = TL[entry.type] || entry.type;
+    const label = esc(TL[entry.type] || entry.type);
     const scope = getScope(entry);
     const scopeLabel = scope === 'course' ? 'Course' : 'Website';
     const scopeClass = scope === 'course' ? 'cl-scope-tag--course' : 'cl-scope-tag--site';
-    const mods = (entry.modules || []).filter(m => m !== 'site' && m !== 'course').map(m => `<span class="cl-mod">${m}</span>`).join('');
+    const mods = (entry.modules || []).filter(m => m !== 'site' && m !== 'course').map(m => `<span class="cl-mod">${esc(m)}</span>`).join('');
     const ms = entry.machine_summary
-      ? `<details class="cl-agent"><summary>Agent context</summary><p>${entry.machine_summary}</p></details>`
+      ? `<details class="cl-agent"><summary>Agent context</summary><p>${esc(entry.machine_summary)}</p></details>`
       : '';
 
     return `
@@ -123,11 +127,11 @@ const apiUrl = siteData.changelog.apiUrl;
             <div class="cl-meta">
               <span class="cl-scope-tag ${scopeClass}">${scopeLabel}</span>
               <span class="cl-badge ${tc}">${label}</span>
-              ${entry.version !== 'unreleased' ? `<span class="cl-ver">v${entry.version}</span>` : '<span class="cl-ver">unreleased</span>'}
+              ${entry.version !== 'unreleased' ? `<span class="cl-ver">v${esc(entry.version)}</span>` : '<span class="cl-ver">unreleased</span>'}
               <span class="cl-date">${fmtDate(entry.published_at)}</span>
             </div>
-            <h3 class="cl-entry-title">${entry.title}</h3>
-            <p class="cl-entry-desc">${entry.summary}</p>
+            <h3 class="cl-entry-title">${esc(entry.title)}</h3>
+            <p class="cl-entry-desc">${esc(entry.summary)}</p>
             ${ms}
             ${mods ? `<div class="cl-mods">${mods}</div>` : ''}
           </div>
@@ -158,7 +162,7 @@ const apiUrl = siteData.changelog.apiUrl;
         : `${fmtDate(items[items.length - 1].published_at)} — ${fmtDate(items[0].published_at)}`;
 
       const isUnreleased = version === 'Unreleased';
-      const vLabel = isUnreleased ? 'Unreleased' : `v${version}`;
+      const vLabel = isUnreleased ? 'Unreleased' : `v${esc(version)}`;
 
       html += `
         <div class="cl-vgroup ${isUnreleased ? 'cl-vgroup--unreleased' : ''}">
@@ -180,7 +184,7 @@ const apiUrl = siteData.changelog.apiUrl;
     const tc = {};
     for (const e of entries) tc[e.type] = (tc[e.type] || 0) + 1;
     const dots = Object.entries(tc).map(([t, c]) =>
-      `<span class="cl-stat-item"><span class="cl-stat-dot ${TC[t]}"></span>${c} ${TL[t] || t}</span>`
+      `<span class="cl-stat-item"><span class="cl-stat-dot ${TC[t]}"></span>${c} ${esc(TL[t] || t)}</span>`
     ).join('');
     el.innerHTML = `<span class="cl-stat-total">${entries.length} updates</span><span class="cl-stat-sep"></span><span class="cl-stat-item"><span class="cl-stat-dot cl-stat-dot--site"></span>${siteCount} Website</span><span class="cl-stat-item"><span class="cl-stat-dot cl-stat-dot--course"></span>${courseCount} Course</span><span class="cl-stat-sep"></span>${dots}`;
   }
@@ -188,7 +192,7 @@ const apiUrl = siteData.changelog.apiUrl;
   function renderHeroMeta(entries) {
     const el = document.getElementById('hero-meta');
     if (!entries.length) return;
-    el.innerHTML = `Latest: <strong>v${entries[0].version}</strong> — ${fmtDate(entries[0].published_at)}`;
+    el.innerHTML = `Latest: <strong>v${esc(entries[0].version)}</strong> — ${fmtDate(entries[0].published_at)}`;
   }
 
   function applyFilters() {

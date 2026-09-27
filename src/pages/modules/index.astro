@@ -1,4 +1,5 @@
 ---
+import { jsonLd } from '../../lib/json-ld';
 // Modules hub — lists all modules + lessons. Reads from the content collection
 // so adding a lesson is one file edit; no separate config to update.
 import { getCollection } from 'astro:content';
@@ -59,7 +60,7 @@ const curriculumSchema = {
   description={`The full free Claude Code for Marketers curriculum: ${totalModules} modules, ${totalLessons} lessons. Go from installing Claude Code to shipping a real marketing campaign.`}
   ogPageKey="modules"
 >
-  <script type="application/ld+json" set:html={JSON.stringify(curriculumSchema)} />
+  <script type="application/ld+json" set:html={jsonLd(curriculumSchema)} />
   <Header />
 
   <main class="modules-hub">

@@ -41,11 +41,13 @@ function html(body, status = 200) {
 }
 
 function checkAuth(request, env) {
+  // No password configured means admin is closed, never a public default.
+  if (!env.ADMIN_PASS) return false;
   const auth = request.headers.get('Authorization') || '';
   if (!auth.startsWith('Basic ')) return false;
   const decoded = atob(auth.split(' ')[1]);
   const [user, pass] = decoded.split(':');
-  return user === (env.ADMIN_USER || 'admin') && pass === (env.ADMIN_PASS || 'bearlychange');
+  return user === (env.ADMIN_USER || 'admin') && pass === env.ADMIN_PASS;
 }
 
 function unauthorized() {
@@ -129,6 +131,10 @@ async function handleRss(kv, url) {
   });
 }
 
+// Entries are partly model-written (auto-changelog workflow): escape before
+// putting them in the admin HTML so an entry can't script the admin session.
+const escHtml = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 async function handleAdmin(kv) {
   const entries = (await readEntries(kv)).map(normalize)
     .sort((a, b) => new Date(b.published_at || 0) - new Date(a.published_at || 0));
@@ -136,13 +142,13 @@ async function handleAdmin(kv) {
   const rows = entries
     .map(
       (e) => `<tr>
-<td>${e.id}</td>
-<td>${e.title}</td>
-<td><span class="status status-${e.status}">${e.status}</span></td>
-<td>v${e.version}</td>
-<td><span class="type type-${e.type}">${e.type}</span></td>
+<td>${escHtml(e.id)}</td>
+<td>${escHtml(e.title)}</td>
+<td><span class="status status-${escHtml(e.status)}">${escHtml(e.status)}</span></td>
+<td>v${escHtml(e.version)}</td>
+<td><span class="type type-${escHtml(e.type)}">${escHtml(e.type)}</span></td>
 <td>
-<form method="post" action="/admin/entries/${e.id}/status" style="display:inline-flex;gap:6px;">
+<form method="post" action="/admin/entries/${encodeURIComponent(e.id)}/status" style="display:inline-flex;gap:6px;">
 <select name="status">
 <option value="draft" ${e.status === 'draft' ? 'selected' : ''}>draft</option>
 <option value="published" ${e.status === 'published' ? 'selected' : ''}>published</option>
@@ -278,18 +284,20 @@ export default {
 
     // Admin routes (auth required)
     else if (path.startsWith('/admin')) {
-      if (!checkAuth(request, env)) return cors(unauthorized());
+      // Admin responses get no CORS headers: only same-origin / curl should reach them.
+      if (!checkAuth(request, env)) return unauthorized();
 
       if (method === 'GET' && path === '/admin') {
         response = await handleAdmin(env.CHANGELOG_KV);
       } else if (method === 'POST' && path === '/admin/entries') {
         response = await handleCreateEntry(request, env.CHANGELOG_KV);
       } else if (method === 'POST' && path.match(/^\/admin\/entries\/(.+)\/status$/)) {
-        const entryId = path.match(/^\/admin\/entries\/(.+)\/status$/)[1];
+        const entryId = decodeURIComponent(path.match(/^\/admin\/entries\/(.+)\/status$/)[1]);
         response = await handleUpdateStatus(request, env.CHANGELOG_KV, entryId);
       } else {
         response = new Response('Not found', { status: 404 });
       }
+      return response;
     }
 
     // Root

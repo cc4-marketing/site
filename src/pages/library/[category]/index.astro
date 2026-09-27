@@ -1,4 +1,5 @@
 ---
+import { jsonLd } from '../../../lib/json-ld';
 // SSR (not prerendered), matches the modules route so Emdash does not redirect
 // these paths to /_emdash/admin/setup in production.
 import { getCollection } from 'astro:content';
@@ -56,9 +57,9 @@ const itemList = {
   showBreadcrumb={false}
 >
   <Header />
-  <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />
+  <script type="application/ld+json" set:html={jsonLd(breadcrumb)} />
   {entries.length > 0 && (
-    <script type="application/ld+json" set:html={JSON.stringify(itemList)} />
+    <script type="application/ld+json" set:html={jsonLd(itemList)} />
   )}
 
   <main class="lib-cat">

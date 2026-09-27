@@ -1,4 +1,5 @@
 ---
+import { jsonLd } from '../lib/json-ld';
 import BaseLayout from './BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -74,8 +75,8 @@ const breadcrumbSchema = {
 ---
 
 <BaseLayout title={pageTitle} description={description} type="article" showCourseSchema={false} showBreadcrumb={false}>
-  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
-  <script type="application/ld+json" set:html={JSON.stringify(lessonSchema)} />
+  <script type="application/ld+json" set:html={jsonLd(breadcrumbSchema)} />
+  <script type="application/ld+json" set:html={jsonLd(lessonSchema)} />
   <Header />
   
   <main class="lesson-container">

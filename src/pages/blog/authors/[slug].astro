@@ -1,4 +1,5 @@
 ---
+import { jsonLd } from '../../../lib/json-ld';
 import { getEmDashCollection } from 'emdash';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Header from '../../../components/Header.astro';
@@ -116,8 +117,8 @@ if (hasTopics) {
 >
   <Header />
 
-  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
-  <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+  <script type="application/ld+json" set:html={jsonLd(breadcrumbSchema)} />
+  <script type="application/ld+json" set:html={jsonLd(personSchema)} />
 
   <section class="author-hero">
     <div class="author-hero-inner">

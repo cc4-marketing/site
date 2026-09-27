@@ -2,14 +2,37 @@ import type { APIRoute } from 'astro';
 
 export const prerender = false;
 
+// Only our own pages call this endpoint. Never reflect the caller's Origin:
+// that let any site drive signups (and our Resend quota) from a browser.
+const corsHeaders = {
+  'Access-Control-Allow-Origin': 'https://cc4.marketing',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  Vary: 'Origin',
+};
+
 export const POST: APIRoute = async ({ request }) => {
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': request.headers.get('Origin') || '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+  // Require JSON. A text/plain POST skips the CORS preflight, so without this
+  // any web page could fire signups cross-site with a plain <form>.
+  if (!(request.headers.get('content-type') || '').toLowerCase().includes('application/json')) {
+    return Response.json({ error: 'Content-Type must be application/json' }, { status: 415, headers: corsHeaders });
+  }
 
   try {
+    const { env } = await import('cloudflare:workers');
+
+    // Per-IP rate limit (wrangler.jsonc `ratelimits`: 3 per 60s). Every accepted
+    // request sends a real email, so this is the abuse ceiling. Binding is absent
+    // in unit tests; production always has it.
+    const limiter = (env as any).SUBSCRIBE_LIMITER;
+    if (limiter) {
+      const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+      const { success } = await limiter.limit({ key: ip });
+      if (!success) {
+        return Response.json({ error: 'Too many requests, try again in a minute' }, { status: 429, headers: corsHeaders });
+      }
+    }
+
     const { email: rawEmail } = await request.json();
 
     // Normalise at the boundary so Resend and Substack receive the same key
@@ -26,7 +49,6 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const { env } = await import('cloudflare:workers');
     const RESEND_API_KEY = (env as any).RESEND_API_KEY;
     const RESEND_AUDIENCE_ID = (env as any).RESEND_AUDIENCE_ID;
 
@@ -127,7 +149,7 @@ export const POST: APIRoute = async ({ request }) => {
       const errBody = await res.text();
       console.error('Resend API error:', res.status, errBody);
       return Response.json(
-        { error: 'Failed to send email', detail: errBody },
+        { error: 'Failed to send email' },
         { status: 502, headers: corsHeaders },
       );
     }
@@ -143,11 +165,5 @@ export const POST: APIRoute = async ({ request }) => {
 };
 
 export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  });
+  return new Response(null, { status: 204, headers: corsHeaders });
 };

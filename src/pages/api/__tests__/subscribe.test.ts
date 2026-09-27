@@ -2,12 +2,12 @@
 // Stubs fetch and the cloudflare:workers env; asserts the contract, not the plumbing.
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('cloudflare:workers', () => ({
-  env: {
-    RESEND_API_KEY: 'test-key',
-    RESEND_AUDIENCE_ID: 'test-audience',
-  },
-}));
+// Mutable so individual tests can attach a rate limiter binding.
+const mockEnv = vi.hoisted(() => ({
+  RESEND_API_KEY: 'test-key',
+  RESEND_AUDIENCE_ID: 'test-audience',
+} as Record<string, unknown>));
+vi.mock('cloudflare:workers', () => ({ env: mockEnv }));
 
 import { POST } from '../subscribe';
 
@@ -41,6 +41,7 @@ async function post(body: unknown): Promise<Response> {
 }
 
 beforeEach(() => {
+  delete mockEnv.SUBSCRIBE_LIMITER;
   vi.unstubAllGlobals();
   vi.spyOn(console, 'error').mockImplementation(() => {});
   vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -108,5 +109,38 @@ describe('POST /api/subscribe', () => {
     stubFetch(ok);
     const res = await post({ email: 'x@gmail.comcom' });
     expect(res.status).toBe(200);
+  });
+
+  it('rejects non-JSON bodies with 415 before any outbound call (blocks cross-site form posts)', async () => {
+    const calls = stubFetch(ok);
+    const res = await POST({
+      request: new Request('https://cc4.marketing/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ email: 'person@example.com' }),
+      }),
+    } as any);
+    expect(res.status).toBe(415);
+    expect(calls).toHaveLength(0);
+  });
+
+  it('never reflects a foreign Origin in CORS headers', async () => {
+    stubFetch(ok);
+    const res = await post({ email: 'person@example.com' });
+    expect(res.headers.get('access-control-allow-origin')).toBe('https://cc4.marketing');
+  });
+
+  it('returns 429 with no outbound calls when the rate limiter says no', async () => {
+    mockEnv.SUBSCRIBE_LIMITER = { limit: async () => ({ success: false }) };
+    const calls = stubFetch(ok);
+    const res = await post({ email: 'person@example.com' });
+    expect(res.status).toBe(429);
+    expect(calls).toHaveLength(0);
+  });
+
+  it('does not leak the upstream Resend error body', async () => {
+    stubFetch((url) => (url.includes('/emails') ? new Response('secret-ish detail', { status: 500 }) : ok()));
+    const res = await post({ email: 'person@example.com' });
+    expect(await res.text()).not.toContain('secret-ish detail');
   });
 });

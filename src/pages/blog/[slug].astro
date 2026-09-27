@@ -1,4 +1,5 @@
 ---
+import { jsonLd } from '../../lib/json-ld';
 export const prerender = false;
 
 import { getEmDashCollection, getEmDashEntry } from 'emdash';
@@ -110,9 +111,9 @@ const extraSchema = extraSchemas[slug!] ?? null;
 >
   <Header />
 
-  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
-  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbListSchema)} />
-  {extraSchema && <script type="application/ld+json" set:html={JSON.stringify(extraSchema)} />}
+  <script type="application/ld+json" set:html={jsonLd(articleSchema)} />
+  <script type="application/ld+json" set:html={jsonLd(breadcrumbListSchema)} />
+  {extraSchema && <script type="application/ld+json" set:html={jsonLd(extraSchema)} />}
 
   {/* The desk: cream page background. The article is a bordered sheet on it. */}
   <div class="post-desk">
