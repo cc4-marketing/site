@@ -14,7 +14,12 @@ const entry = sorted.find((e) => {
 });
 
 if (!entry) {
-  return Astro.redirect('/404');
+  // /modules/<n>/ has no page of its own (breadcrumbs used to link it); send
+  // it to the hub. Anything else is a real 404, not a 302 to /404 (GSC flagged
+  // that chain as soft 404 + page with redirect).
+  const moduleOnly = slug?.replace(/\/$/, '').match(/^(\d+)$/);
+  if (moduleOnly) return Astro.redirect(`/modules/#module-${moduleOnly[1]}`, 301);
+  return new Response(null, { status: 404 });
 }
 
 const index = sorted.indexOf(entry);

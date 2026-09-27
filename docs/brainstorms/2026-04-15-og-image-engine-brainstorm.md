@@ -5,6 +5,8 @@ topic: og-image-engine
 
 # OG Image Engine for cc4.marketing
 
+> 2026-09-27: The compressed-size limits below describe the original decision, not the current platform. See [the updated bundle-size lesson](../solutions/integration-issues/workers-og-bundle-size-measurement.md#current-platform-limit-checked-2026-09-27) for the 64 MiB uncompressed limit and current guard.
+
 ## What We're Building
 
 An in-repo TypeScript OG image engine (Satori + resvg-wasm) that replaces the Python `generate_cover*.py` scripts. It renders 1200×630 typographic PNGs on-brand with cc4.marketing's retro-futuristic style (Righteous display font, hard shadows, cream/rust/plum/mustard palette).

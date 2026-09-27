@@ -2,6 +2,7 @@
 dist/
 # generated types
 .astro/
+.emdash/migrations.json
 
 # dependencies
 node_modules/

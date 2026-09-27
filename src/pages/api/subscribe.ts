@@ -1,16 +1,60 @@
 import type { APIRoute } from 'astro';
 
+declare global {
+  namespace Cloudflare {
+    interface Env {
+      SUBSCRIBE_LIMITER?: { limit(options: { key: string }): Promise<{ success: boolean }> };
+      RESEND_API_KEY?: string;
+      RESEND_AUDIENCE_ID?: string;
+    }
+  }
+}
+
 export const prerender = false;
 
+// Only our own pages call this endpoint. Never reflect the caller's Origin:
+// that let any site drive signups (and our Resend quota) from a browser.
+const corsHeaders = {
+  'Access-Control-Allow-Origin': 'https://cc4.marketing',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  Vary: 'Origin',
+};
+
 export const POST: APIRoute = async ({ request }) => {
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': request.headers.get('Origin') || '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+  const origin = request.headers.get('origin');
+  if (origin && origin !== new URL(request.url).origin) {
+    return Response.json({ error: 'Origin not allowed' }, { status: 403, headers: corsHeaders });
+  }
+
+  // Require JSON. A text/plain POST skips the CORS preflight, so without this
+  // any web page could fire signups cross-site with a plain <form>.
+  if (request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') {
+    return Response.json({ error: 'Content-Type must be application/json' }, { status: 415, headers: corsHeaders });
+  }
 
   try {
-    const { email: rawEmail } = await request.json();
+    const { env } = await import('cloudflare:workers');
+
+    // Fail closed: a missing binding must never enable unlimited email sends.
+    const limiter = env.SUBSCRIBE_LIMITER;
+    if (!limiter) {
+      console.error('SUBSCRIBE_LIMITER not configured');
+      return Response.json({ error: 'Signup temporarily unavailable' }, { status: 503, headers: corsHeaders });
+    }
+    const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+    const { success } = await limiter.limit({ key: ip });
+    if (!success) {
+      return Response.json({ error: 'Too many requests, try again in a minute' }, { status: 429, headers: corsHeaders });
+    }
+
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return Response.json({ error: 'Invalid JSON body' }, { status: 400, headers: corsHeaders });
+    }
+    const rawEmail = body && typeof body === 'object' && 'email' in body ? body.email : undefined;
 
     // Normalise at the boundary so Resend and Substack receive the same key
     // (audit 2026-08-28: mixed-case signups made cross-list diffs unreliable).
@@ -26,9 +70,7 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const { env } = await import('cloudflare:workers');
-    const RESEND_API_KEY = (env as any).RESEND_API_KEY;
-    const RESEND_AUDIENCE_ID = (env as any).RESEND_AUDIENCE_ID;
+    const { RESEND_API_KEY, RESEND_AUDIENCE_ID } = env;
 
     if (!RESEND_API_KEY) {
       console.error('RESEND_API_KEY not configured');
@@ -127,7 +169,7 @@ export const POST: APIRoute = async ({ request }) => {
       const errBody = await res.text();
       console.error('Resend API error:', res.status, errBody);
       return Response.json(
-        { error: 'Failed to send email', detail: errBody },
+        { error: 'Failed to send email' },
         { status: 502, headers: corsHeaders },
       );
     }
@@ -143,11 +185,5 @@ export const POST: APIRoute = async ({ request }) => {
 };
 
 export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  });
+  return new Response(null, { status: 204, headers: corsHeaders });
 };

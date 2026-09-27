@@ -36,10 +36,14 @@ const apiUrl = siteData.changelog.apiUrl;
     return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
+  // Changelog entries come from a remote API (partly model-written); escape every
+  // interpolated field so a crafted title can never become markup on cc4.marketing.
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
   function renderEntry(entry, i) {
-    const typeClass = `type-${entry.type}`;
-    const label = TYPE_LABELS[entry.type] || entry.type;
-    const modules = (entry.modules || []).map(m => `<span class="module-tag">${m}</span>`).join('');
+    const typeClass = `type-${esc(entry.type)}`;
+    const label = esc(TYPE_LABELS[entry.type] || entry.type);
+    const modules = (entry.modules || []).map(m => `<span class="module-tag">${esc(m)}</span>`).join('');
 
     const isNewest = i === 0;
     return `
@@ -48,11 +52,11 @@ const apiUrl = siteData.changelog.apiUrl;
         <div class="entry-inner">
           <div class="entry-meta">
             <span class="type-badge ${typeClass}">${label}</span>
-            <span class="version">v${entry.version}</span>
+            <span class="version">v${esc(entry.version)}</span>
             <span class="date">${formatDate(entry.published_at)}</span>
           </div>
-          <h3 class="entry-title">${entry.title}</h3>
-          <p class="entry-summary">${entry.summary}</p>
+          <h3 class="entry-title">${esc(entry.title)}</h3>
+          <p class="entry-summary">${esc(entry.summary)}</p>
           ${modules ? `<div class="entry-modules">${modules}</div>` : ''}
         </div>
       </div>

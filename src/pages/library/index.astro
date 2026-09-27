@@ -1,4 +1,5 @@
 ---
+import { jsonLd } from '../../lib/json-ld';
 // SSR (not prerendered) so requests route through Astro like the modules pages.
 // Prerendered library routes were falling through to the Emdash SSR handler in
 // production and redirecting to /_emdash/admin/setup. Matching the modules SSR
@@ -43,15 +44,15 @@ const itemList = {
 ---
 
 <BaseLayout
-  title="Marketing Library, Claude Code Prompts and Commands"
+  title="Claude Code Prompts for Marketers: Free Library | CC4M"
   description="Free Claude Code prompts, slash commands, subagents, and skills for marketers. Copy real artifacts for SEO, content, ads, analytics, email, and more."
   keywords={['Claude Code prompts', 'marketing slash commands', 'AI marketing prompts', 'Claude Code for marketers', 'marketing prompt library']}
   showCourseSchema={false}
   showBreadcrumb={false}
 >
   <Header />
-  <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />
-  <script type="application/ld+json" set:html={JSON.stringify(itemList)} />
+  <script type="application/ld+json" set:html={jsonLd(breadcrumb)} />
+  <script type="application/ld+json" set:html={jsonLd(itemList)} />
 
   <section class="lib-hero">
     <div class="lib-hero-inner">

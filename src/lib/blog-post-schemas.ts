@@ -1,5 +1,5 @@
 // JSON-LD builders for blog post pages, extracted from [slug].astro (plan U3)
-// so the page stays data-plumbing + composition. Content unchanged.
+// so the page stays data-plumbing + composition.
 
 export interface PostSchemaInput {
   slug: string;
@@ -10,6 +10,7 @@ export interface PostSchemaInput {
   ogImageUrl: string;
   authorName: string;
   authorUrl: string;
+  authorIsAI: boolean;
 }
 
 export function buildArticleSchema(p: PostSchemaInput): object {
@@ -22,7 +23,9 @@ export function buildArticleSchema(p: PostSchemaInput): object {
     'dateModified': p.updatedAt?.toISOString(),
     'url': `https://cc4.marketing/blog/${p.slug}/`,
     'image': p.ogImageUrl,
-    'author': { '@type': 'Person', 'name': p.authorName, 'url': p.authorUrl },
+    ...(!p.authorIsAI ? {
+      'author': { '@type': 'Person', 'name': p.authorName, 'url': p.authorUrl },
+    } : {}),
     'publisher': {
       '@type': 'Organization',
       'name': 'CC4.Marketing',

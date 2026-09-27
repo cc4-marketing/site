@@ -49,10 +49,13 @@ const apiUrl = siteData.changelog.apiUrl;
       const dismiss = document.getElementById('mub-dismiss');
 
       text.textContent = `${recent.length} recent update${recent.length > 1 ? 's' : ''} for Module ${module}`;
+      // Changelog entries come from a remote API (partly model-written); escape every
+  // interpolated field so a crafted title can never become markup on cc4.marketing.
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
       list.innerHTML = recent.map(e => `
         <div class="mub-entry">
-          <span class="mub-type" style="background:${TC[e.type] || '#666'}">${TL[e.type] || e.type}</span>
-          <span class="mub-title">${e.title}</span>
+          <span class="mub-type" style="background:${TC[e.type] || '#666'}">${esc(TL[e.type] || e.type)}</span>
+          <span class="mub-title">${esc(e.title)}</span>
           <span class="mub-date">${new Date(e.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
         </div>
       `).join('');

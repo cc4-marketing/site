@@ -41,11 +41,13 @@ function html(body, status = 200) {
 }
 
 function checkAuth(request, env) {
+  // No password configured means admin is closed, never a public default.
+  if (!env.ADMIN_PASS) return false;
   const auth = request.headers.get('Authorization') || '';
   if (!auth.startsWith('Basic ')) return false;
   const decoded = atob(auth.split(' ')[1]);
   const [user, pass] = decoded.split(':');
-  return user === (env.ADMIN_USER || 'admin') && pass === (env.ADMIN_PASS || 'bearlychange');
+  return user === (env.ADMIN_USER || 'admin') && pass === env.ADMIN_PASS;
 }
 
 function unauthorized() {
@@ -90,9 +92,9 @@ async function handleFeedJson(kv, url) {
     feed_url: `${url.origin}/feed.json`,
     items: entries.map((e) => ({
       id: e.id,
-      url: `${url.origin}/entries/${e.slug}`,
+      url: `${url.origin}/entries/${encodeURIComponent(e.slug)}`,
       title: e.title,
-      content_html: `<p><strong>${e.type.toUpperCase()}</strong> · v${e.version}</p><p>${e.summary}</p>`,
+      content_html: `<p><strong>${escHtml(String(e.type).toUpperCase())}</strong> · v${escHtml(e.version)}</p><p>${escHtml(e.summary)}</p>`,
       date_published: e.published_at,
       tags: [e.type, ...(e.modules || [])],
     })),
@@ -105,12 +107,12 @@ async function handleRss(kv, url) {
     .map(
       (e) => `
     <item>
-      <title><![CDATA[${e.title}]]></title>
-      <link>${url.origin}/entries/${e.slug}</link>
-      <guid>${e.id}</guid>
+      <title>${escHtml(e.title)}</title>
+      <link>${escHtml(`${url.origin}/entries/${encodeURIComponent(e.slug)}`)}</link>
+      <guid isPermaLink="false">${escHtml(e.id)}</guid>
       <pubDate>${new Date(e.published_at).toUTCString()}</pubDate>
-      <description><![CDATA[${e.summary}]]></description>
-      <category>${e.type}</category>
+      <description>${escHtml(escHtml(e.summary))}</description>
+      <category>${escHtml(e.type)}</category>
     </item>`
     )
     .join('\n');
@@ -120,7 +122,7 @@ async function handleRss(kv, url) {
   <channel>
     <title>CC4.Marketing Changelog</title>
     <description>Course updates for humans &amp; agents</description>
-    <link>${url.origin}</link>${items}
+    <link>${escHtml(url.origin)}</link>${items}
   </channel>
 </rss>`;
 
@@ -129,6 +131,10 @@ async function handleRss(kv, url) {
   });
 }
 
+// Entries are partly model-written: escape text before inserting it into HTML
+// or XML. RSS descriptions need both HTML and XML escaping for feed readers.
+const escHtml = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 async function handleAdmin(kv) {
   const entries = (await readEntries(kv)).map(normalize)
     .sort((a, b) => new Date(b.published_at || 0) - new Date(a.published_at || 0));
@@ -136,13 +142,13 @@ async function handleAdmin(kv) {
   const rows = entries
     .map(
       (e) => `<tr>
-<td>${e.id}</td>
-<td>${e.title}</td>
-<td><span class="status status-${e.status}">${e.status}</span></td>
-<td>v${e.version}</td>
-<td><span class="type type-${e.type}">${e.type}</span></td>
+<td>${escHtml(e.id)}</td>
+<td>${escHtml(e.title)}</td>
+<td><span class="status status-${escHtml(e.status)}">${escHtml(e.status)}</span></td>
+<td>v${escHtml(e.version)}</td>
+<td><span class="type type-${escHtml(e.type)}">${escHtml(e.type)}</span></td>
 <td>
-<form method="post" action="/admin/entries/${e.id}/status" style="display:inline-flex;gap:6px;">
+<form method="post" action="/admin/entries/${escHtml(encodeURIComponent(e.id))}/status" style="display:inline-flex;gap:6px;">
 <select name="status">
 <option value="draft" ${e.status === 'draft' ? 'selected' : ''}>draft</option>
 <option value="published" ${e.status === 'published' ? 'selected' : ''}>published</option>
@@ -278,18 +284,32 @@ export default {
 
     // Admin routes (auth required)
     else if (path.startsWith('/admin')) {
-      if (!checkAuth(request, env)) return cors(unauthorized());
+      // Admin responses get no CORS headers: only same-origin / curl should reach them.
+      if (!checkAuth(request, env)) return unauthorized();
+      if (method === 'POST') {
+        const origin = request.headers.get('Origin');
+        const fetchSite = request.headers.get('Sec-Fetch-Site');
+        const isJson = request.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase() === 'application/json';
+        // Forms require same-origin proof; authenticated JSON automation may omit Origin.
+        if (
+          (origin !== null && origin !== url.origin) ||
+          (origin === null && (!isJson || (fetchSite !== null && fetchSite !== 'same-origin')))
+        ) {
+          return new Response('Forbidden origin', { status: 403 });
+        }
+      }
 
       if (method === 'GET' && path === '/admin') {
         response = await handleAdmin(env.CHANGELOG_KV);
       } else if (method === 'POST' && path === '/admin/entries') {
         response = await handleCreateEntry(request, env.CHANGELOG_KV);
       } else if (method === 'POST' && path.match(/^\/admin\/entries\/(.+)\/status$/)) {
-        const entryId = path.match(/^\/admin\/entries\/(.+)\/status$/)[1];
+        const entryId = decodeURIComponent(path.match(/^\/admin\/entries\/(.+)\/status$/)[1]);
         response = await handleUpdateStatus(request, env.CHANGELOG_KV, entryId);
       } else {
         response = new Response('Not found', { status: 404 });
       }
+      return response;
     }
 
     // Root

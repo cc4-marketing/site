@@ -22,9 +22,19 @@
       "binding": "MEDIA",
       "bucket_name": "cc4-media"
     }
-  ]
+  ],
+
+  // Per-IP limit for /api/subscribe (each accepted request sends a real email).
+  // period must be 10 or 60 seconds.
+  "ratelimits": [
+    {
+      "name": "SUBSCRIBE_LIMITER",
+      "namespace_id": "1001",
+      "simple": { "limit": 3, "period": 60 }
+    }
+  ],
 
   // Secrets (set via Cloudflare Dashboard or `wrangler secret put`):
   // - RESEND_API_KEY
-  // - GITHUB_TOKEN
+  // - RESEND_AUDIENCE_ID
 }

@@ -1,28 +1,19 @@
 /**
- * Bundle-size guard for CI. Runs `wrangler deploy --dry-run --outdir=...`,
- * computes the gzipped size of the uploaded Worker, and fails with exit
- * code 1 if it crosses the configured ceiling.
- *
- * Why this exists: the OG engine adds ~770 KiB gzipped via workers-og +
- * resvg-wasm + fonts. A future dep bump or new route that accidentally
- * imports a heavy library could push us past Cloudflare's 3 MB free-tier
- * (or 10 MB paid) limits. We'd rather fail a PR than discover it in a
- * failed `wrangler deploy` on main.
+ * Check the actual upload size reported by the pinned Wrangler dry-run.
+ * Cloudflare limits Workers to 64 MiB uncompressed on Free and Paid plans;
+ * gzip size is diagnostic only. Do not count stale outdir files or source maps.
+ * https://developers.cloudflare.com/workers/platform/limits/#worker-size
  */
 
 import { spawnSync } from 'node:child_process';
-import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { gzipSync } from 'node:zlib';
 
-const CEILING_BYTES = 2.5 * 1024 * 1024; // 2.5 MB compressed
-const OUT_DIR = '.size-guard-bundle';
+const CEILING_BYTES = 64 * 1024 * 1024;
 
 function main(): void {
   console.log('size-guard: running wrangler deploy --dry-run...');
   const result = spawnSync(
     'npx',
-    ['wrangler', 'deploy', '--dry-run', '--outdir', OUT_DIR],
+    ['wrangler', 'deploy', '--dry-run'],
     { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' },
   );
 
@@ -32,36 +23,26 @@ function main(): void {
     process.exit(1);
   }
 
-  let totalGzipped = 0;
-  walk(OUT_DIR, (_path, bytes) => {
-    totalGzipped += gzipSync(bytes).byteLength;
-  });
+  const upload = result.stdout.match(/Total Upload:\s+(\d+(?:\.\d+)?) KiB\s*\/\s*gzip:\s+(\d+(?:\.\d+)?) KiB/);
+  if (!upload) {
+    console.error('size-guard: Wrangler did not report upload size');
+    process.exit(1);
+  }
+  const totalBytes = Math.ceil(Number(upload[1]) * 1024);
+  const totalMb = (totalBytes / 1024 / 1024).toFixed(2);
+  const ceilingMb = (CEILING_BYTES / 1024 / 1024).toFixed(0);
+  const gzipMb = (Number(upload[2]) / 1024).toFixed(2);
 
-  const totalKb = (totalGzipped / 1024).toFixed(1);
-  const ceilingKb = (CEILING_BYTES / 1024).toFixed(1);
-  const pct = ((totalGzipped / CEILING_BYTES) * 100).toFixed(1);
-
-  if (totalGzipped > CEILING_BYTES) {
+  if (totalBytes >= CEILING_BYTES) {
     console.error(
-      `size-guard: FAIL — gzipped worker bundle is ${totalKb} KB (ceiling ${ceilingKb} KB, ${pct}%)`,
+      `size-guard: FAIL: upload ${totalMb} MiB reaches ${ceilingMb} MiB uncompressed limit (gzip ${gzipMb} MiB)`,
     );
     process.exit(1);
   }
 
   console.log(
-    `size-guard: OK — gzipped worker bundle ${totalKb} KB / ${ceilingKb} KB (${pct}%)`,
+    `size-guard: OK: upload ${totalMb} MiB / ${ceilingMb} MiB uncompressed (gzip ${gzipMb} MiB, informational)`,
   );
-}
-
-function walk(dir: string, visit: (path: string, bytes: Uint8Array) => void): void {
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      walk(full, visit);
-    } else if (entry.isFile()) {
-      visit(full, readFileSync(full));
-    }
-  }
 }
 
 main();

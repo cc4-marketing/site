@@ -16,8 +16,65 @@ tags:
   - trailing-slash
 severity: critical
 component: astro.config.mjs, wrangler.jsonc, src/pages, src/live.config.ts
-last_updated: 2026-07-15
+last_updated: 2026-09-27
 ---
+
+## 2026-09-27 release candidate
+
+This section supersedes the package and deployment guidance below. The remaining sections document the earlier Astro 6 integration. These changes are local and have not been deployed.
+
+- Runtime: Node 22.22.2, Astro 7.3.5, `@astrojs/cloudflare` 14.3.3, MDX 8.0.2, React integration 7.0.0, EmDash and its Cloudflare adapter 0.41.0, Wrangler 4.141.0.
+- Keep server rendering, existing D1/R2 bindings, and `compressHTML: true`. Do not reintroduce prerendering as part of this upgrade.
+- `cc4-site-policy` registers `src/lib/site-middleware.ts` before EmDash's pre-middleware. A normal `src/middleware.ts` runs too late for setup/auth responses.
+- Route protection must use Astro's normalized `context.url`, not raw `request.url`. Single and repeated percent-encoding otherwise bypass the CMS path check.
+- Production uses `migrations.runtime: 'check'`; local development uses `dev: 'auto'`. Never point the development runtime at production D1.
+
+### Migration gate
+
+A read-only production D1 query returned 31 applied migrations, ending at `032_rate_limits`, with `rows_written: 0`. The 0.41.0 build manifest contains 86 migrations through `087_reference_field_relations`: 55 are pending.
+
+The migration-set fingerprint is `0f51713d91c066543531e7ad3b8fceb61d81af03201a1ed2cab1567bfa1ed605`. This is not the CLI's target-approval fingerprint.
+
+`npx emdash migrate --status --wrangler-config wrangler.jsonc` requires both a Cloudflare account ID and an API token. Wrangler's existing OAuth login does not satisfy the EmDash CLI token requirement. Obtain the token through 1Password after signing in; never copy it into config or documentation.
+
+Before an authorized release:
+
+1. Preserve the previous Worker artifact, capture a fresh D1 Time Travel bookmark, and back up R2. A content-only export is not a restorable site backup.
+2. Rehearse against an isolated representative database. The local public-content preview is not a full production migration rehearsal.
+3. Run the migration status command, review its target and pending work, and obtain explicit approval before `npx emdash migrate --wrangler-config wrangler.jsonc`.
+4. Run `npx emdash migrate --check --wrangler-config wrangler.jsonc`, then deploy the same tested artifact. Do not merge first if Cloudflare Builds automatically deploys the branch.
+5. Verify published posts, bylines, media, admin authentication, subscriptions, and changelog on production. The separate `changelog-worker` also needs its own approved deployment.
+
+Time Travel bookmark observed during this audit: `000080cf-00000000-000050f3-9500201bcb856104ea810741b97df7bd`. It is time-limited and must be refreshed before release. No restore or production migration was performed.
+
+### Verification and local preview limits
+
+- `npm test`: 76 tests passed. `npm run build`: completed, synchronized 14 published posts and generated 63 OG images. `npm run og:smoke`: 27 images validated. Production dependency audits: zero vulnerabilities in both packages.
+- Built Worker on local D1: Alice's four published articles return 200, show the AI disclosure, and omit an AI `Person` author. Her profile remains `index, follow`.
+- The preview copied published posts and public credits only, not credentials, revisions, or all media. Post-migration imports must follow migration 040's `translation_group = id` byline backfill; omitting it hides credits. This preview proves rendering, not full database migration integrity.
+- Subscription smoke returned `403, 415, 400, 400, 400, 429` for foreign origin, wrong media type, three requests without an email, and the fourth rate-limited request. No email was sent.
+- Removed feedback endpoint returns 404. Encoded unsafe CMS redirects return 302 to the canonical login URL with `noindex, nofollow`.
+- Changelog initial HTML contains 32 entries; browser filtering gives 6 course entries, zero for an unmatched query, and 32 after clearing. No duplicate browser feed request occurs.
+- Local changelog Worker: a cross-origin form persisted a KV entry before the fix; afterward foreign/null/originless forms and foreign JSON return 403 without changing KV. Same-origin forms and authenticated originless JSON still work.
+
+### External follow-through
+
+- GSC's observed Soft 404 sample is `/changelog`, not `/modules`. After deployment, inspect the rendered canonical `/changelog/` and start validation. The four HTTP/non-slash redirect samples are intentional canonical redirects.
+- The main sitemap and eight submitted product sitemaps already report Success. Do not claim validation or indexing has completed before a new GSC result.
+- `wrangler secret list --name cc4-mkt` returned only the two Resend secret names. This does not prove that an old GitHub token was revoked; identify it before requesting revocation.
+- Both root and `mail.cc4.marketing` publish explicit DMARC monitoring policies. Changing only the root policy does not enforce the newsletter subdomain. Review aggregate alignment evidence before proposing enforcement.
+
+### DMARC evidence, read-only
+
+The Gmail search for domain-specific reports received after 2026-08-27 returned 30 messages and 30 ZIP/gzip aggregate attachments, with no pagination or retrieval failures. All 30 report messages had `dmarc=pass` in the final Gmail receiver's `mx.google.com` Authentication-Results. XML report periods, rather than email receipt dates, determine the coverage below.
+
+- For report periods beginning 2026-08-28 or later: 21 reports, 76 messages, all 76 DMARC-aligned. Providers: Google (74 messages) and Enterprise Outlook (2). Latest covered period ends 2026-09-25 23:59:59 UTC.
+- Including delayed older reports: 30 reports covering 2026-08-26 through 2026-09-25, 465 messages, 464 aligned and one unaligned. Coverage includes Google, Enterprise Outlook, Outlook.com, Yahoo, and Zoho.
+- The single failure is from 2026-08-27, source `18.198.39.243`, reported by Enterprise Outlook: aligned DKIM and SPF both failed, with no override reason. It is not evidence of a current sender failure, but its origin remains unclassified.
+- Forwarded copies with failed SPF retained aligned DKIM. Do not equate every SPF failure with a DMARC failure.
+- All parsed reports concern `mail.cc4.marketing`. No root-domain report was found in this mailbox/window, so this sample does not justify enforcing the root domain.
+
+No Gmail labels or DNS records were changed. Keep the existing policies until a separately approved enforcement decision; review the older unexplained failure and sending-source inventory before tightening the newsletter subdomain. Current alignment evidence is positive but is not a guarantee for unobserved senders or recipients.
 
 ## Problem
 

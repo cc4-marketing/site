@@ -1,4 +1,5 @@
 ---
+import { jsonLd } from '../lib/json-ld';
 import BaseLayout from './BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -28,7 +29,39 @@ const moduleNames: Record<number, string> = {
   3: 'Capstone',
 };
 const moduleName = moduleNames[module] ?? `Module ${module}`;
-const moduleUrl = `https://cc4.marketing/modules/${module}/`;
+// /modules/<n>/ is not a page; point at the module's anchor on the hub so the
+// breadcrumb never sends Google to a redirect (was a GSC soft 404 source).
+const moduleUrl = `https://cc4.marketing/modules/#module-${module}`;
+const lessonUrl = new URL(Astro.url.pathname, 'https://cc4.marketing').href;
+
+// "15 min" / "1 hour" -> ISO 8601 duration for timeRequired; skip if unparseable.
+const durationMatch = duration?.match(/(\d+)\s*(min|hour|hr)/i);
+const timeRequired = durationMatch
+  ? `PT${durationMatch[1]}${/^h/i.test(durationMatch[2]) ? 'H' : 'M'}`
+  : undefined;
+
+const lessonSchema = {
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": title,
+  "description": description,
+  "url": lessonUrl,
+  "learningResourceType": "Lesson",
+  "educationalLevel": "Beginner",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  ...(timeRequired && { "timeRequired": timeRequired }),
+  "isPartOf": {
+    "@type": "Course",
+    "name": "Claude Code for Marketers",
+    "url": "https://cc4.marketing/",
+  },
+  "provider": { "@type": "Organization", "name": "CC4.Marketing", "url": "https://cc4.marketing/" },
+};
+
+// Short lesson titles ("Installation") make weak SERP titles; spell out the course name.
+const shortTitle = `Module ${module}: ${title}`;
+const pageTitle = shortTitle.length < 35 ? `${title}: Claude Code for Marketers, Module ${module}` : shortTitle;
 
 const breadcrumbSchema = {
   "@context": "https://schema.org",
@@ -36,13 +69,14 @@ const breadcrumbSchema = {
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://cc4.marketing/" },
     { "@type": "ListItem", "position": 2, "name": `Module ${module}: ${moduleName}`, "item": moduleUrl },
-    { "@type": "ListItem", "position": 3, "name": title, "item": Astro.url.href },
+    { "@type": "ListItem", "position": 3, "name": title, "item": lessonUrl },
   ]
 };
 ---
 
-<BaseLayout title={`Module ${module}: ${title}`} description={description} type="article" showCourseSchema={false} showBreadcrumb={false}>
-  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+<BaseLayout title={pageTitle} description={description} type="article" showCourseSchema={false} showBreadcrumb={false}>
+  <script type="application/ld+json" set:html={jsonLd(breadcrumbSchema)} />
+  <script type="application/ld+json" set:html={jsonLd(lessonSchema)} />
   <Header />
   
   <main class="lesson-container">

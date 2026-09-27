@@ -1,4 +1,5 @@
 ---
+import { jsonLd } from '../../lib/json-ld';
 // Modules hub — lists all modules + lessons. Reads from the content collection
 // so adding a lesson is one file edit; no separate config to update.
 import { getCollection } from 'astro:content';
@@ -37,13 +38,29 @@ for (const e of all) {
 
 const totalLessons = all.length;
 const totalModules = grouped.size;
+
+// ItemList of every lesson so search and answer engines can read the
+// curriculum order without crawling each lesson first.
+const curriculumSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Claude Code for Marketers curriculum',
+  numberOfItems: totalLessons,
+  itemListElement: all.map((e, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: `Module ${e.data.module}.${e.data.lesson}: ${e.data.title}`,
+    url: `https://cc4.marketing${lessonHref(e)}`,
+  })),
+};
 ---
 
 <BaseLayout
-  title="All Modules"
-  description={`The full CC4.Marketing curriculum — ${totalModules} modules, ${totalLessons} lessons. Master Claude Code for marketers from install to a real shipped campaign.`}
+  title="Claude Code for Marketers Course: All Modules and Lessons"
+  description={`The full free Claude Code for Marketers curriculum: ${totalModules} modules, ${totalLessons} lessons. Go from installing Claude Code to shipping a real marketing campaign.`}
   ogPageKey="modules"
 >
+  <script type="application/ld+json" set:html={jsonLd(curriculumSchema)} />
   <Header />
 
   <main class="modules-hub">
@@ -57,7 +74,7 @@ const totalModules = grouped.size;
 
     <section class="modules-list">
       {[...grouped.entries()].map(([modNum, entries]) => (
-        <article class="module-block">
+        <article class="module-block" id={`module-${modNum}`}>
           <header class="module-head">
             <div class="module-tag">Module {modNum}</div>
             <h2>{moduleNames[modNum] ?? `Module ${modNum}`}</h2>

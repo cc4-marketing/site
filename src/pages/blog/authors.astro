@@ -1,4 +1,5 @@
 ---
+import { jsonLd } from '../../lib/json-ld';
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
@@ -8,7 +9,7 @@ import { AUTHORS as authors, slugifyAuthorName as slugify } from '../../data/aut
 
 <BaseLayout
   title="Authors — CC4.Marketing Blog"
-  description="Meet the team behind CC4.Marketing. Practical AI marketing guides written by marketers who build with Claude Code every day."
+  description="Meet Tri Vo and Alice Marketer, CC4.Marketing's disclosed AI author. Read marketing workflows, source-grounded prompts, and practical guides."
   keywords={['CC4.Marketing authors', 'AI marketing writers', 'Claude Code experts']}
   ogPageKey="authors"
   showCourseSchema={false}
@@ -16,12 +17,12 @@ import { AUTHORS as authors, slugifyAuthorName as slugify } from '../../data/aut
 >
   <Header />
 
-  <script type="application/ld+json" set:html={JSON.stringify({
+  <script type="application/ld+json" set:html={jsonLd({
     "@context": "https://schema.org",
     "@type": "AboutPage",
     "name": "CC4.Marketing Blog Authors",
     "url": "https://cc4.marketing/blog/authors",
-    "mainEntity": authors.map((a) => ({
+    "mainEntity": authors.filter((a) => !a.isAI).map((a) => ({
       "@type": "Person",
       "name": a.name,
       "jobTitle": a.role,
@@ -44,14 +45,14 @@ import { AUTHORS as authors, slugifyAuthorName as slugify } from '../../data/aut
     <div class="authors-hero-inner">
       <span class="authors-hero-label">The Team</span>
       <h1 class="authors-hero-title">Authors</h1>
-      <p class="authors-hero-desc">Marketers writing for marketers. Everything on this blog comes from real workflows we use every day.</p>
+      <p class="authors-hero-desc">Human perspective and a disclosed AI voice. Meet the authors behind our marketing workflows, checklists, and source-grounded prompts.</p>
     </div>
   </section>
 
   <section class="authors-body">
     <div class="authors-body-inner">
       {authors.map((author) => (
-        <a href={`/blog/authors/${slugify(author.name)}`} class="author-card">
+        <a href={`/blog/authors/${slugify(author.name)}/`} class="author-card">
           <div class="author-avatar">
             <img src={author.avatar} alt={author.name} class="author-avatar-img" width="80" height="80" loading="lazy" />
           </div>
@@ -59,6 +60,7 @@ import { AUTHORS as authors, slugifyAuthorName as slugify } from '../../data/aut
             <h2 class="author-name">{author.name}</h2>
             <span class="author-role">{author.role}</span>
             <p class="author-bio">{author.bio}</p>
+            {author.isAI && author.disclosure && <p class="author-bio"><strong>AI disclosure:</strong> {author.disclosure}</p>}
             <div class="author-links">
               {author.links.substack && (
                 <span class="author-link">

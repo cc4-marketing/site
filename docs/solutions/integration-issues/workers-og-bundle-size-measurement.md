@@ -8,6 +8,21 @@ outcome: GO — proceed with workers-og hybrid architecture
 
 # `workers-og` on Cloudflare Workers — Bundle Size & Runtime Validation
 
+## Current platform limit, checked 2026-09-27
+
+The compressed-size limits in the historical spike below are obsolete. [Cloudflare's current documentation](https://developers.cloudflare.com/workers/platform/limits/#worker-size) specifies 64 MiB uncompressed for both Free and Paid Workers, with no compressed-size limit.
+
+`src/lib/og/size-guard.ts` now checks Wrangler's reported upload size directly, fails if the size is missing or reaches the platform ceiling, and retains gzip size as diagnostic output. It does not sum stale output files or source maps.
+
+The Astro 7.3.5 and EmDash 0.41.0 release candidate produced:
+
+```text
+npm run og:size-guard
+size-guard: OK: upload 19.10 MiB / 64 MiB uncompressed (gzip 5.00 MiB, informational)
+```
+
+This is a deployment-size check, not proof of production cold-start or request latency. Larger bundles can affect startup; retain runtime verification. No plan upgrade or deployment was performed.
+
 ## Purpose
 
 Phase 0 decision gate for the OG Image Engine plan. Answers: can `workers-og` (Satori + resvg-wasm) run on Cloudflare Workers within bundle-size limits for the cc4.marketing Astro 6 SSR site, and does it render our brand typography correctly?

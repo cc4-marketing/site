@@ -21,8 +21,22 @@ For changes to the interactive course content, see the [course repo](https://git
 
 ### Changed
 
+- Alice Marketer remains an AI author, with explicit disclosure on the author hub, profile, and credited articles. Profile and prompts now distinguish source evidence from proposed workflows and do not claim human experience. AI authors are excluded from `Person` structured data.
+- Upgrade to Astro 7.3.5, EmDash and its Cloudflare adapter 0.41.0, matching Astro integrations, and Wrangler 4.141.0 on Node 22. Production schema checks now block deployment when CMS migrations are pending.
 - Course lesson count reconciled to 19 (then 20 with Module 3.1 above) across the README, FAQ, homepage, OG image, and the llms files (previously drifted between 17 and 18). The blog publish helper (`publish_post.py`) now auto-appends new posts to `llms.txt` and `llms-full.txt` on publish, so AI crawlers pick them up without a manual edit.
 - The former Lesson 3.1 (sigil capstone) is now 3.2, at the same URL (`/modules/3/ship-with-sigil/`).
+
+### Fixed
+
+- Render changelog entries in the initial HTML rather than fetching them only in the browser. Preserve interactive filters and search, avoid a duplicate header fetch, return a temporary 503 on upstream failure, and keep active filter labels readable on hover.
+- Run CMS redirect protection before setup and authentication middleware, including encoded route variants and duplicate redirect parameters. Add `noindex` to early CMS responses without weakening the CMS content security policy.
+- Require same-origin JSON subscription requests when an Origin is present. Reject unavailable rate-limit bindings instead of allowing unlimited sends; retain the three-request-per-minute limit.
+- Reject cross-origin changelog admin mutations, while preserving same-origin forms and authenticated JSON automation. Escape feed HTML and XML.
+- Check Worker upload size against Cloudflare's current 64 MiB uncompressed limit. The old compressed-size ceiling is obsolete; gzip remains diagnostic output.
+
+### Removed
+
+- Remove the unused `/api/feedback` endpoint and its GitHub issue creation path.
 
 ## [0.6.0] - 2026-07-17
 

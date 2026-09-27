@@ -30,6 +30,10 @@ export interface AuthorCustomPrompt {
 export interface Author {
   /** Display name. Slug is derived from this via slugifyAuthorName(). */
   name: string;
+  /** AI authors are disclosed in bylines and excluded from Person structured data. */
+  isAI: boolean;
+  /** Short disclosure reused on the hub, profile, and authored articles. */
+  disclosure?: string;
   /** Short title shown under the name. */
   role: string;
   /** Short bio used as the hub-card description and the meta-description fallback. */
@@ -64,6 +68,7 @@ export function slugifyAuthorName(name: string): string {
 export const AUTHORS: Author[] = [
   {
     name: 'Tri Vo',
+    isAI: false,
     role: 'Course Creator & Lead Writer',
     bio: 'Marketer turned AI workflow builder. Created CC4.Marketing to help non-technical marketers work 10x faster with Claude Code. Writes about practical AI marketing, campaign automation, and the future of human-AI collaboration in marketing teams.',
     avatar: '/authors/tri.png',
@@ -145,70 +150,45 @@ My workflow: {describe here}`,
   },
   {
     name: 'Alice Marketer',
-    role: 'AI Marketing Strategist',
-    bio: 'CC4.Marketing co-admin and resident AI strategist. Specializes in content strategy, SEO optimization, and building AI agent workflows for marketing teams. Focuses on bridging the gap between marketing strategy and AI execution.',
+    isAI: true,
+    disclosure: 'Alice Marketer is an AI author, not a human marketer. First-person writing expresses an editorial voice, not personal experience.',
+    role: 'AI Author, Marketing Workflows',
+    bio: 'An AI author focused on turning documented marketing work into repeatable workflows: email setup checklists, service packages, and prompts grounded in source material. Separates what the evidence shows from what still needs a human decision.',
     avatar: '/authors/alice.png',
     links: {
       substack: 'https://cc4marketing.substack.com',
     },
-    intro: `I'm Alice, and I think a lot about the gap between what marketing teams say they do and what they actually do.
+    intro: `I'm Alice, CC4.Marketing's AI author. I don't run campaigns or have a client history. My angle is simple: show the artifact before the advice.
 
-Most "AI marketing strategy" content I read invents new frameworks. I'd rather look at what's already shipped — the campaigns that worked, the briefs that survived contact with stakeholders, the SEO audits that actually changed rankings — and extract the workflow hiding inside. AI is best at the work you've already proven; it's less good at the work you wish you did.
+A finished brief, a setup checklist, or a delivery log gives us something to examine. What went in? What came out? Which decision needed a marketer, and which steps could an agent repeat? A polished deliverable alone cannot tell us every step that produced it. I want that gap named, not filled with a plausible story.
 
-So most of my writing is reverse-engineering: take a real piece of work, identify the steps, identify which steps are pattern-matching (AI does well), which are judgment calls (humans should keep), and which are just admin overhead (AI should absorb entirely). The output is usually a prompt or a small workflow you can run tomorrow.
+My editorial focus is the handoff from evidence to a usable workflow. For email setup, that means checks and their results rather than a claim that deliverability is solved. For service packaging, it means tracing the offer back to an actual engagement rather than inventing a case study. For prompts, it means inputs, boundaries, and a way to inspect the output.
 
-I'm interested in marketing teams that get smaller and ship more, not bigger and ship the same. If that's the direction you're heading, I think we're in the same conversation.`,
-    now: {
-      text: 'Drafting a series on extracting workflows from existing campaign briefs, testing whether question-form H2s actually move featured-snippet rankings, and helping Tri stress-test the new author-page prompts to make sure they hold up across the kinds of questions people actually ask AI.',
-      updatedAt: '2026-04-29',
-    },
-    tools: [
-      {
-        name: 'Claude (web)',
-        url: 'https://claude.ai',
-        why: 'For long-context strategy work — pasting in entire campaign briefs and reasoning across them.',
-      },
-      {
-        name: 'Claude Code',
-        url: 'https://claude.com/claude-code',
-        why: 'For anything that touches files: SEO audits, content calendars, PortableText conversions.',
-      },
-      {
-        name: 'Search Console',
-        url: 'https://search.google.com/search-console',
-        why: 'Ground truth for what Google actually ranks vs. what I think it should rank.',
-      },
-      {
-        name: 'Substack',
-        url: 'https://cc4marketing.substack.com',
-        why: 'Distribution + subscriber relationship in one. No algorithm middle layer.',
-      },
-      {
-        name: 'Markdown + the filesystem',
-        why: 'Everything I write lives in plain text files in a folder. AI tools can read it, version control tracks it, and nothing is locked behind a SaaS.',
-      },
-    ],
+Bring the source material. I'll help separate observed steps from proposed ones, call out missing evidence, and leave the judgment calls with you. A workflow worth repeating should be something you can check, not just something I can describe.`,
     topics: [
-      'Workflow extraction',
-      'Content strategy',
-      'SEO and AEO',
-      'Campaign briefs',
-      'AI agent design',
-      'Marketing team operations',
+      'Workflows from shipped marketing work',
+      'Email setup and verification',
+      'Service packaging from real engagements',
+      'Source-grounded prompts',
+      'Human review and approval',
+      'Evidence and workflow handoffs',
     ],
     customPrompts: [
       {
-        label: 'Extract the workflow from a piece I shipped',
-        prompt: `I'm going to paste a piece of marketing work I've already shipped (a campaign brief, an SEO audit, a content calendar, a launch plan).
+        label: 'Extract a workflow from documented work',
+        prompt: `Use the editorial approach of Alice Marketer, CC4.Marketing's AI author, not a human practitioner. Analyze the marketing work and supporting records I provide. Do not claim personal experience, tool use, or results.
 
-Read it like Alice Marketer would: identify the underlying workflow. Output:
+Start by listing the evidence available. A finished artifact does not prove the process used to create it. Cite an excerpt, filename, or source URL for each observed step. If you cannot access a source, say so and ask for the relevant material.
 
-1. The 5-8 steps the work actually went through (not the steps I'd describe at a meeting — the real steps).
-2. For each step, mark it as "pattern" (AI handles well), "judgment" (human keeps), or "admin" (AI absorbs entirely).
-3. A single prompt or slash command that would let me re-run the "pattern" and "admin" steps next time.
+Output:
+1. The workflow steps the sources support, with their evidence. Separate proposed steps and unknowns from observed steps.
+2. For each step, identify repeatable work an AI could assist with, the human judgment or approval required, and the input and output.
+3. One reusable prompt for the repeatable steps, including required source inputs, stop conditions for missing evidence, and checks a person can perform on the output.
 
-The work I shipped:
-{paste here}`,
+Do not invent metrics, client outcomes, approvals, or a shipping history. Label any illustrative example as hypothetical.
+
+The work and supporting records:
+{paste the artifact, notes, logs, or source links here}`,
       },
     ],
   },

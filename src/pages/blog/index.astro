@@ -1,4 +1,5 @@
 ---
+import { jsonLd } from '../../lib/json-ld';
 export const prerender = false;
 
 import { getEmDashCollection } from 'emdash';
@@ -32,7 +33,7 @@ function formatDate(date: Date | null | undefined): string {
 >
   <Header />
 
-  <script type="application/ld+json" set:html={JSON.stringify({
+  <script type="application/ld+json" set:html={jsonLd({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
@@ -41,7 +42,7 @@ function formatDate(date: Date | null | undefined): string {
     ]
   })} />
 
-  <script type="application/ld+json" set:html={JSON.stringify({
+  <script type="application/ld+json" set:html={jsonLd({
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     "name": "CC4.Marketing Blog",

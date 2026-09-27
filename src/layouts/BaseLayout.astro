@@ -1,4 +1,5 @@
 ---
+import { jsonLd } from '../lib/json-ld';
 import HelloBar from '../components/HelloBar.astro';
 import FloatingSideBanner from '../components/FloatingSideBanner.astro';
 import CodeBlockCopy from '../components/CodeBlockCopy.astro';
@@ -223,15 +224,15 @@ const breadcrumbSchema = {
   <meta name="msapplication-TileColor" content="#B85C3C">
   
   <!-- JSON-LD Structured Data -->
-  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
-  {showCourseSchema && <script type="application/ld+json" set:html={JSON.stringify(courseSchema)} />}
+  <script type="application/ld+json" set:html={jsonLd(websiteSchema)} />
+  {showCourseSchema && <script type="application/ld+json" set:html={jsonLd(courseSchema)} />}
   {/* BaseLayout only knows the "Home" item, which is a useless 1-item
       BreadcrumbList. Emit only when the calling page has supplied an
       itemListElement chain with ≥2 items (currently none do, so this
       effectively never fires from BaseLayout — pages provide their own
       BreadcrumbList script). */}
   {showBreadcrumb && breadcrumbSchema.itemListElement.length >= 2 && (
-    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+    <script type="application/ld+json" set:html={jsonLd(breadcrumbSchema)} />
   )}
 </head>
 <body>
