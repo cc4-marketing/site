@@ -40,7 +40,19 @@ beforeEach(() => {
 });
 
 describe('POST /api/course-download', () => {
-  it('production config (no GATEWAY, no MAIL_MODE) answers 503 not_configured on cc4.marketing', async () => {
+  // cc4-mkt today: Resend secrets only, no GATEWAY, SITE_DOMAINS, LEAD_NOTIFY or MAIL_MODE.
+  it('production config answers 503 not_configured on cc4.marketing and on its workers.dev host', async () => {
+    Object.assign(mockEnv, { RESEND_API_KEY: 'k', RESEND_AUDIENCE_ID: 'a' });
+    const prod = await post(PROD);
+    expect(prod.status).toBe(503);
+    expect(await prod.json()).toMatchObject({ ok: false, error: 'not_configured', missing: ['SITE_DOMAINS'] });
+    const dev = await post('https://cc4-mkt.mtri-vo.workers.dev');
+    expect(dev.status).toBe(503);
+    expect(await dev.json()).toMatchObject({ ok: false, error: 'not_configured', missing: ['LEAD_NOTIFY'] });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('once production sets SITE_DOMAINS without MAIL_MODE=live it still answers 503', async () => {
     Object.assign(mockEnv, { SITE_DOMAINS: 'cc4.marketing', RESEND_API_KEY: 'k' });
     const res = await post(PROD);
     expect(res.status).toBe(503);
