@@ -7,7 +7,7 @@ import sitemap from '@astrojs/sitemap';
 import emdash from 'emdash/astro';
 import { d1, r2 } from '@emdash-cms/cloudflare';
 import fs from 'node:fs';
-import { sitemapSerializer } from 'site-kick/lib/sitemap.js';
+import { lastmodFromMarkdown, sitemapSerializer } from 'site-kick/lib/sitemap.js';
 
 /** Loads .ttf/.woff files as Uint8Array modules so Satori can consume them at runtime on Workers. */
 function rawFonts(exts) {
@@ -84,26 +84,6 @@ function deriveLibraryUrls() {
 
 const isoDay = (d) => new Date(`${d}T00:00:00.000Z`).toISOString();
 
-// Library entries carry a real `updatedAt` in frontmatter; collect them into a
-// path->date map so the sitemap can emit an honest <lastmod> (not a build-time
-// stamp, which would tell Google every page changed on every deploy).
-function deriveLibraryLastmod() {
-  const ROOT = './src/content/library';
-  const map = new Map();
-  if (!fs.existsSync(ROOT)) return map;
-  for (const dir of fs.readdirSync(ROOT, { withFileTypes: true })) {
-    if (!dir.isDirectory()) continue;
-    for (const file of fs.readdirSync(`${ROOT}/${dir.name}`)) {
-      if (!file.endsWith('.mdx')) continue;
-      const fm = fs.readFileSync(`${ROOT}/${dir.name}/${file}`, 'utf8');
-      const m = fm.match(/^updatedAt:\s*'?(\d{4}-\d{2}-\d{2})'?/m);
-      if (!m) continue;
-      map.set(`/library/${dir.name}/${file.replace(/\.mdx$/, '')}/`, isoDay(m[1]));
-    }
-  }
-  return map;
-}
-
 const modulePages = deriveModuleLessonUrls();
 const authorPages = deriveAuthorUrls();
 const libraryPages = deriveLibraryUrls();
@@ -125,7 +105,8 @@ const blogPages = blogSitemapData.map(({ slug }) => `${SITE_URL}/blog/${slug}/`)
 // Path -> real lastmod date, combining library frontmatter (updatedAt) with the
 // D1-sourced blog dates. Date-less URLs (module lessons, hubs, author pages) are
 // intentionally absent so they emit no <lastmod> rather than a fabricated one.
-const lastmodByUrl = deriveLibraryLastmod();
+// Not a build-time stamp, which would tell Google every page changed on every deploy.
+const lastmodByUrl = lastmodFromMarkdown({ 'src/content/library': 'library' });
 for (const { slug, lastmod } of blogSitemapData) {
   if (lastmod) lastmodByUrl.set(`/blog/${slug}/`, isoDay(lastmod));
 }
