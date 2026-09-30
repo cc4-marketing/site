@@ -1,5 +1,5 @@
 import { OG_COLORS, OG_SITE } from '../config';
-import { sanitizeOgText as sanitize } from 'site-kick/og/og-text.js';
+import { sanitizeOgText as sanitize, titleFontSize } from 'site-kick/og/og-text.js';
 
 export interface BylineForOg {
   displayName: string;
@@ -13,28 +13,6 @@ export interface BlogTemplateInput {
   excerpt?: string;
   bylines?: BylineForOg[];
   category?: string;
-}
-
-/**
- * Prepares text for injection into the Satori HTML template. workers-og
- * uses htmlparser2 which does NOT decode HTML entities back into
- * characters — "&amp;" would render as literal "&amp;" — so we:
- *   1. Decode common entities that appear in Emdash PortableText excerpts
- *   2. Strip tag-breaking characters (< > &) that could corrupt the parser
- *   3. Strip emoji and pictographic glyphs not covered by our fonts
- *
- * Result is safe to drop into an HTML text node without further escaping.
- */
-
-/**
- * Title is smaller than the pre-avatar variant because the excerpt now
- * takes vertical space below it. Cap at ~2 visual lines for readability.
- */
-function titleFontSize(title: string): number {
-  if (title.length <= 40) return 68;
-  if (title.length <= 60) return 58;
-  if (title.length <= 80) return 50;
-  return 44;
 }
 
 /** Truncate excerpt to roughly 2 lines at 24px (~130 chars). */
@@ -96,7 +74,8 @@ export function renderBlogTemplate(input: BlogTemplateInput): string {
   const excerpt = input.excerpt ? clampExcerpt(input.excerpt) : '';
   const byline = primaryByline(input.bylines);
   const category = categoryLabel(input.category);
-  const fontSize = titleFontSize(title);
+  // Smaller than the other templates: the excerpt takes vertical space below the title.
+  const fontSize = titleFontSize(title, [68, 58, 50, 44], [40, 60, 80]);
 
   return `
     <div style="display:flex;flex-direction:column;justify-content:space-between;width:100%;height:100%;background:${OG_COLORS.cream};padding:48px 64px;box-sizing:border-box;border:6px solid ${OG_COLORS.charcoal};">
