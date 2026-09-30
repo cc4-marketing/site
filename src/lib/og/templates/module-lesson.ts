@@ -1,4 +1,5 @@
 import { OG_COLORS, OG_SITE } from '../config';
+import { sanitizeOgText as sanitize, titleFontSize } from 'site-kick/og/og-text.js';
 
 export interface ModuleLessonTemplateInput {
   module: number;
@@ -8,28 +9,6 @@ export interface ModuleLessonTemplateInput {
   duration?: string;
 }
 
-function sanitize(text: string): string {
-  return text
-    .replace(/&amp;/g, 'and')
-    .replace(/&lt;/g, '')
-    .replace(/&gt;/g, '')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ')
-    .replace(/[<>]/g, '')
-    .replace(/&(?!#?\w+;)/g, 'and')
-    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F02F}\u{FE0F}]/gu, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function titleFontSize(title: string): number {
-  if (title.length <= 30) return 96;
-  if (title.length <= 50) return 80;
-  if (title.length <= 70) return 64;
-  return 52;
-}
-
 /**
  * Module lesson OG template. Plum background (course-section feel, matches
  * the site's module list), mustard lesson pill, cream title.
@@ -37,7 +16,7 @@ function titleFontSize(title: string): number {
 export function renderModuleLessonTemplate(input: ModuleLessonTemplateInput): string {
   const title = sanitize(input.title);
   const description = input.description ? sanitize(input.description) : '';
-  const fontSize = titleFontSize(title);
+  const fontSize = titleFontSize(title, [96, 80, 64, 52], [30, 50, 70]);
   const durationBadge = input.duration ? sanitize(input.duration) : '';
 
   return `

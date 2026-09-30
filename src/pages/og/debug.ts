@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getEmDashEntry } from 'emdash';
-import { computeOgHash } from '../../lib/og/hash';
+import { computeOgHash } from '../../lib/og/url';
 
 export const prerender = false;
 

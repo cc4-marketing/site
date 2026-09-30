@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseSlugHash, resolveOgImage, type OgResolveContext } from '../url';
+import { computeOgHash, parseSlugHash, resolveOgImage, type OgResolveContext } from '../url';
 
 const ctxEnabled: OgResolveContext = {
   path: '/',
@@ -128,5 +128,19 @@ describe('parseSlugHash', () => {
 
   it('rejects non-hex hash characters', () => {
     expect(parseSlugHash('my-post-ghijklmn')).toBeNull();
+  });
+});
+
+describe('computeOgHash (cc4 wiring of the kit hash)', () => {
+  // Golden value from the pre-kit cc4 hash.ts. If this changes, every live
+  // /og/blog/<slug>-<hash>.png URL and its R2 copy is invalidated.
+  it('keeps pre-kit hashes for OG_TEMPLATE_VERSION 1', async () => {
+    const hash = await computeOgHash({
+      title: "How Anthropic 10x'd Growth Marketing",
+      excerpt: 'A deep dive into Claude Code workflows.',
+      bylineIds: ['byline-tri', 'byline-alice'],
+      updatedAt: new Date('2026-04-15T10:00:00Z'),
+    });
+    expect(hash).toBe('9d1014f5');
   });
 });

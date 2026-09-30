@@ -13,14 +13,11 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import satori from 'satori';
-import { html as satoriHtml } from 'satori-html';
-import { Resvg } from '@resvg/resvg-js';
+import { renderPng } from 'site-kick/og/render-node.js';
 import { renderModuleLessonTemplate } from './templates/module-lesson';
 import { renderGenericTemplate, type GenericTemplateInput } from './templates/generic';
 import { renderLibraryTemplate } from './templates/library';
 import { OG_DIMENSIONS, OG_TEMPLATE_VERSION } from './config';
-import { injectPngText } from './png-metadata';
 import { LIBRARY_CATEGORIES, TYPE_LABELS } from '../../data/library-categories';
 
 const BUILD_STAMP = {
@@ -58,15 +55,8 @@ const fonts = [
 ];
 
 async function renderToPng(htmlString: string): Promise<Buffer> {
-  const svg = await satori(satoriHtml(htmlString) as Parameters<typeof satori>[0], {
-    width: OG_DIMENSIONS.width,
-    height: OG_DIMENSIONS.height,
-    fonts,
-  });
-  const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: OG_DIMENSIONS.width } });
-  const rawPng = resvg.render().asPng();
-  const stamped = injectPngText(new Uint8Array(rawPng), BUILD_STAMP);
-  return Buffer.from(stamped);
+  const png = await renderPng(htmlString, { fonts, ...OG_DIMENSIONS, stamp: BUILD_STAMP });
+  return Buffer.from(png);
 }
 
 interface ModuleFrontmatter {

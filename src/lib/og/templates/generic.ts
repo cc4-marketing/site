@@ -1,4 +1,5 @@
 import { OG_COLORS, OG_SITE } from '../config';
+import { sanitizeOgText as sanitize, titleFontSize } from 'site-kick/og/og-text.js';
 
 export interface GenericTemplateInput {
   title: string;
@@ -7,28 +8,6 @@ export interface GenericTemplateInput {
   accent?: 'rust' | 'olive' | 'mustard' | 'plum';
   /** Short label shown as a pill in the top-right */
   badge?: string;
-}
-
-function sanitize(text: string): string {
-  return text
-    .replace(/&amp;/g, 'and')
-    .replace(/&lt;/g, '')
-    .replace(/&gt;/g, '')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ')
-    .replace(/[<>]/g, '')
-    .replace(/&(?!#?\w+;)/g, 'and')
-    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F02F}\u{FE0F}]/gu, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function titleFontSize(title: string): number {
-  if (title.length <= 25) return 112;
-  if (title.length <= 40) return 96;
-  if (title.length <= 60) return 80;
-  return 64;
 }
 
 /**
