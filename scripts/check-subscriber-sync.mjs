@@ -9,15 +9,16 @@
 //   RESEND_API_KEY=$(op read "op://<vault>/<item>/api key") ... npm run check:subscriber-sync -- --substack sub.csv
 //
 // Buckets (failures exit non-zero):
-//   1. opted in on Resend, absent from Substack   -> FAILURE (signup write regressing)
+//   1. opted in on Resend, absent from Substack   -> FAILURE (not yet imported; the monthly
+//      import issue from .github/workflows/monthly-substack-sync-reminder.yml clears it)
 //   2. unsubscribed on Resend, active on Substack -> FAILURE (compliance)
 //   3. absent from Resend, present on Substack    -> info, count only (Substack-native)
 //   4. unsubscribed on Substack, opted in on Resend -> info (reverse leak, manual review)
 //
 // --apply: for bucket 2 only, PATCH the Resend contact to unsubscribed:true.
 //   Suppression only; nothing is ever resubscribed and Substack is never written.
-// --emit-import-csv: write bucket 1 as a single-column `email` CSV, the exact
-//   file phase 02 imports into Substack.
+// --emit-import-csv: write bucket 1 as a single-column `email` CSV, the file to
+//   import into Substack (Subscribers > Add > Import).
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { diffSubscribers, parseSubstackCsv } from './lib/subscriber-sync-diff.mjs';
@@ -117,7 +118,7 @@ for (const c of b4) console.log(`  ${c.email}`);
 
 if (emitImportCsv) {
   writeFileSync(emitImportCsv, ['email', ...b1.map((c) => c.email)].join('\n') + '\n');
-  console.log(`\nwrote ${b1.length} addresses to ${emitImportCsv} (phase 02 import set)`);
+  console.log(`\nwrote ${b1.length} addresses to ${emitImportCsv} (Substack import set)`);
 }
 
 if (b2.length > 0) {
