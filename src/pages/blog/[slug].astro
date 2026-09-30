@@ -1,5 +1,5 @@
 ---
-import { jsonLd } from '../../lib/json-ld';
+import { jsonLd } from 'site-kick/lib/json-ld.js';
 export const prerender = false;
 
 import { getEmDashCollection, getEmDashEntry, getSeoMeta } from 'emdash';
@@ -13,8 +13,8 @@ import PostToc from '../../components/blog/PostToc.astro';
 import PostNav from '../../components/blog/PostNav.astro';
 import PostCta from '../../components/blog/PostCta.astro';
 import DonationSection from '../../components/DonationSection.astro';
-import { slugify } from '../../lib/blog-slugify';
-import { readTimeMinutes } from '../../lib/blog-read-time';
+import { slugify } from 'site-kick/lib/slugify.js';
+import { readTimeMinutes } from 'site-kick/lib/read-time.js';
 import { buildArticleSchema, buildBreadcrumbListSchema, extraSchemas } from '../../lib/blog-post-schemas';
 import { AUTHORS, slugifyAuthorName } from '../../data/authors';
 import '../../styles/blog-prose.css';
