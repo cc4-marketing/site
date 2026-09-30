@@ -34,10 +34,10 @@
     }
   ],
 
-  // site-kick gateway (private Worker, Service binding only). Kit forms answer 503 until
-  // MAIL_MODE=live is set on purpose; switch to live only after a real test to an owned address.
+  // site-kick gateway (private Worker, Service binding only). MAIL_MODE=live since 2026-09-30 (U13
+  // live test). Remove MAIL_MODE and redeploy to stop all kit mail (forms answer 503 again).
   "services": [{ "binding": "GATEWAY", "service": "site-kick-gateway" }],
-  "vars": { "LEAD_NOTIFY": "mtri.vo@gmail.com", "SITE_DOMAINS": "cc4.marketing" },
+  "vars": { "LEAD_NOTIFY": "mtri.vo@gmail.com", "SITE_DOMAINS": "cc4.marketing", "MAIL_MODE": "live", "MAIL_FROM": "CC4 Marketing <hello@mail.cc4.marketing>" },
 
   // Secrets (set via Cloudflare Dashboard or `wrangler secret put`):
   // - RESEND_API_KEY
