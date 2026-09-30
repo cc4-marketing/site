@@ -1,4 +1,4 @@
-# Build Astro and deploy to Cloudflare Workers
+# Test and build checks. Cloudflare Workers Builds (Git integration on cc4-mkt) is the only deployer.
 name: Deploy to Cloudflare Workers
 
 on:
@@ -42,12 +42,6 @@ jobs:
       - name: Check production CMS schema before deployment
         if: github.event_name != 'pull_request'
         run: npx emdash migrate --check --wrangler-config wrangler.jsonc
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      - name: Deploy to Cloudflare Workers
-        if: github.event_name != 'pull_request'
-        run: npx wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
