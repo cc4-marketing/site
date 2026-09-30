@@ -59,9 +59,24 @@ async function joinSubstack(email: string) {
       body: new URLSearchParams({ email, source: 'subscribe_page' }),
     });
     if (!r.ok) log.log('substack_failed', { status: r.status, error: `provider_${r.status}` });
+    await logSubstackResponse(r, email);
   } catch (err) {
     log.log('substack_failed', { error: errorCode(err) });
   }
+}
+
+// TEMPORARY diagnostic (2026-09-30): a 2xx from Substack did not add the subscriber. Log what the
+// endpoint actually answers: status, content type, final URL and the first 200 characters of the
+// body with the address removed. Remove once the Substack path is decided.
+async function logSubstackResponse(r: Response, email: string) {
+  const body = await r.text().catch(() => '');
+  const snippet = body
+    .split(email).join('<email>')
+    .replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, '<email>')
+    .replace(/\s+/g, ' ')
+    .slice(0, 200);
+  console.log(JSON.stringify({ action: 'substack', state: 'substack_response', status: r.status,
+    type: r.headers.get('content-type'), url: r.url, redirected: r.redirected, snippet }));
 }
 
 // addToAudience never re-subscribes a contact that opted out.
