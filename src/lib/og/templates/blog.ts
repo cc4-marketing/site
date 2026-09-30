@@ -1,4 +1,5 @@
 import { OG_COLORS, OG_SITE } from '../config';
+import { sanitizeOgText as sanitize } from 'site-kick/og/og-text.js';
 
 export interface BylineForOg {
   displayName: string;
@@ -24,20 +25,6 @@ export interface BlogTemplateInput {
  *
  * Result is safe to drop into an HTML text node without further escaping.
  */
-function sanitize(text: string): string {
-  return text
-    .replace(/&amp;/g, 'and')
-    .replace(/&lt;/g, '')
-    .replace(/&gt;/g, '')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ')
-    .replace(/[<>]/g, '')
-    .replace(/&(?!#?\w+;)/g, 'and')
-    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F02F}\u{FE0F}]/gu, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
 
 /**
  * Title is smaller than the pre-avatar variant because the excerpt now

@@ -1,8 +1,9 @@
 import type { APIRoute } from 'astro';
 import { getEmDashEntry } from 'emdash';
-import { computeOgHash } from '../../../lib/og/hash';
-import { parseSlugHash } from '../../../lib/og/url';
-import { renderOgImage, isValidPng } from '../../../lib/og/renderer';
+import { computeOgHash, parseSlugHash } from '../../../lib/og/url';
+import { renderOgResponse } from 'site-kick/og/render-worker.js';
+import { isValidPng } from 'site-kick/og/png-metadata.js';
+import { getOgFonts } from '../../../lib/og/fonts';
 import { renderBlogTemplate, type BylineForOg } from '../../../lib/og/templates/blog';
 
 type EmdashByline = { byline: { id?: string; displayName: string; avatarMediaId?: string | null }; roleLabel?: string | null };
@@ -102,14 +103,13 @@ export const GET: APIRoute = async ({ params, url }) => {
     bylines: bylinesWithAvatars,
   });
 
-  let renderResp: Response;
+  let png: Uint8Array;
   try {
-    renderResp = renderOgImage(html);
+    const renderResp = await renderOgResponse(html, { fonts: getOgFonts() });
+    png = new Uint8Array(await renderResp.arrayBuffer());
   } catch {
     return fallbackGeneric();
   }
-
-  const png = new Uint8Array(await renderResp.arrayBuffer());
   if (!isValidPng(png)) {
     return fallbackGeneric();
   }

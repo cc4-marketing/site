@@ -7,6 +7,7 @@ import sitemap from '@astrojs/sitemap';
 import emdash from 'emdash/astro';
 import { d1, r2 } from '@emdash-cms/cloudflare';
 import fs from 'node:fs';
+import { sitemapSerializer } from 'site-kick/lib/sitemap.js';
 
 /** Loads .ttf/.woff files as Uint8Array modules so Satori can consume them at runtime on Workers. */
 function rawFonts(exts) {
@@ -81,8 +82,10 @@ function deriveLibraryUrls() {
   return [...urls].sort();
 }
 
+const isoDay = (d) => new Date(`${d}T00:00:00.000Z`).toISOString();
+
 // Library entries carry a real `updatedAt` in frontmatter; collect them into a
-// URL->date map so the sitemap can emit an honest <lastmod> (not a build-time
+// path->date map so the sitemap can emit an honest <lastmod> (not a build-time
 // stamp, which would tell Google every page changed on every deploy).
 function deriveLibraryLastmod() {
   const ROOT = './src/content/library';
@@ -95,7 +98,7 @@ function deriveLibraryLastmod() {
       const fm = fs.readFileSync(`${ROOT}/${dir.name}/${file}`, 'utf8');
       const m = fm.match(/^updatedAt:\s*'?(\d{4}-\d{2}-\d{2})'?/m);
       if (!m) continue;
-      map.set(`${SITE_URL}/library/${dir.name}/${file.replace(/\.mdx$/, '')}/`, m[1]);
+      map.set(`/library/${dir.name}/${file.replace(/\.mdx$/, '')}/`, isoDay(m[1]));
     }
   }
   return map;
@@ -119,12 +122,12 @@ try {
 }
 const blogPages = blogSitemapData.map(({ slug }) => `${SITE_URL}/blog/${slug}/`);
 
-// URL -> real lastmod date, combining library frontmatter (updatedAt) with the
+// Path -> real lastmod date, combining library frontmatter (updatedAt) with the
 // D1-sourced blog dates. Date-less URLs (module lessons, hubs, author pages) are
 // intentionally absent so they emit no <lastmod> rather than a fabricated one.
 const lastmodByUrl = deriveLibraryLastmod();
 for (const { slug, lastmod } of blogSitemapData) {
-  if (lastmod) lastmodByUrl.set(`${SITE_URL}/blog/${slug}/`, lastmod);
+  if (lastmod) lastmodByUrl.set(`/blog/${slug}/`, isoDay(lastmod));
 }
 
 // https://astro.build/config
@@ -157,80 +160,28 @@ export default defineConfig({
         !page.includes('/og/preview') &&
         !page.includes('/og/debug') &&
         !page.includes('/library/download/'),
-      serialize(item) {
-        const url = item.url;
-        // Real content lastmod where we have an honest date (library frontmatter,
-        // blog D1 dates). Date-less URLs (modules, hubs) stay without lastmod
-        // rather than getting a build-time stamp, which would erode trust.
-        const lm = lastmodByUrl.get(url);
-        if (lm) item.lastmod = new Date(`${lm}T00:00:00.000Z`).toISOString();
-
-        // Homepage - highest priority
-        if (url === 'https://cc4.marketing/') {
-          item.priority = 1.0;
-          item.changefreq = 'daily';
-        }
-        // Blog posts - high priority (SEO)
-        else if (url.includes('/blog')) {
-          item.priority = 0.9;
-          item.changefreq = 'weekly';
-        }
-        // Download page - high priority (conversion)
-        else if (url.includes('/download')) {
-          item.priority = 0.9;
-          item.changefreq = 'weekly';
-        }
-        // Module 0 - Getting Started (entry point)
-        else if (url.includes('/modules/0/')) {
-          item.priority = 0.9;
-          item.changefreq = 'monthly';
-        }
-        // Module 1 - Core lessons
-        else if (url.includes('/modules/1/')) {
-          item.priority = 0.8;
-          item.changefreq = 'monthly';
-        }
-        // Module 2 - Advanced lessons
-        else if (url.includes('/modules/2/')) {
-          item.priority = 0.8;
-          item.changefreq = 'monthly';
-        }
-        // Module 3 - Capstone
-        else if (url.includes('/modules/3/')) {
-          item.priority = 0.8;
-          item.changefreq = 'monthly';
-        }
-        // Modules hub
-        else if (url === `${SITE_URL}/modules/`) {
-          item.priority = 0.8;
-          item.changefreq = 'weekly';
-        }
-        // Author detail pages
-        else if (url.includes('/blog/authors/')) {
-          item.priority = 0.7;
-          item.changefreq = 'monthly';
-        }
-        // Changelog
-        else if (url.includes('/changelog')) {
-          item.priority = 0.8;
-          item.changefreq = 'weekly';
-        }
-        // Marketing Library: hub + category pages 0.8, entry pages 0.7.
-        // Depth is the number of path segments after /library/.
-        else if (url.includes('/library/')) {
-          const rest = url.split('/library/')[1].replace(/\/$/, '');
-          const depth = rest === '' ? 0 : rest.split('/').length;
-          item.priority = depth >= 2 ? 0.7 : 0.8;
-          item.changefreq = 'monthly';
-        }
-        // Default
-        else {
-          item.priority = 0.7;
-          item.changefreq = 'weekly';
-        }
-
-        return item;
-      },
+      // Honest <lastmod> only where a real content date exists (library
+      // frontmatter, blog D1 dates); date-less URLs get none. First matching
+      // rule sets priority/changefreq.
+      serialize: sitemapSerializer({
+        lastmod: lastmodByUrl,
+        rules: [
+          { match: /^\/$/, priority: 1.0, changefreq: 'daily' },
+          // Blog posts and author pages (SEO)
+          { match: /\/blog/, priority: 0.9, changefreq: 'weekly' },
+          // Download page (conversion)
+          { match: /\/download/, priority: 0.9, changefreq: 'weekly' },
+          // Module 0 is the entry point; modules 1 to 3 are the core course
+          { match: /\/modules\/0\//, priority: 0.9, changefreq: 'monthly' },
+          { match: /\/modules\/[123]\//, priority: 0.8, changefreq: 'monthly' },
+          { match: /^\/modules\/$/, priority: 0.8, changefreq: 'weekly' },
+          { match: /\/changelog/, priority: 0.8, changefreq: 'weekly' },
+          // Marketing Library: entry pages 0.7, hub + category pages 0.8
+          { match: /\/library\/[^/]+\/[^/]+/, priority: 0.7, changefreq: 'monthly' },
+          { match: /\/library\//, priority: 0.8, changefreq: 'monthly' },
+          { match: /^/, priority: 0.7, changefreq: 'weekly' },
+        ],
+      }),
     }),
     emdash({
       database: d1({ binding: 'DB' }),

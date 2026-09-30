@@ -1,4 +1,23 @@
-import { computeOgHash, type OgHashInput } from './hash';
+import { computeOgHash as kitOgHash } from 'site-kick/og/og-hash.js';
+import { OG_TEMPLATE_VERSION } from './config';
+
+export { parseSlugHash } from 'site-kick/og/og-hash.js';
+
+/** Fields that participate in the blog OG content hash. Order doesn't matter. */
+export interface OgHashInput {
+  title: string;
+  excerpt?: string;
+  bylineIds?: string[];
+  updatedAt: Date | string;
+}
+
+/**
+ * 8-hex content hash for blog OG URLs. Bumping OG_TEMPLATE_VERSION in config.ts
+ * invalidates every hashed URL, which forces crawlers to re-fetch.
+ */
+export function computeOgHash(input: OgHashInput): Promise<string> {
+  return kitOgHash(input, { version: OG_TEMPLATE_VERSION });
+}
 
 export interface OgResolveContext {
   /** Astro.url.pathname */
@@ -89,11 +108,4 @@ export async function resolveOgImage(
 
 function isBlogPath(path: string): boolean {
   return path === '/blog' || path === '/blog/' || path.startsWith('/blog/');
-}
-
-/** Parses the dynamic endpoint's [slugHash] param back into its parts. */
-export function parseSlugHash(param: string): { slug: string; hash: string } | null {
-  const match = param.match(/^(.+)-([a-f0-9]{8})$/);
-  if (!match) return null;
-  return { slug: match[1], hash: match[2] };
 }

@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { renderOgImage } from '../../lib/og/renderer';
+import { renderOgResponse } from 'site-kick/og/render-worker.js';
+import { getOgFonts } from '../../lib/og/fonts';
 import { renderBlogTemplate } from '../../lib/og/templates/blog';
 import { renderModuleLessonTemplate } from '../../lib/og/templates/module-lesson';
 import { renderGenericTemplate } from '../../lib/og/templates/generic';
@@ -79,5 +80,5 @@ export const GET: APIRoute = async ({ url }) => {
     });
   }
 
-  return renderOgImage(html, { cacheControl: 'no-store' });
+  return renderOgResponse(html, { fonts: getOgFonts(), cacheControl: 'no-store' });
 };

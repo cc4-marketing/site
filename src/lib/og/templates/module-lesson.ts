@@ -1,4 +1,5 @@
 import { OG_COLORS, OG_SITE } from '../config';
+import { sanitizeOgText as sanitize } from 'site-kick/og/og-text.js';
 
 export interface ModuleLessonTemplateInput {
   module: number;
@@ -6,21 +7,6 @@ export interface ModuleLessonTemplateInput {
   title: string;
   description?: string;
   duration?: string;
-}
-
-function sanitize(text: string): string {
-  return text
-    .replace(/&amp;/g, 'and')
-    .replace(/&lt;/g, '')
-    .replace(/&gt;/g, '')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ')
-    .replace(/[<>]/g, '')
-    .replace(/&(?!#?\w+;)/g, 'and')
-    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F02F}\u{FE0F}]/gu, '')
-    .replace(/\s+/g, ' ')
-    .trim();
 }
 
 function titleFontSize(title: string): number {
