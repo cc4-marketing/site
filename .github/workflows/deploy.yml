@@ -23,6 +23,12 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      # site-kick is a private repo; this read-only deploy key lets npm ci fetch it over SSH.
+      # Fork PRs get no secrets, so their install fails at this point by design.
+      - name: Load site-kick deploy key
+        uses: webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555 # v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.SITE_KICK_DEPLOY_KEY }}
       - name: Install dependencies
         run: npm ci
       - name: Test application contracts
