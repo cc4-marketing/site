@@ -9,7 +9,8 @@ import { addToAudience } from 'site-kick/lib/mail-transport.js';
 // mail runs on the site-kick book handler, guarded by the site-kick gateway over the GATEWAY
 // Service binding: journal, per-recipient quota, site budget, idempotency, owner lead record.
 // Only cc4.marketing with MAIL_MODE=live sends; workers.dev and localhost simulate (log mode).
-// After a live delivery the reader joins the Resend audience (RESEND_AUDIENCE_ID), as /api/subscribe did.
+// After a live delivery the reader joins the Resend audience (RESEND_AUDIENCE_ID) and Substack,
+// as /api/subscribe did.
 export const prerender = false;
 
 const RELEASE_URL = 'https://github.com/cc4-marketing/cc4.marketing/releases/latest';
@@ -38,17 +39,33 @@ export const course = {
 const handler = bookDeliveryHandler(course, { guard: gatewayResolver({ site: 'cc4' }) });
 
 type Env = Record<string, string | undefined>;
+type WaitUntil = (task: Promise<unknown>) => void;
 
-// Joins the audience only after a live delivery: a simulated answer carries `simulated`, and the
-// honeypot also answers 200 { ok: true }, so it is screened again here. addToAudience never
-// re-subscribes a contact that opted out. Nothing here changes the answer the reader gets.
-async function joinAudience(copy: Request, res: Response, env: Env) {
-  if (res.status !== 200) return;
-  const result = await res.clone().json().catch(() => null);
-  if (!result?.ok || result.simulated) return;
-  const body = await readForm(copy);
-  const email = normalizeEmail(body.email);
-  if (isBot(body) || !isEmail(email)) return;
+const SUBSCRIBE_URL = 'https://cc4marketing.substack.com/api/v1/free?nojs=true';
+
+// Same request /api/subscribe made. Never retried (scripts/check-subscriber-sync.mjs reconciles);
+// a failure is logged as a status code only, never the address or the response body.
+async function joinSubstack(email: string) {
+  const log = actionLogger('substack');
+  try {
+    const r = await fetch(SUBSCRIBE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        // The endpoint rejects requests without a browser-like agent.
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+      },
+      body: new URLSearchParams({ email, source: 'subscribe_page' }),
+    });
+    if (!r.ok) log.log('substack_failed', { status: r.status, error: `provider_${r.status}` });
+  } catch (err) {
+    log.log('substack_failed', { error: errorCode(err) });
+  }
+}
+
+// addToAudience never re-subscribes a contact that opted out.
+async function joinAudience(email: string, env: Env) {
   const log = actionLogger('audience');
   try {
     const r = await addToAudience(env, email);
@@ -58,12 +75,33 @@ async function joinAudience(copy: Request, res: Response, env: Env) {
   }
 }
 
-export const POST: APIRoute = async ({ request }) => {
+// The list signups run only after a live delivery: a simulated answer carries `simulated`, and
+// the honeypot also answers 200 { ok: true }, so it is screened again here. Returns the address
+// to sign up, or null.
+async function signupEmail(copy: Request, res: Response): Promise<string | null> {
+  if (res.status !== 200) return null;
+  const result = await res.clone().json().catch(() => null);
+  if (!result?.ok || result.simulated) return null;
+  const body = await readForm(copy);
+  const email = normalizeEmail(body.email);
+  return isBot(body) || !isEmail(email) ? null : email;
+}
+
+export const POST: APIRoute = async ({ request, locals }) => {
   const { env } = await import('cloudflare:workers');
   const e = env as unknown as Env;
-  // The handler consumes the body; the audience step reads the copy.
+  // The handler consumes the body; the signup step reads the copy.
   const copy = request.clone();
   const res = await handler({ request, env: e });
-  await joinAudience(copy, res, e);
+  const email = await signupEmail(copy, res);
+  if (email) {
+    // Each step catches its own errors, so the task never rejects.
+    const task = Promise.all([joinAudience(email, e), joinSubstack(email)]);
+    // @astrojs/cloudflare puts the Worker's ExecutionContext on locals.cfContext: the reply goes
+    // out once the mail is sent and the signups finish in the background. Without it, wait.
+    const ctx = (locals as { cfContext?: { waitUntil?: WaitUntil } }).cfContext;
+    if (ctx?.waitUntil) ctx.waitUntil(task);
+    else await task;
+  }
   return res;
 };
