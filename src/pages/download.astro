@@ -45,6 +45,8 @@ import Footer from '../components/Footer.astro';
               Join free list →
             </button>
           </div>
+          <!-- Spam trap (site-kick honeypot): people never see or fill it; a filled one gets a fake success. -->
+          <input type="text" name="website" id="website-input" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
           <p class="form-note" id="form-note">We'll email you the download link and subscribe you to updates.</p>
         </form>
 
@@ -52,7 +54,7 @@ import Footer from '../components/Footer.astro';
           <div class="success-icon">✓</div>
           <h2>Check your inbox!</h2>
           <p>We've sent the course download link to <strong id="sent-email"></strong>.</p>
-          <p class="success-subtext">Also subscribed you to course updates.</p>
+          <p class="success-subtext">Also subscribed you to course updates via Substack.</p>
         </div>
         
         <p class="privacy-note">
@@ -253,6 +255,8 @@ import Footer from '../components/Footer.astro';
     margin-top: 8px !important;
   }
 
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
   /* Error state */
   .form-note.error {
     color: var(--rust);
@@ -283,6 +287,7 @@ import Footer from '../components/Footer.astro';
   const successMessage = document.getElementById("success-message");
   const sentEmail = document.getElementById("sent-email");
   const successSubtext = successMessage.querySelector(".success-subtext");
+  const website = document.getElementById("website-input");
 
   // site-kick form contract (components/form-client.js): one key per page load, resent on every
   // retry, so a double click or a retry after a network error never mails twice.
@@ -317,7 +322,7 @@ import Footer from '../components/Footer.astro';
       const res = await fetch("/api/course-download", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ email, idempotencyKey }),
+        body: JSON.stringify({ email, website: website.value, idempotencyKey }),
       });
       const data = await res.json().catch(() => ({ ok: res.ok }));
 
@@ -326,8 +331,8 @@ import Footer from '../components/Footer.astro';
       }
 
       // Success: show confirmation. No window.open here: popup blockers killed
-      // that path for ~a third of signups (plans/20260828-0238). The list signup
-      // (Resend audience) happens server-side in /api/course-download.
+      // that path for ~a third of signups (plans/20260828-0238). The list signups
+      // (Resend audience, Substack) happen server-side in /api/course-download.
       if (data.simulated) successSubtext.textContent = "Test mode: the form works, but no mail was sent.";
       sentEmail.textContent = email;
       form.hidden = true;

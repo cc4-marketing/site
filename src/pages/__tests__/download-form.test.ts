@@ -13,8 +13,13 @@ describe('/download form', () => {
 
   it('sends one idempotency key per page load with every submit', () => {
     expect(script).toMatch(/const idempotencyKey = [^;]*crypto\.randomUUID\(\)/);
-    expect(script).toContain('JSON.stringify({ email, idempotencyKey })');
+    expect(script).toContain('JSON.stringify({ email, website: website.value, idempotencyKey })');
     expect(script).toContain('if (submitBtn.disabled) return;');
+  });
+
+  it('carries the kit honeypot field, hidden from people', () => {
+    expect(page).toMatch(/<input type="text" name="website"[^>]*tabindex="-1"[^>]*class="hp" aria-hidden="true"/);
+    expect(page).toMatch(/\.hp \{ position: absolute; left: -9999px;/);
   });
 
   it('maps every kit error code to a message', () => {
