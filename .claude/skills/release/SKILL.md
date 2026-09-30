@@ -59,7 +59,27 @@ Change `"version": "{OLD_VERSION}"` to `"version": "{NEW_VERSION}"`.
 
 ### Step 6: Update changelog KV entries
 
-`/ship` adds bullets to `CHANGELOG.md` `## [Unreleased]` but does NOT touch `changelog-worker/data/entries.json` — KV writes are batched here at release time. This step has two substeps:
+`/ship` adds bullets to `CHANGELOG.md` `## [Unreleased]` but does NOT touch `changelog-worker/data/entries.json` — KV writes are batched here at release time. This step has three substeps.
+
+**Step 6.0: Pull the live entries first (required)**
+
+The weekly changelog workflow (`.github/workflows/changelog-draft.yml` / `changelog-publish.yml`) posts entries straight to the API, so they exist in KV but not in `changelog-worker/data/entries.json`. Uploading the local file without pulling would delete them. Always start from live KV:
+
+```bash
+cd changelog-worker && npx wrangler kv key get --remote --namespace-id=0056bfd0472e481387acaec3f6e8a721 "entries" > data/entries.live.json \
+  && node -e "
+const fs=require('fs');
+const live=JSON.parse(fs.readFileSync('data/entries.live.json','utf8'));
+if(!Array.isArray(live)||!live.length) throw new Error('live entries empty or not an array');
+const local=JSON.parse(fs.readFileSync('data/entries.json','utf8'));
+const ids=new Set(live.map(e=>e.id));
+const localOnly=local.filter(e=>!ids.has(e.id));
+fs.writeFileSync('data/entries.json', JSON.stringify([...live,...localOnly],null,2)+'\\n');
+console.log('live',live.length,'+ local only',localOnly.length,'=',live.length+localOnly.length);
+" && rm data/entries.live.json && cd ..
+```
+
+Merge rule: live KV wins for the same `id` (the weekly workflow or an earlier release may have edited it); entries that exist only in the local file (not yet uploaded) are kept. Stop the release if the command fails or live is empty: never upload over live KV from a stale or empty file. Then `git diff changelog-worker/data/entries.json` shows what the workflow added since the last release. If an entry already carries `{NEW_VERSION}` (posted by the weekly workflow), do not create a second entry for the same bullet.
 
 **Step 6a: Sync CHANGELOG.md bullets into entries.json**
 

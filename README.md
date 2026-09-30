@@ -75,6 +75,12 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 See [CHANGELOG.md](CHANGELOG.md) for the full history, or visit the [live changelog](https://cc4.marketing/changelog) with timeline view, filters, and RSS/JSON feeds.
 
+### Weekly changelog automation
+
+- `changelog-draft.yml` runs Mondays 09:00 Asia/Saigon (or by hand). `scripts/changelog.mjs facts` takes commits since the newest `changelog/v*` tag (first run: since the newest entry on the changelog API), keeps `feat`, `fix` and content changes (lessons, library, blog, pages), and computes type, version and modules. Claude (`CLAUDE_CODE_OAUTH_TOKEN`) only writes the title and bullets. The result lands in `changelog/next.json` on a PR from `changelog/next`.
+- Edit the copy on that branch if needed, then merge. `changelog-publish.yml` posts the entry to the API (skipped if the version is already there), tags `changelog/vX.Y.Z`, removes the draft, and prints a suggested hello bar edit.
+- Local dry run: `node scripts/changelog.mjs facts --since "2 weeks ago" --out /tmp/facts.json`, then `node scripts/changelog.mjs prompt /tmp/facts.json`.
+
 ## Contributing
 
 - Open an [issue](https://github.com/cc4-marketing/site/issues) for bugs or suggestions

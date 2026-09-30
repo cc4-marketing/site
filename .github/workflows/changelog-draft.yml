@@ -1,0 +1,77 @@
+# Weekly changelog draft. Computes the entry in node (range, filter, type,
+# version, modules), asks Claude only for the title and bullets, then opens or
+# updates a PR from changelog/next. Merging that PR publishes (changelog-publish.yml).
+name: Changelog draft (weekly)
+
+on:
+  schedule:
+    - cron: "0 2 * * 1" # Monday 09:00 Asia/Saigon
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: changelog
+  cancel-in-progress: false
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main with full history and tags
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+
+      - name: Compute entry facts (no LLM)
+        id: facts
+        run: node scripts/changelog.mjs facts --out "$RUNNER_TEMP/facts.json"
+
+      - name: Write title and bullets with Claude
+        if: steps.facts.outputs.has_changes == 'true'
+        env:
+          # Claude sign-in via subscription OAuth token (no Anthropic API key).
+          # Generate once locally with `claude setup-token`.
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
+            echo "::error::Repository secret CLAUDE_CODE_OAUTH_TOKEN is missing. Run 'claude setup-token' locally, then add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          npm install -g @anthropic-ai/claude-code
+          node scripts/changelog.mjs prompt "$RUNNER_TEMP/facts.json" > "$RUNNER_TEMP/prompt.txt"
+          # No tools: Claude sees only the commit list in the prompt.
+          if ! claude -p --tools "" --output-format json < "$RUNNER_TEMP/prompt.txt" > "$RUNNER_TEMP/claude.json"; then
+            echo "::error::claude -p failed (check that CLAUDE_CODE_OAUTH_TOKEN is valid and not expired)"
+            cat "$RUNNER_TEMP/claude.json" || true
+            exit 1
+          fi
+          node scripts/changelog.mjs apply "$RUNNER_TEMP/facts.json" "$RUNNER_TEMP/claude.json" \
+            --out changelog/next.json --body "$RUNNER_TEMP/pr-body.md"
+
+      - name: Open or update the changelog/next PR
+        if: steps.facts.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.facts.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C changelog/next
+          git add changelog/next.json
+          git commit -m "chore(changelog): draft v$VERSION"
+          git push --force origin changelog/next
+          TITLE="chore(changelog): publish v$VERSION"
+          if [ "$(gh pr view changelog/next --json state --jq .state 2>/dev/null)" = "OPEN" ]; then
+            gh pr edit changelog/next --title "$TITLE" --body-file "$RUNNER_TEMP/pr-body.md"
+          else
+            gh pr create --base main --head changelog/next --title "$TITLE" --body-file "$RUNNER_TEMP/pr-body.md"
+          fi

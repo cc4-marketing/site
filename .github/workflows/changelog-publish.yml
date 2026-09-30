@@ -1,0 +1,104 @@
+# Publishes changelog/next.json when the weekly draft PR is merged into main.
+# Idempotent: skips the POST if the version is already on the API, skips the
+# tag if it exists, and only clears the draft file once both are done.
+name: Changelog publish
+
+on:
+  push:
+    branches: ["main"]
+    paths: ["changelog/next.json"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: changelog
+  cancel-in-progress: false
+
+env:
+  CHANGELOG_API_URL: https://cc4-changelog.mtri-vo.workers.dev
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main with full history and tags
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+
+      - name: Read draft and check the API
+        id: draft
+        run: |
+          if [ ! -f changelog/next.json ]; then
+            echo "No changelog/next.json on main. Nothing to publish."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          VERSION=$(jq -r .version changelog/next.json)
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::changelog/next.json has a non-semver version: $VERSION"
+            exit 1
+          fi
+          { echo "present=true"; echo "version=$VERSION"; } >> "$GITHUB_OUTPUT"
+          node scripts/changelog.mjs check changelog/next.json
+
+      - name: Post entry to the changelog API
+        if: steps.draft.outputs.present == 'true' && steps.draft.outputs.published == 'false'
+        env:
+          CHANGELOG_ADMIN_USER: ${{ secrets.CHANGELOG_ADMIN_USER }}
+          CHANGELOG_ADMIN_PASS: ${{ secrets.CHANGELOG_ADMIN_PASS }}
+        run: |
+          if [ -z "$CHANGELOG_ADMIN_USER" ] || [ -z "$CHANGELOG_ADMIN_PASS" ]; then
+            echo "::error::Secrets CHANGELOG_ADMIN_USER and CHANGELOG_ADMIN_PASS are required to publish."
+            exit 1
+          fi
+          node scripts/changelog.mjs payload changelog/next.json > "$RUNNER_TEMP/payload.json"
+          HTTP_CODE=$(curl -sS -o "$RUNNER_TEMP/response.txt" -w '%{http_code}' \
+            -u "$CHANGELOG_ADMIN_USER:$CHANGELOG_ADMIN_PASS" \
+            -H "Content-Type: application/json" -H "Accept: application/json" \
+            -X POST "$CHANGELOG_API_URL/admin/entries" --data-binary @"$RUNNER_TEMP/payload.json")
+          if [ "$HTTP_CODE" != "201" ]; then
+            echo "::error::POST /admin/entries failed (HTTP $HTTP_CODE)"
+            cat "$RUNNER_TEMP/response.txt"
+            exit 1
+          fi
+          echo "Published v${{ steps.draft.outputs.version }}"
+
+      - name: Tag the last covered commit
+        if: steps.draft.outputs.present == 'true'
+        env:
+          VERSION: ${{ steps.draft.outputs.version }}
+        run: |
+          # Tag range.head (main when the draft was made), not the merge commit:
+          # commits merged while the PR was open stay in the next weekly range.
+          TAG="changelog/v$VERSION"
+          HEAD_SHA=$(jq -r .range.head changelog/next.json)
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" > /dev/null; then
+            echo "Tag $TAG already exists."
+          else
+            git tag "$TAG" "$HEAD_SHA"
+            git push origin "refs/tags/$TAG"
+          fi
+
+      - name: Suggest an announcement
+        if: steps.draft.outputs.present == 'true'
+        run: node scripts/changelog.mjs announce changelog/next.json
+
+      - name: Clear the draft on main
+        if: steps.draft.outputs.present == 'true'
+        env:
+          VERSION: ${{ steps.draft.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -q changelog/next.json
+          git commit -m "chore(changelog): clear published draft v$VERSION"
+          git push origin HEAD:main || { git pull --rebase origin main && git push origin HEAD:main; }
