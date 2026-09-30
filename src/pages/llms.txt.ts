@@ -14,7 +14,7 @@ export const GET: APIRoute = async () => {
     getCollection('modules'),
     getCollection('library'),
   ]);
-  return llmsTxtResponse(
+  const res = llmsTxtResponse(
     buildCc4LlmsTxt({
       posts: posts
         .filter((p) => p.data.status === 'published')
@@ -23,4 +23,7 @@ export const GET: APIRoute = async () => {
       entries,
     }),
   );
+  // One D1 read per hour at most per edge; a new post reaches llms.txt within the hour.
+  res.headers.set('cache-control', 'public, max-age=3600');
+  return res;
 };
