@@ -1,7 +1,8 @@
 // check-download-links.mjs — guards the welcome-email download resource.
 // Run via `npm run check:download-links` (wired into the /release skill).
 // Checks:
-//  1. The subscribe email template links to releases/latest (evergreen URL,
+//  1. The course download mail (the book config in src/pages/api/course-download.ts,
+//     the route /download posts to) links to releases/latest (evergreen URL,
 //     never pins a version that can go stale).
 //  2. That URL resolves live to a concrete release tag (HTTP 200).
 //  3. The quick-start entry command in the email still matches the one the
@@ -14,7 +15,7 @@ let failed = false;
 const fail = (msg) => { console.log(`FAIL  ${msg}`); failed = true; };
 const pass = (msg) => console.log(`pass  ${msg}`);
 
-const tpl = readFileSync('src/pages/api/subscribe.ts', 'utf8');
+const tpl = readFileSync('src/pages/api/course-download.ts', 'utf8');
 
 // 1. Evergreen link present, no pinned /releases/tag/ URL
 if (tpl.includes('github.com/cc4-marketing/cc4.marketing/releases/latest')) {
@@ -37,7 +38,7 @@ try {
 }
 
 // 3. Entry command consistency: email vs the site's own quick-start copy
-const emailCmd = tpl.match(/type <code>(\/[\w-]+)<\/code>/)?.[1];
+const emailCmd = tpl.match(/then type (\/[\w-]+)/)?.[1];
 const siteSources = ['src/pages/blog/[slug].astro', 'src/lib/blog-post-schemas.ts']
   .filter(existsSync)
   .map((f) => readFileSync(f, 'utf8'))

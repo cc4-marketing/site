@@ -45,6 +45,8 @@ import Footer from '../components/Footer.astro';
               Join free list →
             </button>
           </div>
+          <!-- Spam trap (site-kick honeypot): people never see or fill it; a filled one gets a fake success. -->
+          <input type="text" name="website" id="website-input" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
           <p class="form-note" id="form-note">We'll email you the download link and subscribe you to updates.</p>
         </form>
 
@@ -253,6 +255,8 @@ import Footer from '../components/Footer.astro';
     margin-top: 8px !important;
   }
 
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
   /* Error state */
   .form-note.error {
     color: var(--rust);
@@ -282,9 +286,30 @@ import Footer from '../components/Footer.astro';
   const formNote = document.getElementById("form-note");
   const successMessage = document.getElementById("success-message");
   const sentEmail = document.getElementById("sent-email");
+  const successSubtext = successMessage.querySelector(".success-subtext");
+  const website = document.getElementById("website-input");
+
+  // site-kick form contract (components/form-client.js): one key per page load, resent on every
+  // retry, so a double click or a retry after a network error never mails twice.
+  const idempotencyKey = window.crypto && crypto.randomUUID
+    ? crypto.randomUUID()
+    : String(Date.now()) + Math.random().toString(36).slice(2);
+
+  // Kit error codes (site-kick lib/policy.js). The gateway's recipient quota and site budget
+  // answer rate_limited too.
+  const ERRORS = {
+    rate_limited: "Too many requests, try again later",
+    in_progress: "Your last try is still being processed. Please wait a moment.",
+    invalid_email: "Valid email is required",
+    bad_origin: "Origin not allowed",
+    not_configured: "Signup temporarily unavailable",
+    guard_unavailable: "Signup temporarily unavailable",
+    send_failed: "Failed to send email",
+  };
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (submitBtn.disabled) return; // a request is in flight: Enter must not resend
     const email = emailInput.value.trim();
     if (!email) return;
 
@@ -294,20 +319,21 @@ import Footer from '../components/Footer.astro';
     formNote.textContent = "We'll email you the download link and subscribe you to updates.";
 
     try {
-      const res = await fetch("/api/subscribe", {
+      const res = await fetch("/api/course-download", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ email, website: website.value, idempotencyKey }),
       });
+      const data = await res.json().catch(() => ({ ok: res.ok }));
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Something went wrong");
+      if (!data.ok) {
+        throw new Error(ERRORS[data.error] || "Something went wrong");
       }
 
-      // Success — show confirmation. The Substack subscribe now happens
-      // server-side in /api/subscribe (popup blockers killed the old
-      // window.open path for ~a third of signups, plans/20260828-0238).
+      // Success: show confirmation. No window.open here: popup blockers killed
+      // that path for ~a third of signups (plans/20260828-0238). The list signups
+      // (Resend audience, Substack) happen server-side in /api/course-download.
+      if (data.simulated) successSubtext.textContent = "Test mode: the form works, but no mail was sent.";
       sentEmail.textContent = email;
       form.hidden = true;
       successMessage.hidden = false;
