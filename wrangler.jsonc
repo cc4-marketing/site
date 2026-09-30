@@ -37,4 +37,58 @@
   // Secrets (set via Cloudflare Dashboard or `wrangler secret put`):
   // - RESEND_API_KEY
   // - RESEND_AUDIENCE_ID
+
+  // Preview Worker cc4-mkt-preview for the site-kick gateway rollout. The env is chosen at BUILD
+  // time: `CLOUDFLARE_ENV=preview npm run build && npx wrangler deploy`. Wrangler deploys the
+  // adapter's generated config and ignores --env, so a plain build plus `deploy --env preview`
+  // would deploy production cc4-mkt. Envs inherit no bindings, so each one is
+  // repeated here with the production IDs: preview shares production D1, R2 and KV (owner decision
+  // 2026-09-30). MAIL_MODE stays unset (log), and a *.workers.dev host never sends real mail.
+  // Secrets for this env: SITE_SECRET, STATUS_TOKEN (see the site-kick cc4 adoption report).
+  "env": {
+    "preview": {
+      "name": "cc4-mkt-preview",
+      "workers_dev": true,
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "cc4-emdash",
+          "database_id": "6745b124-0093-48fe-bf57-c12b35c4a70c"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "MEDIA",
+          "bucket_name": "cc4-media"
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "SESSION",
+          "id": "a8a777d908784d0cb849de8b82aaa816"
+        }
+      ],
+      "images": {
+        "binding": "IMAGES"
+      },
+      // Own namespace so preview traffic never spends production's 1001 budget.
+      "ratelimits": [
+        {
+          "name": "SUBSCRIBE_LIMITER",
+          "namespace_id": "1002",
+          "simple": { "limit": 3, "period": 60 }
+        }
+      ],
+      "services": [
+        {
+          "binding": "GATEWAY",
+          "service": "site-kick-gateway-preview"
+        }
+      ],
+      "vars": {
+        "LEAD_NOTIFY": "mtri.vo@gmail.com",
+        "SITE_DOMAINS": "cc4.marketing"
+      }
+    }
+  }
 }

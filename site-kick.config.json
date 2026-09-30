@@ -1,0 +1,7 @@
+{
+  "site": "cc4",
+  "env": "preview",
+  "handlers": ["book"],
+  "gatewayBinding": "GATEWAY",
+  "wrangler": "wrangler.jsonc"
+}
