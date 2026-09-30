@@ -59,7 +59,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
     const rawEmail = body && typeof body === 'object' && 'email' in body ? body.email : undefined;
 
-    // Normalise at the boundary so Resend and Substack receive the same key
+    // Normalise at the boundary so the Resend audience keys match the Substack export
     // (audit 2026-08-28: mixed-case signups made cross-list diffs unreliable).
     const email = String(rawEmail ?? '').trim().toLowerCase();
 
@@ -137,34 +137,10 @@ export const POST: APIRoute = async ({ request }) => {
       console.warn('RESEND_AUDIENCE_ID not set — subscriber not added to audience');
     }
 
-    // Server-side Substack subscribe. Replaces the popup-based client write that
-    // popup blockers killed for ~a third of signups (plans/20260828-0238).
-    // Rules: never gates the signup response, never retries (the reconcile
-    // script in phase 03 is the retry), failures logged with the address so
-    // Workers logs are the recovery record.
-    requests.push(
-      fetch('https://cc4marketing.substack.com/api/v1/free?nojs=true', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          // The endpoint rejects requests without a browser-like agent.
-          'User-Agent':
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
-        },
-        body: new URLSearchParams({ email, source: 'subscribe_page' }),
-      })
-        .then(async (r) => {
-          if (!r.ok) {
-            console.error('substack subscribe failed', email, r.status, await r.text().catch(() => ''));
-          }
-          return r;
-        })
-        .catch((e) => {
-          // Swallow network errors: a Substack outage must never cost a signup.
-          console.error('substack subscribe failed', email, e);
-          return new Response(null, { status: 599 });
-        }),
-    );
+    // No server-side Substack call. The POST to Substack's /api/v1/free was redirected to the
+    // publication homepage and never created a subscriber (diagnostic log, 2026-09-30), so it
+    // failed silently. Readers subscribe through the embed on /download; the monthly issue from
+    // .github/workflows/monthly-substack-sync-reminder.yml covers the Resend -> Substack import.
 
     const [res] = await Promise.all(requests);
 

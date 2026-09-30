@@ -49,7 +49,8 @@ beforeEach(() => {
 });
 
 describe('POST /api/subscribe', () => {
-  it('valid address produces three outbound calls: Resend send, Resend contact, Substack free', async () => {
+  // Substack's /api/v1/free redirected server posts to its homepage (2026-09-30); no longer called.
+  it('valid address produces two outbound calls: Resend send and Resend contact, no Substack', async () => {
     const calls = stubFetch(ok);
     const res = await post({ email: 'person@example.com' });
 
@@ -58,25 +59,7 @@ describe('POST /api/subscribe', () => {
     expect(urls).toEqual([
       'https://api.resend.com/emails',
       'https://api.resend.com/audiences/test-audience/contacts',
-      'https://cc4marketing.substack.com/api/v1/free?nojs=true',
     ]);
-  });
-
-  it('a broken Substack never costs a signup: substack 500 still yields 200', async () => {
-    stubFetch((url) =>
-      url.includes('substack.com') ? new Response('boom', { status: 500 }) : ok(),
-    );
-    const res = await post({ email: 'person@example.com' });
-    expect(res.status).toBe(200);
-  });
-
-  it('a substack network error still yields 200', async () => {
-    stubFetch((url) => {
-      if (url.includes('substack.com')) throw new Error('network down');
-      return ok();
-    });
-    const res = await post({ email: 'person@example.com' });
-    expect(res.status).toBe(200);
   });
 
   it('Resend send returning 500 still yields 502 (existing behaviour, guarded)', async () => {
@@ -93,8 +76,8 @@ describe('POST /api/subscribe', () => {
 
     const sendBody = JSON.parse(String(calls[0].init.body));
     expect(sendBody.to).toEqual(['foo@bar.com']);
-    const substackBody = String(calls[2].init.body);
-    expect(substackBody).toContain('email=foo%40bar.com');
+    const contactBody = JSON.parse(String(calls[1].init.body));
+    expect(contactBody.email).toBe('foo@bar.com');
   });
 
   it('rejects structurally invalid addresses with 400', async () => {

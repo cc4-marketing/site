@@ -41,7 +41,6 @@ const LIVE = {
 };
 const contactCalls = (calls: { method: string; path: string }[]) =>
   calls.filter((c) => c.path.startsWith('/audiences/')).map(({ method, path }) => ({ method, path }));
-const substackCalls = (calls: { path: string }[]) => calls.filter((c) => c.path === '/api/v1/free');
 const logLines = () => vi.mocked(console.log).mock.calls.map((c) => String(c[0]));
 // An ExecutionContext stand-in, as @astrojs/cloudflare puts it on locals.cfContext.
 function cfContext() {
@@ -187,26 +186,24 @@ describe('POST /api/course-download', () => {
     });
   });
 
-  describe('list signups (Resend audience + Substack) after a live delivery', () => {
-    it('subscribes to Substack with the same request /api/subscribe made', async () => {
+  describe('audience signup after a live delivery', () => {
+    // Substack's /api/v1/free redirected server posts to its homepage and never added anyone
+    // (2026-09-30); readers now subscribe through the embed on /download.
+    it('joins the Resend audience and never calls Substack', async () => {
       const calls = stubResend();
       Object.assign(mockEnv, LIVE, { GATEWAY: fakeGateway() });
       expect((await post(PROD)).status).toBe(200);
-      const [sub] = substackCalls(calls);
-      expect(sub.method).toBe('POST');
-      expect(vi.mocked(fetch).mock.calls.some(([u]) => String(u) === 'https://cc4marketing.substack.com/api/v1/free?nojs=true')).toBe(true);
-      expect(String(sub.init?.body)).toBe('email=reader%40example.com&source=subscribe_page');
-      expect(sub.init?.headers).toMatchObject({ 'Content-Type': 'application/x-www-form-urlencoded' });
-      expect((sub.init?.headers as Record<string, string>)['User-Agent']).toMatch(/^Mozilla\/5\.0/);
+      expect(contactCalls(calls).some((c) => c.method === 'POST' && c.path === '/audiences/aud/contacts')).toBe(true);
+      expect(vi.mocked(fetch).mock.calls.some(([u]) => String(u).includes('substack.com'))).toBe(false);
     });
 
-    it('with locals.cfContext the reply does not wait for the signups', async () => {
+    it('with locals.cfContext the reply does not wait for the audience signup', async () => {
       const pending: string[] = [];
       vi.stubGlobal('fetch', vi.fn((url: string | URL) => {
         const u = new URL(String(url));
         if (u.pathname === '/emails') return Promise.resolve(Response.json({ id: 'm' }));
         pending.push(u.pathname);
-        return new Promise<Response>(() => {}); // audience and Substack never answer
+        return new Promise<Response>(() => {}); // the audience never answers
       }));
       Object.assign(mockEnv, LIVE, { GATEWAY: fakeGateway() });
       const { tasks, locals } = cfContext();
@@ -215,7 +212,7 @@ describe('POST /api/course-download', () => {
       expect(await res.json()).toEqual({ ok: true });
       expect(locals.cfContext.waitUntil).toHaveBeenCalledTimes(1);
       expect(tasks).toHaveLength(1);
-      expect(pending).toEqual(['/audiences/aud/contacts/reader%40example.com', '/api/v1/free']);
+      expect(pending).toEqual(['/audiences/aud/contacts/reader%40example.com']);
     });
 
     it('schedules nothing on a simulated answer, an error, or the honeypot', async () => {
@@ -230,11 +227,10 @@ describe('POST /api/course-download', () => {
       for (const c of [failed, bot, sim]) expect(c.locals.cfContext.waitUntil).not.toHaveBeenCalled();
     });
 
-    it('failing signups never change the reply and log codes without the address', async () => {
+    it('a failing audience signup never changes the reply and log codes without the address', async () => {
       vi.stubGlobal('fetch', vi.fn(async (url: string | URL) => {
         const u = new URL(String(url));
         if (u.pathname === '/emails') return Response.json({ id: 'm' });
-        if (u.hostname.endsWith('substack.com')) return new Response('reader@example.com is bad', { status: 400 });
         throw new TypeError('network down');
       }));
       Object.assign(mockEnv, LIVE, { GATEWAY: fakeGateway() });
@@ -245,7 +241,6 @@ describe('POST /api/course-download', () => {
       await Promise.all(tasks);
       const lines = logLines();
       expect(lines.some((l) => l.includes('"state":"audience_failed"') && l.includes('provider_error'))).toBe(true);
-      expect(lines.some((l) => l.includes('"state":"substack_failed"') && l.includes('provider_400'))).toBe(true);
       expect(lines.join('\n')).not.toContain('reader@example.com');
     });
   });
