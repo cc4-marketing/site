@@ -54,7 +54,16 @@ import Footer from '../components/Footer.astro';
           <div class="success-icon">✓</div>
           <h2>Check your inbox!</h2>
           <p>We've sent the course download link to <strong id="sent-email"></strong>.</p>
-          <p class="success-subtext">Also subscribed you to course updates via Substack.</p>
+          <p class="success-subtext" id="success-subtext" hidden></p>
+          <div class="substack-block">
+            <p class="substack-lead">Want the weekly course updates? Subscribe on Substack:</p>
+            <!-- The Substack embed iframe is added by the script below only after a successful
+                 submit, so it adds no weight to the initial page. -->
+            <div class="substack-embed" id="substack-embed"></div>
+            <p class="substack-fallback">
+              Embed not loading? <a href="https://cc4marketing.substack.com/subscribe" target="_blank" rel="noopener">Subscribe on cc4marketing.substack.com</a>
+            </p>
+          </div>
         </div>
         
         <p class="privacy-note">
@@ -255,6 +264,37 @@ import Footer from '../components/Footer.astro';
     margin-top: 8px !important;
   }
 
+  .substack-block {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 2px dashed var(--border-color);
+  }
+
+  .success-message .substack-lead {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  /* :global because the script creates the iframe, so it has no scoped attribute. */
+  .substack-embed :global(iframe) {
+    display: block;
+    width: 100%;
+    height: 160px;
+    border: 3px solid var(--border-color);
+    background: #fff;
+  }
+
+  .success-message .substack-fallback {
+    font-size: 0.85em;
+    margin-top: 10px;
+  }
+
+  .substack-fallback a {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 
   /* Error state */
@@ -286,7 +326,8 @@ import Footer from '../components/Footer.astro';
   const formNote = document.getElementById("form-note");
   const successMessage = document.getElementById("success-message");
   const sentEmail = document.getElementById("sent-email");
-  const successSubtext = successMessage.querySelector(".success-subtext");
+  const successSubtext = document.getElementById("success-subtext");
+  const substackEmbed = document.getElementById("substack-embed");
   const website = document.getElementById("website-input");
 
   // site-kick form contract (components/form-client.js): one key per page load, resent on every
@@ -331,9 +372,21 @@ import Footer from '../components/Footer.astro';
       }
 
       // Success: show confirmation. No window.open here: popup blockers killed
-      // that path for ~a third of signups (plans/20260828-0238). The list signups
-      // (Resend audience, Substack) happen server-side in /api/course-download.
-      if (data.simulated) successSubtext.textContent = "Test mode: the form works, but no mail was sent.";
+      // that path for ~a third of signups (plans/20260828-0238). The Resend audience
+      // signup happens server-side in /api/course-download. Substack has no working
+      // server-side subscribe (2026-09-30), so the reader subscribes through its embed.
+      if (data.simulated) {
+        successSubtext.textContent = "Test mode: the form works, but no mail was sent.";
+        successSubtext.hidden = false;
+      }
+      if (!substackEmbed.firstChild) {
+        const frame = document.createElement("iframe");
+        frame.src = "https://cc4marketing.substack.com/embed";
+        frame.title = "Subscribe to CC4 Marketing on Substack";
+        frame.setAttribute("frameborder", "0");
+        frame.setAttribute("scrolling", "no");
+        substackEmbed.appendChild(frame);
+      }
       sentEmail.textContent = email;
       form.hidden = true;
       successMessage.hidden = false;
