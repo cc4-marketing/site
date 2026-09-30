@@ -1,0 +1,42 @@
+name: Monthly Substack sync reminder
+
+# Substack has no import API and no working server-side subscribe (the Worker's POST to
+# /api/v1/free redirected to the homepage, 2026-09-30). Signups land in the Resend audience,
+# so once a month this opens an issue with the steps to import them into Substack by hand.
+
+on:
+  schedule:
+    - cron: "0 2 1 * *" # 09:00 Asia/Saigon on the 1st
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  open-issue:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Open the monthly import issue unless one is already open
+        run: |
+          title="Monthly: import Resend signups into Substack ($(TZ=Asia/Saigon date +%Y-%m))"
+          if gh issue list --state open --limit 200 --json title --jq '.[].title' | grep -Fxq "$title"; then
+            echo "Open issue already exists: $title"
+            exit 0
+          fi
+          cat > body.md <<'BODY'
+          Substack has no import API, so new site signups (Resend audience) are imported into Substack by hand once a month.
+
+          1. Export the Substack subscribers CSV: Substack dashboard > Subscribers > Export. Save it as `export.csv` in a clone of this repo.
+          2. Build the import file (bucket 1 = opted in on Resend, missing from Substack):
+             ```sh
+             RESEND_API_KEY=$(op read "op://<vault>/<item>/api key") RESEND_AUDIENCE_ID=<audience id> npm run check:subscriber-sync -- --substack export.csv --emit-import-csv import.csv
+             ```
+             A non-zero exit is expected while bucket 1 is above 0. If bucket 2 (unsubscribed on Resend, active on Substack) is above 0, remove those addresses in Substack too.
+          3. Import `import.csv` in Substack: Subscribers > Add > Import.
+          4. Export a fresh Substack CSV and re-run the step 2 command to confirm bucket 1 is 0.
+          5. Delete `export.csv` and `import.csv` (they hold subscriber addresses), then close this issue.
+          BODY
+          gh issue create --title "$title" --body-file body.md
