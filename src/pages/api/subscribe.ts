@@ -12,6 +12,9 @@ declare global {
 
 export const prerender = false;
 
+// The /download form moved to /api/course-download on 2026-09-30. This route stays for old
+// cached pages and any other caller until its traffic is gone.
+
 // Only our own pages call this endpoint. Never reflect the caller's Origin:
 // that let any site drive signups (and our Resend quota) from a browser.
 const corsHeaders = {

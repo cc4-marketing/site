@@ -52,7 +52,7 @@ import Footer from '../components/Footer.astro';
           <div class="success-icon">✓</div>
           <h2>Check your inbox!</h2>
           <p>We've sent the course download link to <strong id="sent-email"></strong>.</p>
-          <p class="success-subtext">Also subscribed you to course updates via Substack.</p>
+          <p class="success-subtext">Also subscribed you to course updates.</p>
         </div>
         
         <p class="privacy-note">
@@ -282,9 +282,29 @@ import Footer from '../components/Footer.astro';
   const formNote = document.getElementById("form-note");
   const successMessage = document.getElementById("success-message");
   const sentEmail = document.getElementById("sent-email");
+  const successSubtext = successMessage.querySelector(".success-subtext");
+
+  // site-kick form contract (components/form-client.js): one key per page load, resent on every
+  // retry, so a double click or a retry after a network error never mails twice.
+  const idempotencyKey = window.crypto && crypto.randomUUID
+    ? crypto.randomUUID()
+    : String(Date.now()) + Math.random().toString(36).slice(2);
+
+  // Kit error codes (site-kick lib/policy.js). The gateway's recipient quota and site budget
+  // answer rate_limited too.
+  const ERRORS = {
+    rate_limited: "Too many requests, try again later",
+    in_progress: "Your last try is still being processed. Please wait a moment.",
+    invalid_email: "Valid email is required",
+    bad_origin: "Origin not allowed",
+    not_configured: "Signup temporarily unavailable",
+    guard_unavailable: "Signup temporarily unavailable",
+    send_failed: "Failed to send email",
+  };
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (submitBtn.disabled) return; // a request is in flight: Enter must not resend
     const email = emailInput.value.trim();
     if (!email) return;
 
@@ -294,20 +314,21 @@ import Footer from '../components/Footer.astro';
     formNote.textContent = "We'll email you the download link and subscribe you to updates.";
 
     try {
-      const res = await fetch("/api/subscribe", {
+      const res = await fetch("/api/course-download", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ email, idempotencyKey }),
       });
+      const data = await res.json().catch(() => ({ ok: res.ok }));
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Something went wrong");
+      if (!data.ok) {
+        throw new Error(ERRORS[data.error] || "Something went wrong");
       }
 
-      // Success — show confirmation. The Substack subscribe now happens
-      // server-side in /api/subscribe (popup blockers killed the old
-      // window.open path for ~a third of signups, plans/20260828-0238).
+      // Success: show confirmation. No window.open here: popup blockers killed
+      // that path for ~a third of signups (plans/20260828-0238). The list signup
+      // (Resend audience) happens server-side in /api/course-download.
+      if (data.simulated) successSubtext.textContent = "Test mode: the form works, but no mail was sent.";
       sentEmail.textContent = email;
       form.hidden = true;
       successMessage.hidden = false;
