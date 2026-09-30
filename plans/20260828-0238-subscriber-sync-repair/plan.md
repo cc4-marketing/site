@@ -12,6 +12,8 @@ Second-order problems the audit surfaced:
 
 Decision: keep Resend as the system of record and make the server responsible for the Substack write. No browser popup in the path. Substack has no supported write API, so the live path uses the unofficial `POST /api/v1/free?nojs=true` endpoint, and a reconcile script backstops it. That combination is what would have caught this in April.
 
+Update 2026-09-30: the server-side Substack write never worked. A diagnostic log showed the Worker's POST to `/api/v1/free?nojs=true` redirected to the publication homepage (200 text/html) and created no subscriber. It is removed from `/api/course-download` and `/api/subscribe`. Readers now subscribe themselves through Substack's embed on the `/download` success state, and `.github/workflows/monthly-substack-sync-reminder.yml` opens a monthly issue to import Resend signups into Substack with `npm run check:subscriber-sync -- --emit-import-csv`. Resend stays the system of record.
+
 ## Phases
 
 - **Phase 01**: Fix the leak. Server-side Substack subscribe in `src/pages/api/subscribe.ts`, delete the `window.open` call, tighten validation, correct the success copy. Ships alone and stops the bleeding. See `phase-01-fix-signup-sync.md`.
