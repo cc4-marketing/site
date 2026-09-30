@@ -34,9 +34,15 @@
     }
   ],
 
+  // site-kick gateway (private Worker, Service binding only). Kit forms answer 503 until
+  // MAIL_MODE=live is set on purpose; switch to live only after a real test to an owned address.
+  "services": [{ "binding": "GATEWAY", "service": "site-kick-gateway" }],
+  "vars": { "LEAD_NOTIFY": "mtri.vo@gmail.com", "SITE_DOMAINS": "cc4.marketing" },
+
   // Secrets (set via Cloudflare Dashboard or `wrangler secret put`):
   // - RESEND_API_KEY
   // - RESEND_AUDIENCE_ID
+  // - SITE_SECRET, STATUS_TOKEN (site-kick; 1Password "site-kick cc4 production ...", 64 letters+digits)
 
   // Preview Worker cc4-mkt-preview for the site-kick gateway rollout. The env is chosen at BUILD
   // time: `CLOUDFLARE_ENV=preview npm run build && npx wrangler deploy`. Wrangler deploys the
