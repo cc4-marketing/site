@@ -1,174 +1,56 @@
 ---
 name: hellobar
-description: Toggle the site hello bar on/off or create a new one with custom content
+description: Check, schedule, turn on or off, or replace the cc4.marketing top hello bar. Use when asked what the hello bar shows, to announce something in the top bar, to queue a bar for a date, or to stop one.
 ---
 
-# /hellobar — Manage the Hello Bar
+# /hellobar: manage the cc4.marketing hello bar
 
-Turn the site's top announcement bar on or off, or create a new one with custom content.
+cc4 runs the site-kick scheduled hello bar. The kit's own skill (`skills/hellobar/SKILL.md` in the
+`site-kick` package, v0.2.2+) is the full reference; this file is the cc4 workflow.
 
-## Arguments
+- Data: `src/data/hellobar.json` (`"hellobar"` in `site-kick.config.json`), `{ "bars": [...] }`.
+- Every enabled bar that has not ended ships with the build. The visitor's clock shows the first bar
+  whose window holds "now" (startsAt inclusive, endsAt exclusive). File order is priority.
+- `id` is the dismiss key in localStorage (`cooldownDays`). A new campaign needs a new id.
+- Rendered by `src/components/HelloBar.astro` (cc4 look, kit selection logic) from
+  `src/layouts/BaseLayout.astro`. `/hellobar.json` (`src/pages/hellobar.json.ts`) publishes what the
+  build carries.
+- Never edit the JSON by hand. The CLI validates before writing and keeps the file stable.
+- `floatingBanner` and `lessonBanner` in `src/config/promo.ts` are separate. Do not touch them here.
 
-```
-/hellobar on                         # Enable the current hello bar
-/hellobar off                        # Disable the hello bar
-/hellobar <text>                     # Create a new hello bar with this text
-/hellobar                            # Show current status and ask what to do
-```
+## 1. Status first
 
-**With options (can be combined with any of the above):**
-```
-/hellobar <text> --link <url>        # Set the CTA link URL
-/hellobar <text> --cta <label>       # Set the CTA button text (default: "Learn more")
-/hellobar <text> --cooldown <days>   # Set re-show cooldown in days (default: 3)
-/hellobar <text> --ship              # Auto-run /ship after saving
-```
+    npx site-kick hellobar status
+    npx site-kick hellobar status --url https://cc4.marketing        # what the live build carries
+    npx site-kick hellobar status --at 2026-11-27T09:00:00+07:00     # what shows at that time
 
-## Instructions
+Report the active bar, upcoming bars with start times, expired, disabled and any `shadowed` bar.
+Exit 0 ok, 2 config problem, 3 network. On a non-zero exit show the `FAIL` and `next:` lines.
 
-### Config location
+## 2. Change
 
-All hello bar state lives in a single file:
+    npx site-kick hellobar off <id>
+    npx site-kick hellobar on <id>
+    npx site-kick hellobar end <id>       # endsAt = now; for a bar that has not started, use off
+    npx site-kick hellobar new --text '...' --link '/path/?utm_source=hellobar&utm_campaign=...' \
+      --cta 'Learn more' [--starts 2026-11-27T00:00:00+07:00] [--ends 2026-12-01T23:59:59+07:00] \
+      [--cooldown 3] [--id hellobar-...]
 
-```
-src/config/promo.ts → promoConfig.helloBar
-```
+- `new` puts the bar first, so it wins over the others while its window is open.
+- Use single quotes around text and links (zsh expands `$`, backticks and `!` in double quotes).
+- Links: `https://...` (opens in a new tab) or a site path `/x` (same tab). Text max 160, CTA max 40.
+- Tag links with `utm_source=hellobar&utm_campaign=<campaign>`.
+- Changelog releases: the publish workflow's "Suggest an announcement" step prints the exact
+  `new` command for the version.
 
-Fields:
-- `enabled: boolean` — whether the bar renders at all
-- `text: string` — the announcement copy
-- `linkText: string` — the CTA label (e.g. "See what's new")
-- `linkUrl: string` — where the CTA links to
-- `storageKey: string` — localStorage key for dismiss tracking (must be unique per campaign)
-- `cooldownDays: number` — days before re-showing after dismiss
+## 3. Ship
 
-### Subcommand: `/hellobar on`
+1. Run `status` again and show it.
+2. Branch, commit only `src/data/hellobar.json`: `chore: hello bar <on|off|new|end> <id>`
+   (`chore`, never `feat`, so it stays out of the changelog).
+3. Open a PR and merge it to main after the owner confirms; the merge deploys. Never push or merge
+   without that confirmation.
+4. After the deploy, run `npx site-kick hellobar status --url https://cc4.marketing` and confirm
+   `live: matches the local file`.
 
-1. Read `src/config/promo.ts`.
-2. Set `enabled: true` in the `helloBar` block.
-3. Show the current text/link/cooldown so the user knows what they're enabling.
-4. Save the file.
-
-### Subcommand: `/hellobar off`
-
-1. Read `src/config/promo.ts`.
-2. Set `enabled: false` in the `helloBar` block.
-3. Save the file.
-
-### Subcommand: `/hellobar <text>` (new hello bar)
-
-1. Read `src/config/promo.ts`.
-2. Parse the arguments:
-   - `<text>` — everything that isn't a flag; this becomes the `text` field
-   - `--link <url>` — becomes `linkUrl` (required for new bars — if missing, ask the user)
-   - `--cta <label>` — becomes `linkText` (default: `"Learn more"`)
-   - `--cooldown <days>` — becomes `cooldownDays` (default: `3`)
-3. Generate a unique `storageKey` from the text:
-   - Slugify the first 4 words of the text, prefix with `hellobar-`
-   - Example: `"New course module available"` → `"hellobar-new-course-module-available"`
-   - This ensures users who dismissed a previous bar see the new one
-4. Update the `helloBar` block in `promoConfig`:
-   ```typescript
-   helloBar: {
-       enabled: true,
-       text: "<text>",
-       linkText: "<cta>",
-       linkUrl: "<url>",
-       storageKey: "<generated-key>",
-       cooldownDays: <days>
-   },
-   ```
-5. Save the file.
-6. Show a preview:
-   ```
-   Hello bar updated
-
-   Text: <text>
-   CTA: <cta> → <url>
-   Cooldown: <days> days
-   Storage key: <key>
-   Status: enabled
-
-   Run /ship to deploy, or /hellobar off to disable.
-   ```
-
-### Subcommand: `/hellobar` (no args — status check)
-
-1. Read `src/config/promo.ts`.
-2. Show the current hello bar config:
-   ```
-   Hello bar status:
-     Enabled: true/false
-     Text: "..."
-     CTA: "..." → https://...
-     Cooldown: 3 days
-     Storage key: hellobar-...
-   ```
-3. Ask: "Want to turn it on/off, or create a new one?"
-
-### Auto-ship
-
-If the user passed `--ship`, invoke `/ship` after saving the config. The commit message should be:
-- For `on`: `chore: enable hello bar`
-- For `off`: `chore: disable hello bar`
-- For new content: `chore: update hello bar — "<first 40 chars of text>"`
-
-Note: Always use `chore:` — hello bar updates are config changes, not user-facing features. Using `feat:` would wrongly trigger auto-changelog entries in `/ship`.
-
-## Config file format
-
-The exact shape of `src/config/promo.ts` to maintain when editing:
-
-```typescript
-export const promoConfig = {
-    // Hello Bar (top banner)
-    helloBar: {
-        enabled: true,
-        text: "...",
-        linkText: "...",
-        linkUrl: "...",
-        storageKey: "hellobar-...",
-        cooldownDays: 3
-    },
-
-    // Floating Side Banner (appears on scroll) — global
-    floatingBanner: {
-        ...
-    },
-
-    // Lesson Promo Banner (floating inside course lessons)
-    lessonBanner: {
-        ...
-    }
-};
-```
-
-**Important:** Only modify the `helloBar` block. Never touch `floatingBanner` or `lessonBanner` — those have separate controls.
-
-## Component architecture (for reference)
-
-- `src/components/HelloBar.astro` — the Astro component (renders if `enabled`, has dismiss JS with localStorage cooldown)
-- `src/layouts/BaseLayout.astro` — imports and renders HelloBar with props from `promoConfig.helloBar`
-- `src/styles/global.css` — `body:has(.hello-bar.visible) { padding-top: 42px; }` pushes content down when bar is shown
-
-## Examples
-
-```bash
-# Quick toggle
-/hellobar off
-/hellobar on
-
-# New announcement
-/hellobar "New Module 3 just launched — Advanced Analytics" --link https://cc4.marketing/modules/3/welcome/ --cta "Start learning"
-
-# Black Friday promo with short cooldown and auto-ship
-/hellobar "Black Friday: 50% off ClaudeKit Marketing" --link https://claudekit.cc/?ref=BF2026 --cta "Grab the deal" --cooldown 1 --ship
-
-# Status check
-/hellobar
-```
-
-## Related skills
-
-- `/ship` — deploy the config change to production
-- `/changelog-add` — if you want a manual changelog entry for a promo change
+A scheduled start or end needs no deploy.
