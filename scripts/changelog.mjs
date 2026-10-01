@@ -5,12 +5,12 @@
 //   apply   <facts.json> <claude.json>   merge Claude copy, write changelog/next.json + PR body
 //   check   <entry.json>                 is this version already on the API?
 //   payload <entry.json>                 print the POST /admin/entries body
-//   announce <entry.json>                print a suggested hello bar edit
+//   announce <entry.json>                print a suggested site-kick hellobar new command
 import { execFileSync } from 'node:child_process';
 import { appendFileSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import {
-  apiPayload, applyCopy, buildFacts, fetchEntries, isPublished, renderMarkdown, resolveBase,
+  apiPayload, applyCopy, buildFacts, fetchEntries, hellobarAnnounceCommand, isPublished, renderMarkdown, resolveBase,
 } from './lib/changelog-entry.mjs';
 
 const API_URL = process.env.CHANGELOG_API_URL || 'https://cc4-changelog.mtri-vo.workers.dev';
@@ -93,12 +93,9 @@ async function check([entryFile]) {
 
 function announce([entryFile]) {
   const e = readJson(entryFile);
-  const tag = `v${e.version.replace(/\./g, '-')}`;
-  console.log(`Optional: announce v${e.version} in the hello bar. Edit helloBar in src/config/promo.ts to:
-  text: "New in v${e.version}: ${e.title}",
-  linkText: "See what changed",
-  linkUrl: "https://cc4.marketing/changelog/?utm_source=hellobar&utm_campaign=changelog-${tag}",
-  storageKey: "hellobar-changelog-${tag}",`);
+  console.log(`Optional: announce v${e.version} in the hello bar for a week (first bar wins, so it shows ahead of the current one):
+  ${hellobarAnnounceCommand(e)}
+Then commit src/data/hellobar.json, open a PR and merge it to deploy. Check with: npx site-kick hellobar status --url https://cc4.marketing`);
 }
 
 const commands = {

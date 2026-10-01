@@ -153,6 +153,23 @@ export function renderMarkdown(entry) {
   ].join('\n');
 }
 
+// Shell command that queues a one-week hello bar for a published entry (site-kick hellobar new).
+// Single quotes keep zsh/bash from expanding $ or backticks in the title.
+export function hellobarAnnounceCommand(entry, now = Date.now()) {
+  const tag = `v${entry.version.replace(/\./g, '-')}`;
+  const q = (s) => `'${String(s).replace(/'/g, `'\\''`)}'`;
+  const day = (ms) => new Date(ms).toLocaleDateString('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' });
+  return [
+    'npx site-kick hellobar new',
+    `--id hellobar-changelog-${tag}`,
+    `--text ${q(`New in v${entry.version}: ${entry.title}`.slice(0, 160))}`,
+    `--cta 'See the changelog'`,
+    `--link '/changelog/?utm_source=hellobar&utm_campaign=changelog-${tag}'`,
+    `--ends ${day(now + 7 * 864e5)}T23:59:59+07:00`,
+    '--cooldown 3',
+  ].join(' ');
+}
+
 function sortNewestFirst(entries) {
   return [...entries].sort((a, b) => Date.parse(b.published_at || 0) - Date.parse(a.published_at || 0));
 }

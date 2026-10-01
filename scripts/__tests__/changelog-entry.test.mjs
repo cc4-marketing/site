@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-  applyCopy, bumpKind, bumpVersion, buildFacts, entryType, fetchEntries, isPublished, isReaderVisible,
+  applyCopy, bumpKind, bumpVersion, buildFacts, entryType, fetchEntries, hellobarAnnounceCommand, isPublished, isReaderVisible,
   latestSemver, modulesFromPaths, parseCommit, resolveBase,
 } from '../lib/changelog-entry.mjs';
 
@@ -129,5 +129,14 @@ describe('applyCopy', () => {
     expect(() => applyCopy(facts, { title: 'New \u2014 post', bullets: ['x'] })).toThrow(/dash/);
     expect(() => applyCopy(facts, { title: 'Seamless post', bullets: ['x'] })).toThrow(/seamless/);
     expect(() => applyCopy(facts, { title: 'Post', bullets: ['a', 'b', 'c'] })).toThrow(/bullets/);
+  });
+});
+
+describe('hellobarAnnounceCommand', () => {
+  it('queues a one-week bar with a changelog id and single-quoted text', () => {
+    const cmd = hellobarAnnounceCommand({ version: '0.7.0', title: "Reader's $HOME `tips`" }, Date.parse('2026-10-01T07:00:00Z'));
+    expect(cmd).toBe("npx site-kick hellobar new --id hellobar-changelog-v0-7-0 --text 'New in v0.7.0: Reader'\\''s $HOME `tips`'"
+      + " --cta 'See the changelog' --link '/changelog/?utm_source=hellobar&utm_campaign=changelog-v0-7-0'"
+      + ' --ends 2026-10-08T23:59:59+07:00 --cooldown 3');
   });
 });
