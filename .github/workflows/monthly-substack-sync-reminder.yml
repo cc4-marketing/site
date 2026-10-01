@@ -32,7 +32,7 @@ jobs:
           1. Export the Substack subscribers CSV: Substack dashboard > Subscribers > Export. Save it as `export.csv` in a clone of this repo.
           2. Build the import file (bucket 1 = opted in on Resend, missing from Substack):
              ```sh
-             RESEND_API_KEY=$(op read "op://<vault>/<item>/api key") RESEND_AUDIENCE_ID=<audience id> npm run check:subscriber-sync -- --substack export.csv --emit-import-csv import.csv
+             RESEND_API_KEY=$(op read "op://Private/cc4 sub sync/credential") RESEND_AUDIENCE_ID=$(op read "op://Private/cc4 sub sync/audience id") npm run check:subscriber-sync -- --substack export.csv --emit-import-csv import.csv
              ```
              A non-zero exit is expected while bucket 1 is above 0. If bucket 2 (unsubscribed on Resend, active on Substack) is above 0, remove those addresses in Substack too.
           3. Import `import.csv` in Substack: Subscribers > Add > Import.
