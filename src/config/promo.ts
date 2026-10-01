@@ -4,16 +4,6 @@
  */
 
 export const promoConfig = {
-    // Hello Bar (top banner)
-    helloBar: {
-        enabled: true,
-        text: "Free: Book Publisher turns one Markdown file into a real PDF + EPUB book",
-        linkText: "Get the skill",
-        linkUrl: "https://bookpublisher.cc4.marketing/?utm_source=hellobar&utm_campaign=book-publisher-launch",
-        storageKey: "hellobar-book-publisher-launch",
-        cooldownDays: 3
-    },
-
     // Floating Side Banner (appears on scroll), global
     floatingBanner: {
         enabled: true,
