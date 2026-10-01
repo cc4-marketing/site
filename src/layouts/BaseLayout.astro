@@ -4,6 +4,7 @@ import HelloBar from '../components/HelloBar.astro';
 import FloatingSideBanner from '../components/FloatingSideBanner.astro';
 import CodeBlockCopy from '../components/CodeBlockCopy.astro';
 import { promoConfig } from '../config/promo';
+import hellobar from '../data/hellobar.json';
 import { resolveOgImage, type OgPageKey, type OgPostInput } from '../lib/og/url';
 
 interface Props {
@@ -249,7 +250,7 @@ const breadcrumbSchema = {
   )}
 </head>
 <body>
-  <HelloBar {...promoConfig.helloBar} />
+  <HelloBar config={hellobar} />
   <FloatingSideBanner {...promoConfig.floatingBanner} />
   <CodeBlockCopy />
   <slot />

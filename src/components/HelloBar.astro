@@ -1,30 +1,28 @@
 ---
+// Top bar fed by src/data/hellobar.json (site-kick scheduled HelloBar). Edit the file with
+// `npx site-kick hellobar`, never by hand. Same selection as the kit component
+// (site-kick/components/HelloBar.astro): every enabled bar that has not ended renders hidden and the
+// script shows the first one whose window holds the visitor's clock and that the visitor has not
+// dismissed within cooldownDays (localStorage, key = bar id). cc4 keeps its own markup for the icon
+// and brand styling, which the kit component has no slot for.
+import { hellobarCandidates, parseHellobar } from 'site-kick/lib/hellobar.js';
+
 interface Props {
-    enabled?: boolean;
-    text?: string;
-    linkText?: string;
-    linkUrl?: string;
-    storageKey?: string;
-    cooldownDays?: number;
+    config: unknown;
 }
 
-const {
-    enabled = true,
-    text = "ClaudeKit Marketing v1.3.0 just dropped",
-    linkText = "See what's new",
-    linkUrl = "https://claudekit.cc/?ref=BIZE9CYY",
-    storageKey = "hellobar-claudekit-v130",
-    cooldownDays = 3
-} = Astro.props;
+const bars = hellobarCandidates(parseHellobar(Astro.props.config));
+const iso = (s?: string) => (s ? new Date(s).toISOString() : undefined);
+const external = (url: string) => /^https?:\/\//.test(url);
 ---
 
-{enabled && (
-    <div class="hello-bar" id="hello-bar" data-storage-key={storageKey} data-cooldown-days={cooldownDays}>
+{bars.map((bar) => (
+    <div class="hello-bar" data-hello-bar data-id={bar.id} data-starts={iso(bar.startsAt)} data-ends={iso(bar.endsAt)} data-cooldown-days={bar.cooldownDays} hidden>
         <div class="hello-bar-content">
             <span class="hello-bar-icon">&#x1F4E6;</span>
-            <span class="hello-bar-text">{text}</span>
-            <a href={linkUrl} target="_blank" rel="noopener noreferrer" class="hello-bar-link">
-                {linkText} &rarr;
+            <span class="hello-bar-text">{bar.text}</span>
+            <a href={bar.linkUrl} class="hello-bar-link" {...(external(bar.linkUrl) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+                {bar.linkText} &rarr;
             </a>
         </div>
         <button class="hello-bar-close" aria-label="Close banner">
@@ -33,7 +31,7 @@ const {
             </svg>
         </button>
     </div>
-)}
+))}
 
 <style>
     .hello-bar {
@@ -53,6 +51,10 @@ const {
         transform: translateY(-100%);
         opacity: 0;
         transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .hello-bar[hidden] {
+        display: none;
     }
 
     .hello-bar.visible {
@@ -125,35 +127,26 @@ const {
 </style>
 
 <script>
-    const bar = document.getElementById('hello-bar');
+    // Start inclusive, end exclusive, same as site-kick lib/hellobar.js. First open, undismissed bar wins.
+    const now = Date.now();
+    let shown: HTMLElement | null = null;
+    document.querySelectorAll<HTMLElement>('[data-hello-bar]').forEach((bar) => {
+        const d = bar.dataset;
+        let at = 0;
+        const open = !shown && !(d.starts && Date.parse(d.starts) > now) && !(d.ends && Date.parse(d.ends) <= now);
+        if (open) { try { at = Number(localStorage.getItem(d.id!)); } catch { /* storage blocked: just show it */ } }
+        if (open && !(at && now - at < Number(d.cooldownDays || 3) * 864e5)) shown = bar;
+        else bar.remove();
+    });
+    const bar = shown as HTMLElement | null;
     if (bar) {
-        const storageKey = bar.dataset.storageKey || 'hellobar-dismissed';
-        const cooldownDays = parseInt(bar.dataset.cooldownDays || '3', 10);
-        const dismissedAt = localStorage.getItem(storageKey);
-
-        let shouldShow = true;
-        if (dismissedAt) {
-            const elapsed = Date.now() - parseInt(dismissedAt, 10);
-            const cooldownMs = cooldownDays * 24 * 60 * 60 * 1000;
-            if (elapsed < cooldownMs) {
-                shouldShow = false;
-            } else {
-                localStorage.removeItem(storageKey);
-            }
-        }
-
-        if (shouldShow) {
-            setTimeout(() => bar.classList.add('visible'), 100);
-
-            const closeBtn = bar.querySelector('.hello-bar-close');
-            closeBtn?.addEventListener('click', () => {
-                bar.classList.add('hiding');
-                bar.classList.remove('visible');
-                localStorage.setItem(storageKey, String(Date.now()));
-                setTimeout(() => bar.remove(), 300);
-            });
-        } else {
-            bar.remove();
-        }
+        bar.hidden = false;
+        setTimeout(() => bar.classList.add('visible'), 100);
+        bar.querySelector('.hello-bar-close')?.addEventListener('click', () => {
+            bar.classList.add('hiding');
+            bar.classList.remove('visible');
+            try { localStorage.setItem(bar.dataset.id!, String(Date.now())); } catch { /* storage blocked */ }
+            setTimeout(() => bar.remove(), 300);
+        });
     }
 </script>

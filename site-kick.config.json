@@ -3,5 +3,6 @@
   "env": "preview",
   "handlers": ["book"],
   "gatewayBinding": "GATEWAY",
-  "wrangler": "wrangler.jsonc"
+  "wrangler": "wrangler.jsonc",
+  "hellobar": "src/data/hellobar.json"
 }

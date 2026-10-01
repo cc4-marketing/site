@@ -1,0 +1,22 @@
+{
+  "bars": [
+    {
+      "id": "hellobar-changelog-v0-7-0",
+      "enabled": true,
+      "text": "What's new: a new Lesson 3.1 on safe merge campaigns, 4 new blog posts, and more",
+      "linkText": "See the changelog",
+      "linkUrl": "/changelog/?utm_source=hellobar&utm_campaign=changelog-v0-7-0",
+      "startsAt": "2026-10-01T14:00:00+07:00",
+      "endsAt": "2026-10-08T23:59:59+07:00",
+      "cooldownDays": 3
+    },
+    {
+      "id": "hellobar-book-publisher-launch",
+      "enabled": true,
+      "text": "Free: Book Publisher turns one Markdown file into a real PDF + EPUB book",
+      "linkText": "Get the skill",
+      "linkUrl": "https://bookpublisher.cc4.marketing/?utm_source=hellobar&utm_campaign=book-publisher-launch",
+      "cooldownDays": 3
+    }
+  ]
+}
