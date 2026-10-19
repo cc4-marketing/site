@@ -1,0 +1,44 @@
+{
+  "version": "0.8.0",
+  "bump": "minor",
+  "type": "added",
+  "modules": [
+    "site"
+  ],
+  "range": {
+    "base": {
+      "kind": "tag",
+      "ref": "changelog/v0.7.0"
+    },
+    "head": "de7b05cc31da2b15445277e809836a7f2ace4671"
+  },
+  "commits": [
+    {
+      "sha": "72c1e0a",
+      "type": "fix",
+      "subject": "fix(hellobar): serve /hellobar.json at request time, not prerendered",
+      "body": ""
+    },
+    {
+      "sha": "b6082d6",
+      "type": "feat",
+      "subject": "feat(changelog): suggest a site-kick hellobar new command on publish",
+      "body": ""
+    },
+    {
+      "sha": "398d7c1",
+      "type": "feat",
+      "subject": "feat(hellobar): run the hello bar on the site-kick scheduled hellobar.json",
+      "body": "Bars live in src/data/hellobar.json (site-kick hellobar CLI, doctor validates).\nThe v0.7.0 changelog bar runs 2026-10-01 14:00 to 10-08 +07:00 ahead of the\nBook Publisher bar, which keeps its old storage key as id. HelloBar.astro keeps\nthe cc4 look and icon and uses the kit selection logic. /hellobar.json is\nprerendered for status --url. helloBar leaves promo.ts."
+    }
+  ],
+  "title": "Hello bar now runs on a schedule",
+  "bullets": [
+    "The hello bar at the top of the site now follows a schedule. The changelog bar for v0.7.0 shows from 2026-10-01 14:00 to 10-08 (+07:00), ahead of the Book Publisher bar.",
+    "The Book Publisher bar keeps its old identity, so it stays the same bar as before. The bar keeps the same look and icon as before.",
+    "Publishing a changelog entry now suggests a command for adding a new hello bar."
+  ],
+  "summary": "The hello bar at the top of the site now follows a schedule. The changelog bar for v0.7.0 shows from 2026-10-01 14:00 to 10-08 (+07:00), ahead of the Book Publisher bar. The Book Publisher bar keeps its old identity, so it stays the same bar as before. The bar keeps the same look and icon as before. Publishing a changelog entry now suggests a command for adding a new hello bar.",
+  "slug": "hello-bar-now-runs-on-a-schedule",
+  "machine_summary": "72c1e0a fix(hellobar): serve /hellobar.json at request time, not prerendered; b6082d6 feat(changelog): suggest a site-kick hellobar new command on publish; 398d7c1 feat(hellobar): run the hello bar on the site-kick scheduled hellobar.json"
+}
